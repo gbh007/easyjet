@@ -25,7 +25,7 @@ func Run(ctx context.Context, cfg Config) (string, error) {
 
 	out, err := cmd.Output()
 	if err != nil {
-		return "", err
+		return string(out), err
 	}
 
 	return string(out), nil
