@@ -3,6 +3,7 @@ package gorm
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"gorm.io/gorm"
@@ -15,6 +16,10 @@ func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
 	if res.Error != nil {
 		return entity.Project{}, res.Error
 	}
+
+	slices.SortStableFunc(p.Stages, func(a, b entity.ProjectStage) int {
+		return a.Number - b.Number
+	})
 
 	return p, nil
 }

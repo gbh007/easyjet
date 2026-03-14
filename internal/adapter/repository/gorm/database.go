@@ -46,7 +46,8 @@ func NewRepo(logger *slog.Logger, tp, dns string) (Repo, error) {
 		new(entity.Project),
 		new(entity.ProjectRun),
 		new(entity.ProjectStage),
-		new(entity.ProjectStageRun),
+		new(entity.ProjectRunStage),
+		new(entity.ProjectRunGitLogs),
 	)
 	if err != nil {
 		return Repo{}, fmt.Errorf("gorm automigrate: %w", err)

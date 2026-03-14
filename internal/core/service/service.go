@@ -1,0 +1,31 @@
+package service
+
+import (
+	"log/slog"
+
+	"github.com/gbh007/easyjet/internal/core/port"
+)
+
+type Service struct {
+	ex     port.Exec
+	fs     port.FileSystem
+	git    port.Git
+	db     port.Database
+	logger *slog.Logger
+}
+
+func New(
+	logger *slog.Logger,
+	ex port.Exec,
+	fs port.FileSystem,
+	git port.Git,
+	db port.Database,
+) Service {
+	return Service{
+		ex:     ex,
+		fs:     fs,
+		git:    git,
+		db:     db,
+		logger: logger,
+	}
+}

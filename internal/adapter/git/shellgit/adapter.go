@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/gbh007/easyjet/internal/adapter/internal"
@@ -61,13 +62,17 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit,
 		return nil, err
 	}
 
-	return lo.Map(strings.Split(strings.TrimSpace(out), "\n"), func(s string, _ int) entity.Commit {
+	result := lo.Map(strings.Split(strings.TrimSpace(out), "\n"), func(s string, _ int) entity.Commit {
 		a, b, _ := strings.Cut(s, " ")
 		return entity.Commit{
 			Hash:    a,
 			Subject: b,
 		}
-	}), nil
+	})
+
+	slices.Reverse(result)
+
+	return result, nil
 }
 
 func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {

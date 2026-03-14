@@ -109,7 +109,7 @@ func main() {
 	runID, err := r.SetProjectRun(context.TODO(), entity.ProjectRun{
 		ProjectID: id,
 		Success:   true,
-		Stages: []entity.ProjectStageRun{
+		Stages: []entity.ProjectRunStage{
 			{
 				StageNumber: 2,
 				Success:     true,
@@ -119,6 +119,13 @@ func main() {
 				StageNumber: 5,
 				Success:     false,
 				Log:         "aa231aa\nda35sdas",
+			},
+		},
+		GitLogs: []entity.ProjectRunGitLogs{
+			{
+				Number:  77,
+				Hash:    "aaaaaaaaaaa",
+				Subject: "bbbbbbbb",
 			},
 		},
 	})

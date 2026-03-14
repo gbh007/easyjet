@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"context"
+	"slices"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
@@ -14,12 +15,43 @@ func (repo Repo) ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun,
 			ProjectID: id,
 		}).
 		Preload("Stages").
+		Preload("GitLogs").
 		Find(&runs)
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
+	for i := range runs {
+		slices.SortStableFunc(runs[i].Stages, func(a, b entity.ProjectRunStage) int {
+			return a.StageNumber - b.StageNumber
+		})
+		slices.SortStableFunc(runs[i].GitLogs, func(a, b entity.ProjectRunGitLogs) int {
+			return a.Number - b.Number
+		})
+	}
+
 	return runs, nil
+}
+
+func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error) {
+	var run entity.ProjectRun
+
+	res := repo.db.WithContext(ctx).
+		Preload("Stages").
+		Preload("GitLogs").
+		First(&run, id)
+	if res.Error != nil {
+		return entity.ProjectRun{}, res.Error
+	}
+
+	slices.SortStableFunc(run.Stages, func(a, b entity.ProjectRunStage) int {
+		return a.StageNumber - b.StageNumber
+	})
+	slices.SortStableFunc(run.GitLogs, func(a, b entity.ProjectRunGitLogs) int {
+		return a.Number - b.Number
+	})
+
+	return run, nil
 }
 
 func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint, error) {
