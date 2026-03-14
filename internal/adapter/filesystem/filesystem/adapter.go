@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -12,10 +13,14 @@ import (
 
 type Adapter struct {
 	basePath string
+	logger   *slog.Logger
 }
 
-func New(basePath string) Adapter {
-	return Adapter{basePath: basePath}
+func New(logger *slog.Logger, basePath string) Adapter {
+	return Adapter{
+		basePath: basePath,
+		logger:   logger,
+	}
 }
 
 func (a Adapter) GetProjectDir(ctx context.Context, id uint) string {

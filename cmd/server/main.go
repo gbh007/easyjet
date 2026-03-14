@@ -3,19 +3,43 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
 	"github.com/gbh007/easyjet/internal/core/entity"
+	"github.com/golang-cz/devslog"
+	"github.com/lmittmann/tint"
 )
 
 func main() {
+	logger := slog.Default()
+	lt := "dev"
+	llv := slog.LevelDebug
+
+	switch lt {
+	case "json":
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: llv,
+		}))
+	case "dev":
+		logger = slog.New(devslog.NewHandler(os.Stdout, &devslog.Options{
+			HandlerOptions: &slog.HandlerOptions{
+				Level: llv,
+			},
+		}))
+	case "tint":
+		logger = slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+			Level: llv,
+		}))
+	}
+
 	err := os.Remove("main.db")
 	if err != nil {
 		panic(err)
 	}
 
-	r, err := gorm.NewRepo("sqlite", "main.db")
+	r, err := gorm.NewRepo(logger, "sqlite", "main.db")
 	if err != nil {
 		panic(err)
 	}

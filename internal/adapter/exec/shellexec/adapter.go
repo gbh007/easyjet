@@ -2,16 +2,19 @@ package shellexec
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/gbh007/easyjet/internal/adapter/internal"
 )
 
 const execPath = "/bin/sh"
 
-type Adapter struct{}
+type Adapter struct {
+	logger *slog.Logger
+}
 
-func New() Adapter {
-	return Adapter{}
+func New(logger *slog.Logger) Adapter {
+	return Adapter{logger: logger}
 }
 
 func (Adapter) Exec(ctx context.Context, dir, p string) (string, error) {

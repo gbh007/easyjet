@@ -3,19 +3,21 @@ package gorm
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/glebarez/sqlite"
+	slogGorm "github.com/orandin/slog-gorm"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 type Repo struct {
-	db *gorm.DB
+	db     *gorm.DB
+	logger *slog.Logger
 }
 
-func NewRepo(tp, dns string) (Repo, error) {
+func NewRepo(logger *slog.Logger, tp, dns string) (Repo, error) {
 	var dialector gorm.Dialector
 
 	switch tp {
@@ -27,8 +29,14 @@ func NewRepo(tp, dns string) (Repo, error) {
 		return Repo{}, errors.New("unsupported connection type")
 	}
 
+	slogGorm.New()
+
 	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Discard,
+		Logger: slogGorm.New(
+			slogGorm.WithHandler(logger.Handler()),
+			slogGorm.WithTraceAll(),
+			slogGorm.SetLogLevel(slogGorm.DefaultLogType, slog.LevelDebug),
+		),
 	})
 	if err != nil {
 		return Repo{}, fmt.Errorf("gorm open: %w", err)
@@ -45,6 +53,7 @@ func NewRepo(tp, dns string) (Repo, error) {
 	}
 
 	return Repo{
-		db: db,
+		db:     db,
+		logger: logger,
 	}, nil
 }
