@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,10 +35,10 @@ func NewRepo(tp, dns string) (Repo, error) {
 	}
 
 	err = db.AutoMigrate(
-		new(modelProject),
-		new(modelProjectRun),
-		new(modelProjectStage),
-		new(modelProjectStageRun),
+		new(entity.Project),
+		new(entity.ProjectRun),
+		new(entity.ProjectStage),
+		new(entity.ProjectStageRun),
 	)
 	if err != nil {
 		return Repo{}, fmt.Errorf("gorm automigrate: %w", err)

@@ -20,11 +20,38 @@ func main() {
 		panic(err)
 	}
 
+	_, err = r.SetProject(context.TODO(), entity.Project{
+		Stages: []entity.ProjectStage{
+			{
+				Script: "1",
+			},
+			{
+				Script: "2",
+			},
+			{
+				Script: "3",
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	id, err := r.SetProject(context.TODO(), entity.Project{
 		Dir:    "hello",
 		GitURL: "world",
 		Name:   "123",
-		Stages: []string{"1", "2", "3"},
+		Stages: []entity.ProjectStage{
+			{
+				Script: "1",
+			},
+			{
+				Script: "2",
+			},
+			{
+				Script: "3",
+			},
+		},
 	})
 	if err != nil {
 		panic(err)
@@ -58,7 +85,7 @@ func main() {
 	runID, err := r.SetProjectRun(context.TODO(), entity.ProjectRun{
 		ProjectID: id,
 		Success:   true,
-		Stages: []entity.ProjectRunStage{
+		Stages: []entity.ProjectStageRun{
 			{
 				StageNumber: 2,
 				Success:     true,

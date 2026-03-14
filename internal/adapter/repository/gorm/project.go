@@ -5,64 +5,27 @@ import (
 	"fmt"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
-	"github.com/samber/lo"
 	"gorm.io/gorm"
 )
 
 func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
-	var (
-		p      modelProject
-		stages []modelProjectStage
-	)
+	var p entity.Project
 
-	res := repo.db.WithContext(ctx).First(&p, id)
+	res := repo.db.WithContext(ctx).Preload("Stages").First(&p, id)
 	if res.Error != nil {
-		return entity.Project{}, fmt.Errorf("get project: %w", res.Error)
+		return entity.Project{}, res.Error
 	}
 
-	res = repo.db.WithContext(ctx).
-		Where(&modelProjectStage{
-			ProjectID: id,
-		}).
-		Order("num").
-		Find(&stages)
-	if res.Error != nil {
-		return entity.Project{}, fmt.Errorf("get stages: %w", res.Error)
-	}
-
-	return entity.Project{
-		ID:     p.ID,
-		Dir:    p.Dir,
-		GitURL: p.GitURL,
-		Name:   p.Name,
-		Stages: lo.Map(stages, func(s modelProjectStage, _ int) string {
-			return s.Script
-		}),
-	}, nil
+	return p, nil
 }
 
-func (repo Repo) SetProject(ctx context.Context, pr entity.Project) (uint, error) {
-	p := modelProject{
-		Model: gorm.Model{
-			ID: pr.ID,
-		},
-		Dir:    pr.Dir,
-		GitURL: pr.GitURL,
-		Name:   pr.Name,
-		Stages: lo.Map(pr.Stages, func(s string, num int) modelProjectStage {
-			return modelProjectStage{
-				Script: s,
-				Number: num,
-			}
-		}),
-	}
-
+func (repo Repo) SetProject(ctx context.Context, p entity.Project) (uint, error) {
 	err := repo.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if pr.ID > 0 {
-			res := tx.Where(&modelProjectStage{
-				ProjectID: pr.ID,
+		if p.ID > 0 {
+			res := tx.Where(&entity.ProjectStage{
+				ProjectID: p.ID,
 			}).
-				Delete(&modelProjectStage{})
+				Delete(&entity.ProjectStage{})
 			if res.Error != nil {
 				return fmt.Errorf("delete stages: %w", res.Error)
 			}
