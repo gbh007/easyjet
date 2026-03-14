@@ -12,7 +12,7 @@ import (
 func (repo Repo) Project(ctx context.Context, id uint) (entities.Project, error) {
 	var (
 		p      modelProject
-		stages []*modelProjectStage
+		stages []modelProjectStage
 	)
 
 	res := repo.db.WithContext(ctx).First(&p, id)
@@ -35,7 +35,7 @@ func (repo Repo) Project(ctx context.Context, id uint) (entities.Project, error)
 		Dir:    p.Dir,
 		GitURL: p.GitURL,
 		Name:   p.Name,
-		Stages: lo.Map(stages, func(s *modelProjectStage, _ int) string {
+		Stages: lo.Map(stages, func(s modelProjectStage, _ int) string {
 			return s.Script
 		}),
 	}, nil

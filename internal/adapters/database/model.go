@@ -16,21 +16,6 @@ func (modelProject) TableName() string {
 	return "projects"
 }
 
-type modelProjectRun struct {
-	gorm.Model
-
-	Project modelProject `gorm:"foreignKey:ProjectID"`
-
-	ProjectID   uint   `gorm:"column:project_id"`
-	StageNumber int    `gorm:"column:stage_num"`
-	Success     bool   `gorm:"column:success"`
-	Log         string `gorm:"column:log"`
-}
-
-func (modelProjectRun) TableName() string {
-	return "runs"
-}
-
 type modelProjectStage struct {
 	ProjectID uint   `gorm:"column:project_id"`
 	Number    int    `gorm:"column:num"`
@@ -39,4 +24,29 @@ type modelProjectStage struct {
 
 func (modelProjectStage) TableName() string {
 	return "stages"
+}
+
+type modelProjectRun struct {
+	gorm.Model
+
+	Project modelProject           `gorm:"foreignKey:ProjectID"`
+	Stages  []modelProjectStageRun `gorm:"foreignKey:RunID"`
+
+	ProjectID uint `gorm:"column:project_id"`
+	Success   bool `gorm:"column:success"`
+}
+
+func (modelProjectRun) TableName() string {
+	return "runs"
+}
+
+type modelProjectStageRun struct {
+	RunID       uint   `gorm:"column:run_id"`
+	StageNumber int    `gorm:"column:stage_num"`
+	Success     bool   `gorm:"column:success"`
+	Log         string `gorm:"column:log"`
+}
+
+func (modelProjectStageRun) TableName() string {
+	return "stage_runs"
 }

@@ -54,4 +54,33 @@ func main() {
 	}
 
 	fmt.Println(p)
+
+	runID, err := r.SetProjectRun(context.TODO(), entities.ProjectRun{
+		ProjectID: id,
+		Success:   true,
+		Stages: []entities.ProjectRunStage{
+			{
+				StageNumber: 2,
+				Success:     true,
+				Log:         "aaaa\ndasdas",
+			},
+			{
+				StageNumber: 5,
+				Success:     false,
+				Log:         "aa231aa\nda35sdas",
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(runID)
+
+	runs, err := r.ProjectRuns(context.TODO(), id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(runs)
 }

@@ -37,6 +37,7 @@ func NewRepo(tp, dns string) (Repo, error) {
 		new(modelProject),
 		new(modelProjectRun),
 		new(modelProjectStage),
+		new(modelProjectStageRun),
 	)
 	if err != nil {
 		return Repo{}, fmt.Errorf("gorm automigrate: %w", err)

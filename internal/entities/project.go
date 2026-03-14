@@ -12,5 +12,11 @@ type ProjectRun struct {
 	ID        uint
 	ProjectID uint
 	Success   bool
-	Log       string
+	Stages    []ProjectRunStage
+}
+
+type ProjectRunStage struct {
+	StageNumber int
+	Success     bool
+	Log         string
 }
