@@ -1,15 +1,15 @@
-package database
+package gorm
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/gbh007/easyjet/internal/entities"
+	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 )
 
-func (repo Repo) Project(ctx context.Context, id uint) (entities.Project, error) {
+func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
 	var (
 		p      modelProject
 		stages []modelProjectStage
@@ -17,7 +17,7 @@ func (repo Repo) Project(ctx context.Context, id uint) (entities.Project, error)
 
 	res := repo.db.WithContext(ctx).First(&p, id)
 	if res.Error != nil {
-		return entities.Project{}, fmt.Errorf("get project: %w", res.Error)
+		return entity.Project{}, fmt.Errorf("get project: %w", res.Error)
 	}
 
 	res = repo.db.WithContext(ctx).
@@ -27,10 +27,10 @@ func (repo Repo) Project(ctx context.Context, id uint) (entities.Project, error)
 		Order("num").
 		Find(&stages)
 	if res.Error != nil {
-		return entities.Project{}, fmt.Errorf("get stages: %w", res.Error)
+		return entity.Project{}, fmt.Errorf("get stages: %w", res.Error)
 	}
 
-	return entities.Project{
+	return entity.Project{
 		ID:     p.ID,
 		Dir:    p.Dir,
 		GitURL: p.GitURL,
@@ -41,7 +41,7 @@ func (repo Repo) Project(ctx context.Context, id uint) (entities.Project, error)
 	}, nil
 }
 
-func (repo Repo) SetProject(ctx context.Context, pr entities.Project) (uint, error) {
+func (repo Repo) SetProject(ctx context.Context, pr entity.Project) (uint, error) {
 	p := modelProject{
 		Model: gorm.Model{
 			ID: pr.ID,

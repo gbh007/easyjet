@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gbh007/easyjet/internal/adapters/database"
-	"github.com/gbh007/easyjet/internal/entities"
+	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
+	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
 func main() {
@@ -15,12 +15,12 @@ func main() {
 		panic(err)
 	}
 
-	r, err := database.NewRepo("sqlite", "main.db")
+	r, err := gorm.NewRepo("sqlite", "main.db")
 	if err != nil {
 		panic(err)
 	}
 
-	id, err := r.SetProject(context.TODO(), entities.Project{
+	id, err := r.SetProject(context.TODO(), entity.Project{
 		Dir:    "hello",
 		GitURL: "world",
 		Name:   "123",
@@ -55,10 +55,10 @@ func main() {
 
 	fmt.Println(p)
 
-	runID, err := r.SetProjectRun(context.TODO(), entities.ProjectRun{
+	runID, err := r.SetProjectRun(context.TODO(), entity.ProjectRun{
 		ProjectID: id,
 		Success:   true,
-		Stages: []entities.ProjectRunStage{
+		Stages: []entity.ProjectRunStage{
 			{
 				StageNumber: 2,
 				Success:     true,

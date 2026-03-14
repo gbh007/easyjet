@@ -1,4 +1,4 @@
-package entities
+package entity
 
 type Project struct {
 	ID     uint

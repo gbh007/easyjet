@@ -1,4 +1,4 @@
-package git
+package shellgit
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/gbh007/easyjet/internal/adapters/internal/shell"
-	"github.com/gbh007/easyjet/internal/entities"
+	"github.com/gbh007/easyjet/internal/adapter/internal"
+	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/samber/lo"
 )
 
@@ -24,10 +24,12 @@ func New(logger *slog.Logger) Adapter {
 	return Adapter{logger: logger}
 }
 
-func (Adapter) OriginName() string { return originName }
+func (Adapter) OriginName() string {
+	return originName
+}
 
 func (Adapter) CurrentHash(ctx context.Context, dir string) (string, error) {
-	out, err := shell.Run(ctx, shell.Config{
+	out, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"rev-parse",
@@ -42,8 +44,8 @@ func (Adapter) CurrentHash(ctx context.Context, dir string) (string, error) {
 	return strings.TrimSpace(out), nil
 }
 
-func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entities.Commit, error) {
-	out, err := shell.Run(ctx, shell.Config{
+func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit, error) {
+	out, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"log",
@@ -59,9 +61,9 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entities.Commi
 		return nil, err
 	}
 
-	return lo.Map(strings.Split(strings.TrimSpace(out), "\n"), func(s string, _ int) entities.Commit {
+	return lo.Map(strings.Split(strings.TrimSpace(out), "\n"), func(s string, _ int) entity.Commit {
 		a, b, _ := strings.Cut(s, " ")
-		return entities.Commit{
+		return entity.Commit{
 			Hash:    a,
 			Subject: b,
 		}
@@ -69,7 +71,7 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entities.Commi
 }
 
 func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
-	_, err := shell.Run(ctx, shell.Config{
+	_, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"init",
@@ -82,7 +84,7 @@ func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
 		return fmt.Errorf("init: %w", err)
 	}
 
-	_, err = shell.Run(ctx, shell.Config{
+	_, err = internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"remote",
@@ -100,7 +102,7 @@ func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
 }
 
 func (Adapter) Pull(ctx context.Context, dir, branch string) error {
-	_, err := shell.Run(ctx, shell.Config{
+	_, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"pull",

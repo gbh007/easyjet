@@ -1,9 +1,9 @@
-package exec
+package shellexec
 
 import (
 	"context"
 
-	"github.com/gbh007/easyjet/internal/adapters/internal/shell"
+	"github.com/gbh007/easyjet/internal/adapter/internal"
 )
 
 const execPath = "/bin/sh"
@@ -15,7 +15,7 @@ func New() Adapter {
 }
 
 func (Adapter) Exec(ctx context.Context, dir, p string) (string, error) {
-	return shell.Run(ctx, shell.Config{
+	return internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"-xe",
