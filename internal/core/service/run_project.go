@@ -9,22 +9,38 @@ import (
 	"github.com/samber/lo"
 )
 
-func (srv Service) RunProject(ctx context.Context, id uint) (runID uint, returnedErr error) {
-	p, err := srv.db.Project(ctx, id)
-	if err != nil {
-		return 0, fmt.Errorf("get project: %w", err)
-	}
-
-	dir := p.Dir
-
-	if dir == "" {
-		dir = srv.fs.GetProjectDir(ctx, id)
-	}
+func (srv Service) RunProject(ctx context.Context, id uint) (uint, error) {
+	// TODO: проверять что проект существует
 
 	run := entity.ProjectRun{
 		ProjectID: id,
-		Success:   true,
+		Pending:   true,
 	}
+
+	runID, err := srv.db.SetProjectRun(ctx, run)
+	if err != nil {
+		return 0, fmt.Errorf("create run: %w", err)
+	}
+
+	return runID, nil
+}
+
+func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error) {
+	run, err := srv.db.ProjectRun(ctx, runID)
+	if err != nil {
+		return fmt.Errorf("get run: %w", err)
+	}
+
+	run.Pending = false
+	run.Processing = true
+
+	_, err = srv.db.SetProjectRun(ctx, run)
+	if err != nil {
+		return fmt.Errorf("update run status: %w", err)
+	}
+
+	run.Processing = false
+	run.Success = true
 
 	defer func() {
 		if returnedErr != nil {
@@ -33,48 +49,77 @@ func (srv Service) RunProject(ctx context.Context, id uint) (runID uint, returne
 		}
 		var saveRunErr error
 
-		runID, saveRunErr = srv.db.SetProjectRun(ctx, run)
+		_, saveRunErr = srv.db.SetProjectRun(ctx, run)
 		returnedErr = errors.Join(returnedErr, saveRunErr)
 	}()
+
+	id := run.ProjectID
+
+	p, err := srv.db.Project(ctx, id)
+	if err != nil {
+		return fmt.Errorf("get project: %w", err)
+	}
+
+	dir := p.Dir
+
+	if dir == "" {
+		dir = srv.fs.GetProjectDir(ctx, id)
+	}
 
 	if p.HasGIT() {
 		commits, err := srv.git.Diff(ctx, dir, "HEAD", srv.git.OriginName()+"/"+p.GitBranch)
 		if err != nil {
-			return 0, fmt.Errorf("git get diff: %w", err)
+			return fmt.Errorf("git get diff: %w", err)
 		}
 
-		run.GitLogs = lo.Map(commits, func(c entity.Commit, i int) entity.ProjectRunGitLogs {
-			return entity.ProjectRunGitLogs{
-				Number:  i,
-				Hash:    c.Hash,
-				Subject: c.Subject,
+		if len(commits) > 0 {
+			err = srv.db.SetProjectRunGitLogs(
+				ctx,
+				lo.Map(commits, func(c entity.Commit, i int) entity.ProjectRunGitLogs {
+					return entity.ProjectRunGitLogs{
+						RunID:   runID,
+						Number:  i,
+						Hash:    c.Hash,
+						Subject: c.Subject,
+					}
+				}),
+			)
+			if err != nil {
+				return fmt.Errorf("save git logs: %w", err)
 			}
-		})
+		}
 
 		err = srv.git.Pull(ctx, dir, p.GitBranch)
 		if err != nil {
-			return 0, fmt.Errorf("git pull origin: %w", err)
+			return fmt.Errorf("git pull origin: %w", err)
 		}
 	}
 
 	for _, stage := range p.Stages {
 		p, err := srv.fs.CreateSHScript(ctx, id, stage.Number, stage.Script)
 		if err != nil {
-			return 0, fmt.Errorf("create stage %d script: %w", stage.Number, err)
+			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
 		}
 
 		out, err := srv.ex.Exec(ctx, dir, p)
+		if err != nil {
+			err = fmt.Errorf("execute stage %d script: %w", stage.Number, err)
+		}
 
-		run.Stages = append(run.Stages, entity.ProjectRunStage{
+		saveStageErr := srv.db.SetProjectRunStage(ctx, entity.ProjectRunStage{
+			RunID:       runID,
 			StageNumber: stage.Number,
 			Success:     err == nil,
 			Log:         out,
 		})
+		if saveStageErr != nil {
+			err = errors.Join(err, fmt.Errorf("save stage %d result: %w", stage.Number, saveStageErr))
+		}
 
 		if err != nil {
-			return 0, fmt.Errorf("execute stage %d script: %w", stage.Number, err)
+			return err
 		}
 	}
 
-	return 0, nil
+	return nil
 }

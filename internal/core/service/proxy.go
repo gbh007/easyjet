@@ -21,3 +21,7 @@ func (srv Service) ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRu
 func (srv Service) Projects(ctx context.Context) ([]entity.Project, error) {
 	return srv.db.Projects(ctx)
 }
+
+func (srv Service) PendingProjectRuns(ctx context.Context) ([]uint, error) {
+	return srv.db.PendingProjectRuns(ctx)
+}

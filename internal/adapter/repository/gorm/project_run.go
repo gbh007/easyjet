@@ -62,3 +62,38 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 
 	return run.ID, nil
 }
+
+func (repo Repo) SetProjectRunStage(ctx context.Context, rs entity.ProjectRunStage) error {
+	res := repo.db.Create(&rs)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+func (repo Repo) SetProjectRunGitLogs(ctx context.Context, logs []entity.ProjectRunGitLogs) error {
+	res := repo.db.Save(&logs)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+func (repo Repo) PendingProjectRuns(ctx context.Context) ([]uint, error) {
+	var runIDs []uint
+
+	res := repo.db.WithContext(ctx).
+		Model(&entity.ProjectRun{}).
+		Where(&entity.ProjectRun{
+			Pending: true,
+		}).
+		Select("id").
+		Pluck("id", &runIDs)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return runIDs, nil
+}

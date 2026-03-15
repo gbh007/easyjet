@@ -69,11 +69,11 @@
       >
         <template v-slot:item.success="{ item }">
           <v-chip
-            :color="item.success ? 'success' : 'error'"
+            :color="getStatusColor(item)"
             size="small"
             variant="tonal"
           >
-            {{ item.success ? "Успешно" : "Ошибка" }}
+            {{ getStatusText(item) }}
           </v-chip>
         </template>
         <template v-slot:item.created_at="{ item }">
@@ -110,6 +110,8 @@ interface ProjectRun {
   created_at: string;
   project_id: number;
   success: boolean;
+  pending: boolean;
+  processing: boolean;
   fail_log: string;
 }
 
@@ -173,6 +175,18 @@ function load() {
     .catch((err) => {
       console.error(err);
     });
+}
+
+function getStatusColor(item: ProjectRun): string {
+  if (item.pending) return 'warning';
+  if (item.processing) return 'info';
+  return item.success ? 'success' : 'error';
+}
+
+function getStatusText(item: ProjectRun): string {
+  if (item.pending) return 'Ожидание';
+  if (item.processing) return 'Выполняется';
+  return item.success ? 'Успешно' : 'Ошибка';
 }
 
 onMounted(() => {

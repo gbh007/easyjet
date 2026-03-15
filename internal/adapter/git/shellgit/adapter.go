@@ -53,7 +53,7 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit,
 			"--no-color",
 			// Перейти в будущем на
 			// --format="{\"hash\":\"%H\",\"author\":\"%an\",\"email\":\"%ae\",\"commit_message\": \"%s\",\"date\": \"%ad\"}"
-			"--format=\"%H %s\"",
+			"--format=%H %s",
 			from + ".." + to,
 		},
 		Dir: dir,
@@ -62,13 +62,18 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit,
 		return nil, err
 	}
 
-	result := lo.Map(strings.Split(strings.TrimSpace(out), "\n"), func(s string, _ int) entity.Commit {
-		a, b, _ := strings.Cut(s, " ")
-		return entity.Commit{
-			Hash:    a,
-			Subject: b,
-		}
-	})
+	result := lo.Filter(
+		lo.Map(strings.Split(strings.TrimSpace(out), "\n"), func(s string, _ int) entity.Commit {
+			a, b, _ := strings.Cut(s, " ")
+			return entity.Commit{
+				Hash:    a,
+				Subject: b,
+			}
+		}),
+		func(c entity.Commit, _ int) bool {
+			return c.Hash != "" || c.Subject != ""
+		},
+	)
 
 	slices.Reverse(result)
 

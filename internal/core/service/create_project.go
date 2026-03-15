@@ -38,5 +38,10 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 		return 0, fmt.Errorf("init git: %w", err)
 	}
 
+	err = srv.git.Pull(ctx, dir, p.GitBranch)
+	if err != nil {
+		return 0, fmt.Errorf("pull git: %w", err)
+	}
+
 	return id, nil
 }

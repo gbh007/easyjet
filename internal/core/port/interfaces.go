@@ -32,6 +32,9 @@ type Database interface {
 	ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error)
 	ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error)
 	SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint, error)
+	SetProjectRunStage(ctx context.Context, rs entity.ProjectRunStage) error
+	SetProjectRunGitLogs(ctx context.Context, logs []entity.ProjectRunGitLogs) error
+	PendingProjectRuns(ctx context.Context) ([]uint, error)
 }
 
 type Service interface {
@@ -42,7 +45,9 @@ type Service interface {
 	UpdateProject(ctx context.Context, p entity.Project) error
 
 	RunProject(ctx context.Context, id uint) (uint, error)
+	HandleRun(ctx context.Context, runID uint) error
+	PendingProjectRuns(ctx context.Context) ([]uint, error)
 
-	ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error)
+	ProjectRun(ctx context.Context, runID uint) (entity.ProjectRun, error)
 	ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error)
 }

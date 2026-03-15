@@ -1,3 +1,4 @@
 *.db
-projects
+/projects
 config.toml
+/server

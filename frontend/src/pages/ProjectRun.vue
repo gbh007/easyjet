@@ -18,19 +18,13 @@
         </v-sheet>
         <v-sheet class="d-flex flex-row ga-2">
           <b>Статус</b>
-          <v-chip
-            :color="run.success ? 'success' : 'error'"
-            size="small"
-            variant="tonal"
-          >
-            {{ run.success ? 'Успешно' : 'Ошибка' }}
+          <v-chip :color="getStatusColor(run)" size="small" variant="tonal">
+            {{ getStatusText(run) }}
           </v-chip>
         </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex ga-2 flex-column">
-        <v-btn variant="outlined" @click="goBack">
-          Назад
-        </v-btn>
+        <v-btn variant="outlined" @click="goBack"> Назад </v-btn>
       </v-sheet>
     </v-sheet>
 
@@ -64,7 +58,7 @@
             </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <pre class="bg-grey-lighten-4 pa-2 rounded">{{ stage.log }}</pre>
+            <pre class="pa-2 rounded">{{ stage.log }}</pre>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -77,10 +71,7 @@
     >
       <h3>Git изменения</h3>
       <v-list>
-        <v-list-item
-          v-for="log in run.git_logs"
-          :key="log.number"
-        >
+        <v-list-item v-for="log in run.git_logs" :key="log.number">
           <template v-slot:prepend>
             <v-icon icon="mdi-git" size="small" />
           </template>
@@ -122,6 +113,8 @@ interface ProjectRun {
   created_at: string;
   project_id: number;
   success: boolean;
+  pending: boolean;
+  processing: boolean;
   fail_log: string;
   stages?: ProjectRunStage[];
   git_logs?: ProjectRunGitLog[];
@@ -138,7 +131,9 @@ function goBack() {
 function load() {
   loading.value = true;
   axios
-    .get(`/api/v1/projects/${route.params.project_id}/runs/${route.params.run_id}`)
+    .get(
+      `/api/v1/projects/${route.params.project_id}/runs/${route.params.run_id}`,
+    )
     .then((response) => {
       run.value = response.data;
       return axios.get(`/api/v1/projects/${route.params.project_id}`);
@@ -152,6 +147,18 @@ function load() {
     .finally(() => {
       loading.value = false;
     });
+}
+
+function getStatusColor(run: ProjectRun): string {
+  if (run.pending) return "warning";
+  if (run.processing) return "info";
+  return run.success ? "success" : "error";
+}
+
+function getStatusText(run: ProjectRun): string {
+  if (run.pending) return "Ожидание";
+  if (run.processing) return "Выполняется";
+  return run.success ? "Успешно" : "Ошибка";
 }
 
 onMounted(() => {

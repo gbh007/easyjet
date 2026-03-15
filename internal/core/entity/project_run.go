@@ -11,9 +11,11 @@ type ProjectRun struct {
 	Stages  []ProjectRunStage   `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID" validate:"min=1"`
 	GitLogs []ProjectRunGitLogs `json:"git_logs,omitempty,omitzero" gorm:"foreignKey:RunID"`
 
-	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_runs_project_id"`
-	Success   bool   `json:"success" gorm:"column:success;not null"`
-	FailLog   string `json:"fail_log" gorm:"column:fail_log;not null"`
+	ProjectID  uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_runs_project_id"`
+	Success    bool   `json:"success" gorm:"column:success;not null"`
+	Pending    bool   `json:"pending" gorm:"column:pending;not null;default:false"`
+	Processing bool   `json:"processing" gorm:"column:processing;not null;default:false"`
+	FailLog    string `json:"fail_log" gorm:"column:fail_log;not null"`
 }
 
 func (ProjectRun) TableName() string {

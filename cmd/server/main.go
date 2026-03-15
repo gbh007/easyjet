@@ -7,11 +7,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"golang.org/x/sync/errgroup"
+
 	"github.com/gbh007/easyjet/config"
 	"github.com/gbh007/easyjet/internal/adapter/exec/shellexec"
 	"github.com/gbh007/easyjet/internal/adapter/filesystem/filesystem"
 	"github.com/gbh007/easyjet/internal/adapter/git/shellgit"
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
+	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
 	"github.com/gbh007/easyjet/internal/core/service"
 	"github.com/golang-cz/devslog"
@@ -64,7 +67,7 @@ func main() {
 
 	srv := service.New(logger, ex, fs, git, db)
 
-	cnt := httpapi.New(
+	apiCnt := httpapi.New(
 		logger,
 		httpapi.Config{
 			Addr: cfg.Server.Addr,
@@ -73,12 +76,24 @@ func main() {
 		},
 		srv,
 	)
+	workerCnt := worker.New(logger, srv)
 
 	logger.Info("EasyJet starting")
 
-	err = cnt.Serve(ctx)
+	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		workerCnt.Start(ctx)
+		return nil
+	})
+
+	g.Go(func() error {
+		return apiCnt.Serve(ctx)
+	})
+
+	err = g.Wait()
 	if err != nil {
-		logger.Error("start api server", "error", err.Error())
+		logger.Error("server error", "error", err.Error())
 		os.Exit(1)
 	}
 
