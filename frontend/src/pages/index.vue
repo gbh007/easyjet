@@ -23,43 +23,43 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+  import axios from 'axios'
+  import { onMounted, ref } from 'vue'
+  import { useRouter } from 'vue-router'
 
-const router = useRouter();
+  const router = useRouter()
 
-interface Project {
-  id: number;
-  name: string;
-}
+  interface Project {
+    id: number
+    name: string
+  }
 
-const projects = ref<Array<Project>>(Array<Project>());
+  const projects = ref<Array<Project>>(new Array<Project>())
 
-function load() {
-  axios
-    .get("/api/v1/projects")
-    .then((v) => {
-      projects.value = v.data.projects;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+  function load () {
+    axios
+      .get('/api/v1/projects')
+      .then(v => {
+        projects.value = v.data.projects
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
 
-function openProject(id: number) {
-  router.push(`/projects/${id}`);
-}
+  function openProject (id: number) {
+    router.push(`/projects/${id}`)
+  }
 
-function editProject(id: number) {
-  router.push(`/projects/${id}/edit`);
-}
+  function editProject (id: number) {
+    router.push(`/projects/${id}/edit`)
+  }
 
-function createProject() {
-  router.push("/projects/new");
-}
+  function createProject () {
+    router.push('/projects/new')
+  }
 
-onMounted(() => {
-  load();
-});
+  onMounted(() => {
+    load()
+  })
 </script>
