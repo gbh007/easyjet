@@ -20,10 +20,6 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 		return 0, fmt.Errorf("create project: %w", err)
 	}
 
-	if !p.HasGIT() {
-		return id, nil
-	}
-
 	dir := p.Dir
 
 	if p.Dir == "" {
@@ -31,6 +27,10 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 		if err != nil {
 			return 0, fmt.Errorf("create project dir: %w", err)
 		}
+	}
+
+	if !p.HasGIT() {
+		return id, nil
 	}
 
 	err = srv.git.Init(ctx, dir, p.GitBranch, p.GitURL)

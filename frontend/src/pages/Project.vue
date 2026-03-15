@@ -135,13 +135,11 @@ function runProject(id: number) {
   running.value = true;
   axios
     .post(`/api/v1/projects/${id}/runs`)
-    .then(() => {
-      loadRuns();
-    })
     .catch((err) => {
       console.error(err);
     })
     .finally(() => {
+      loadRuns();
       running.value = false;
     });
 }

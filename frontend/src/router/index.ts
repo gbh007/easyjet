@@ -27,6 +27,10 @@ const router = createRouter({
       component: ProjectEditor,                                                 
     },                                                                          
     {                                                                           
+      path: '/projects/new',                                                    
+      component: ProjectEditor,                                                 
+    },                                                                          
+    {                                                                           
       path: '/projects/:project_id/runs/:run_id',                               
       component: ProjectRun,                                                    
     },                                                                          

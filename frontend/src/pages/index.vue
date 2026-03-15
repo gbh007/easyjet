@@ -1,6 +1,11 @@
 <template>
   <v-container class="d-flex ga-4 flex-column">
-    <h1>Проекты</h1>
+    <div class="d-flex flex-row justify-space-between align-center">
+      <h1>Проекты</h1>
+      <v-btn prepend-icon="mdi-plus" @click="createProject">
+        Создать проект
+      </v-btn>
+    </div>
     <v-card v-for="project in projects">
       <v-card-text class="d-flex flex-row justify-space-between align-center">
         <b>#{{ project.id }} {{ project.name }}</b>
@@ -48,6 +53,10 @@ function openProject(id: number) {
 
 function editProject(id: number) {
   router.push(`/projects/${id}/edit`);
+}
+
+function createProject() {
+  router.push("/projects/new");
 }
 
 onMounted(() => {
