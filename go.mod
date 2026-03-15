@@ -3,6 +3,7 @@ module github.com/gbh007/easyjet
 go 1.25.0
 
 require (
+	github.com/BurntSushi/toml v1.6.0
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/golang-cz/devslog v0.0.15

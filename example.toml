@@ -1,0 +1,16 @@
+[app]
+project_dir = "./projects"
+
+[log]
+level = "info"
+# Один из json, dev, tint
+format = "tint"
+
+[database]
+type = "sqlite"
+dns = "main.db"
+
+[server]
+addr = ":8080"
+user = ""
+pass = ""

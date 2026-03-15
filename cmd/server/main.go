@@ -2,22 +2,40 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/gbh007/easyjet/config"
+	"github.com/gbh007/easyjet/internal/adapter/exec/shellexec"
+	"github.com/gbh007/easyjet/internal/adapter/filesystem/filesystem"
+	"github.com/gbh007/easyjet/internal/adapter/git/shellgit"
+	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
-	"github.com/gbh007/easyjet/internal/core/entity"
+	"github.com/gbh007/easyjet/internal/core/service"
 	"github.com/golang-cz/devslog"
 	"github.com/lmittmann/tint"
 )
 
 func main() {
-	logger := slog.Default()
-	lt := "dev"
-	llv := slog.LevelDebug
+	ctx, cancel := signal.NotifyContext(
+		context.Background(),
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT,
+	)
+	defer cancel()
 
-	switch lt {
+	cfg, err := config.Read("config.toml")
+	if err != nil {
+		panic(err)
+	}
+
+	logger := slog.Default()
+	llv := cfg.Log.SlogLevel()
+
+	switch cfg.Log.Format {
 	case "json":
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: llv,
@@ -34,111 +52,35 @@ func main() {
 		}))
 	}
 
-	err := os.Remove("main.db")
+	db, err := gorm.NewRepo(logger, cfg.Database.Type, cfg.Database.DNS)
 	if err != nil {
-		panic(err)
+		logger.Error("create database adapter", "error", err.Error())
+		os.Exit(1)
 	}
 
-	r, err := gorm.NewRepo(logger, "sqlite", "main.db")
-	if err != nil {
-		panic(err)
-	}
+	ex := shellexec.New(logger)
+	fs := filesystem.New(logger, cfg.App.ProjectDir)
+	git := shellgit.New(logger)
 
-	_, err = r.SetProject(context.TODO(), entity.Project{
-		Stages: []entity.ProjectStage{
-			{
-				Script: "1",
-			},
-			{
-				Script: "2",
-			},
-			{
-				Script: "3",
-			},
+	srv := service.New(logger, ex, fs, git, db)
+
+	cnt := httpapi.New(
+		logger,
+		httpapi.Config{
+			Addr: cfg.Server.Addr,
+			User: cfg.Server.User,
+			Pass: cfg.Server.Pass,
 		},
-	})
+		srv,
+	)
+
+	logger.Info("EasyJet starting")
+
+	err = cnt.Serve(ctx)
 	if err != nil {
-		panic(err)
+		logger.Error("start api server", "error", err.Error())
+		os.Exit(1)
 	}
 
-	id, err := r.SetProject(context.TODO(), entity.Project{
-		Dir:    "hello",
-		GitURL: "world",
-		Name:   "123",
-		Stages: []entity.ProjectStage{
-			{
-				Script: "1",
-			},
-			{
-				Script: "2",
-			},
-			{
-				Script: "3",
-			},
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(id)
-
-	p, err := r.Project(context.TODO(), id)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(p)
-
-	p.Name = "vasya"
-
-	id, err = r.SetProject(context.TODO(), p)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(id)
-
-	p, err = r.Project(context.TODO(), id)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(p)
-
-	runID, err := r.SetProjectRun(context.TODO(), entity.ProjectRun{
-		ProjectID: id,
-		Success:   true,
-		Stages: []entity.ProjectRunStage{
-			{
-				StageNumber: 2,
-				Success:     true,
-				Log:         "aaaa\ndasdas",
-			},
-			{
-				StageNumber: 5,
-				Success:     false,
-				Log:         "aa231aa\nda35sdas",
-			},
-		},
-		GitLogs: []entity.ProjectRunGitLogs{
-			{
-				Number:  77,
-				Hash:    "aaaaaaaaaaa",
-				Subject: "bbbbbbbb",
-			},
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(runID)
-
-	runs, err := r.ProjectRuns(context.TODO(), id)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(runs)
+	logger.Info("EasyJet stopped")
 }

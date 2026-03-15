@@ -2,7 +2,9 @@ package httpapi
 
 import (
 	"context"
+	"errors"
 	"log/slog"
+	"net/http"
 
 	"github.com/gbh007/easyjet/internal/core/port"
 	"github.com/go-playground/validator/v10"
@@ -34,6 +36,8 @@ func New(logger *slog.Logger, cfg Config, service port.Service) Controller {
 func (cnt Controller) Serve(ctx context.Context) error {
 	e := echo.New()
 	e.Validator = vldr{validator: validator.New()}
+	e.HideBanner = true
+	e.HidePort = true
 
 	e.Use(
 		slogecho.NewWithConfig(cnt.logger, slogecho.Config{
@@ -90,7 +94,7 @@ func (cnt Controller) Serve(ctx context.Context) error {
 	}()
 
 	err := e.Start(cnt.cfg.Addr)
-	if err != nil {
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 

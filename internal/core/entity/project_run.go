@@ -11,7 +11,7 @@ type ProjectRun struct {
 	Stages  []ProjectRunStage   `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID" validate:"min=1"`
 	GitLogs []ProjectRunGitLogs `json:"git_logs,omitempty,omitzero" gorm:"foreignKey:RunID"`
 
-	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_project_id"`
+	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_runs_project_id"`
 	Success   bool   `json:"success" gorm:"column:success;not null"`
 	FailLog   string `json:"fail_log" gorm:"column:fail_log;not null"`
 }
@@ -21,7 +21,7 @@ func (ProjectRun) TableName() string {
 }
 
 type ProjectRunStage struct {
-	RunID       uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_id"`
+	RunID       uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_stages_run_id"`
 	StageNumber int    `json:"stage_number" gorm:"column:stage_num;not null" validate:"min=1"`
 	Success     bool   `json:"success" gorm:"column:success;not null"`
 	Log         string `json:"log" gorm:"column:log;not null"`
@@ -32,7 +32,7 @@ func (ProjectRunStage) TableName() string {
 }
 
 type ProjectRunGitLogs struct {
-	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_id"`
+	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_git_logs_run_id"`
 	Number  int    `json:"number" gorm:"column:num;not null"`
 	Hash    string `json:"hash" gorm:"column:hash;not null"`
 	Subject string `json:"subject" gorm:"column:subject;not null"`

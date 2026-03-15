@@ -26,7 +26,7 @@ func (p Project) HasGIT() bool {
 }
 
 type ProjectStage struct {
-	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_project_id"`
+	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_stages_project_id"`
 	Number    int    `json:"number" gorm:"column:num;not null" validate:"min=1"`
 	Script    string `json:"script" gorm:"column:script;not null" validate:"required"`
 }
