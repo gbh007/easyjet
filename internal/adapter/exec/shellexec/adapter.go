@@ -24,6 +24,7 @@ func (Adapter) Exec(ctx context.Context, dir, p string) (string, error) {
 			"-xe",
 			p,
 		},
-		Dir: dir,
+		Dir:        dir,
+		WithStdErr: true,
 	})
 }
