@@ -1,0 +1,15 @@
+version: "3"
+
+tasks:
+  go:lint:
+    cmd: golangci-lint run
+
+  go:tidy:
+    cmd: go mod tidy
+
+  run:server:
+    cmd: go run cmd/server/main.go
+
+  run:front:
+    dir: frontend
+    cmd: npm run dev
