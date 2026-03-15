@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -57,7 +56,7 @@ func (Adapter) CreateSHScript(ctx context.Context, id uint, stage int, body stri
 		err = errors.Join(err, f.Close())
 	}()
 
-	_, err = io.WriteString(f, body)
+	_, err = f.WriteString(body)
 	if err != nil {
 		return "", fmt.Errorf("write script: %w", err)
 	}

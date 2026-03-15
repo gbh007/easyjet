@@ -58,7 +58,7 @@ func main() {
 	db, err := gorm.NewRepo(logger, cfg.Database.Type, cfg.Database.DNS)
 	if err != nil {
 		logger.Error("create database adapter", "error", err.Error())
-		os.Exit(1)
+		os.Exit(1) //nolint:gocritic // будет исправлено позднее
 	}
 
 	ex := shellexec.New(logger)

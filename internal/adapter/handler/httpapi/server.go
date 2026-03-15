@@ -87,7 +87,7 @@ func (cnt Controller) Serve(ctx context.Context) error {
 
 	go func() {
 		<-ctx.Done()
-		err := e.Shutdown(context.Background())
+		err := e.Shutdown(context.Background()) //nolint:contextcheck // будет исправлено позднее
 		if err != nil {
 			cnt.logger.Error("shutdown http", slog.String("error", err.Error()))
 		}

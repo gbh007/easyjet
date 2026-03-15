@@ -7,7 +7,7 @@ import (
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/glebarez/sqlite"
-	slogGorm "github.com/orandin/slog-gorm"
+	sloggorm "github.com/orandin/slog-gorm"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -29,13 +29,13 @@ func NewRepo(logger *slog.Logger, tp, dns string) (Repo, error) {
 		return Repo{}, errors.New("unsupported connection type")
 	}
 
-	slogGorm.New()
+	sloggorm.New()
 
 	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: slogGorm.New(
-			slogGorm.WithHandler(logger.Handler()),
-			slogGorm.WithTraceAll(),
-			slogGorm.SetLogLevel(slogGorm.DefaultLogType, slog.LevelDebug),
+		Logger: sloggorm.New(
+			sloggorm.WithHandler(logger.Handler()),
+			sloggorm.WithTraceAll(),
+			sloggorm.SetLogLevel(sloggorm.DefaultLogType, slog.LevelDebug),
 		),
 	})
 	if err != nil {

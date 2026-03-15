@@ -4,6 +4,17 @@ tasks:
   go:lint:
     cmd: golangci-lint run
 
+  go:lint:fix:
+    cmd: golangci-lint run --fix
+
+  go:format:
+    cmds:
+      - go tool gofumpt -l -w .
+      - go tool goimports -l -w .
+
+  go:test:
+    cmd: go test ./internal/...
+
   go:tidy:
     cmd: go mod tidy
 
@@ -13,3 +24,18 @@ tasks:
   run:front:
     dir: frontend
     cmd: npm run dev
+
+  build:server:
+    cmd: go build -o server cmd/server/main.go
+
+  build:front:
+    dir: frontend
+    cmd: npm run build
+
+  ts:lint:
+    dir: frontend
+    cmd: npm run lint
+
+  ts:lint:fix:
+    dir: frontend
+    cmd: npm run lint:fix
