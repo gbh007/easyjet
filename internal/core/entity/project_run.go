@@ -3,17 +3,17 @@ package entity
 import "time"
 
 type ProjectRun struct {
-	ID        uint      `gorm:"column:id;not null;primarykey"`
-	CreatedAt time.Time `gorm:"column:created_at;not null;<-:create;autoCreateTime"`
-	UpdatedAt time.Time `gorm:"column:updated_at;not null;autoUpdateTime"`
+	ID        uint      `param:"run_id" json:"id" gorm:"column:id;not null;primarykey"`
+	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;not null;<-:create;autoCreateTime"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;not null;autoUpdateTime"`
 
-	Project Project             `gorm:"foreignKey:ProjectID"`
-	Stages  []ProjectRunStage   `gorm:"foreignKey:RunID"`
-	GitLogs []ProjectRunGitLogs `gorm:"foreignKey:RunID"`
+	Project Project             `json:"project,omitzero" gorm:"foreignKey:ProjectID"`
+	Stages  []ProjectRunStage   `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID" validate:"min=1"`
+	GitLogs []ProjectRunGitLogs `json:"git_logs,omitempty,omitzero" gorm:"foreignKey:RunID"`
 
-	ProjectID uint   `gorm:"column:project_id;not null"`
-	Success   bool   `gorm:"column:success;not null"`
-	FailLog   string `gorm:"column:fail_log;not null"`
+	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_project_id"`
+	Success   bool   `json:"success" gorm:"column:success;not null"`
+	FailLog   string `json:"fail_log" gorm:"column:fail_log;not null"`
 }
 
 func (ProjectRun) TableName() string {
@@ -21,10 +21,10 @@ func (ProjectRun) TableName() string {
 }
 
 type ProjectRunStage struct {
-	RunID       uint   `gorm:"column:run_id;not null"`
-	StageNumber int    `gorm:"column:stage_num;not null"`
-	Success     bool   `gorm:"column:success;not null"`
-	Log         string `gorm:"column:log;not null"`
+	RunID       uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_id"`
+	StageNumber int    `json:"stage_number" gorm:"column:stage_num;not null" validate:"min=1"`
+	Success     bool   `json:"success" gorm:"column:success;not null"`
+	Log         string `json:"log" gorm:"column:log;not null"`
 }
 
 func (ProjectRunStage) TableName() string {
@@ -32,10 +32,10 @@ func (ProjectRunStage) TableName() string {
 }
 
 type ProjectRunGitLogs struct {
-	RunID   uint   `gorm:"column:run_id;not null"`
-	Number  int    `gorm:"column:num;not null"`
-	Hash    string `gorm:"column:hash;not null"`
-	Subject string `gorm:"column:subject;not null"`
+	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_id"`
+	Number  int    `json:"number" gorm:"column:num;not null"`
+	Hash    string `json:"hash" gorm:"column:hash;not null"`
+	Subject string `json:"subject" gorm:"column:subject;not null"`
 }
 
 func (ProjectRunGitLogs) TableName() string {

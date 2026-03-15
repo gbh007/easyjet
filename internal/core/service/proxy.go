@@ -17,3 +17,7 @@ func (srv Service) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, 
 func (srv Service) ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error) {
 	return srv.db.ProjectRuns(ctx, id)
 }
+
+func (srv Service) Projects(ctx context.Context) ([]entity.Project, error) {
+	return srv.db.Projects(ctx)
+}

@@ -5,16 +5,16 @@ import (
 )
 
 type Project struct {
-	ID        uint      `gorm:"column:id;not null;primarykey"`
-	CreatedAt time.Time `gorm:"column:created_at;not null;<-:create;autoCreateTime"`
-	UpdatedAt time.Time `gorm:"column:updated_at;not null;autoUpdateTime"`
+	ID        uint      `param:"project_id" json:"id" gorm:"column:id;not null;primarykey"`
+	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;not null;<-:create;autoCreateTime"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;not null;autoUpdateTime"`
 
-	Dir       string `gorm:"column:dir;not null"`
-	GitURL    string `gorm:"column:git_url;not null"`
-	GitBranch string `gorm:"column:git_branch;not null"`
-	Name      string `gorm:"column:name;not null"`
+	Dir       string `json:"dir" gorm:"column:dir;not null"`
+	GitURL    string `json:"git_url" gorm:"column:git_url;not null"`
+	GitBranch string `json:"git_branch" gorm:"column:git_branch;not null"`
+	Name      string `json:"name" gorm:"column:name;not null"`
 
-	Stages []ProjectStage `gorm:"foreignKey:ProjectID"`
+	Stages []ProjectStage `json:"stages" gorm:"foreignKey:ProjectID" validate:"min=1"`
 }
 
 func (Project) TableName() string {
@@ -26,9 +26,9 @@ func (p Project) HasGIT() bool {
 }
 
 type ProjectStage struct {
-	ProjectID uint   `gorm:"column:project_id;not null"`
-	Number    int    `gorm:"column:num;not null"`
-	Script    string `gorm:"column:script;not null"`
+	ProjectID uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_project_id"`
+	Number    int    `json:"number" gorm:"column:num;not null" validate:"min=1"`
+	Script    string `json:"script" gorm:"column:script;not null" validate:"required"`
 }
 
 func (ProjectStage) TableName() string {

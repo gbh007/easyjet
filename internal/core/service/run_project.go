@@ -9,10 +9,10 @@ import (
 	"github.com/samber/lo"
 )
 
-func (srv Service) RunProject(ctx context.Context, id uint) (returnedErr error) {
+func (srv Service) RunProject(ctx context.Context, id uint) (runID uint, returnedErr error) {
 	p, err := srv.db.Project(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get project: %w", err)
+		return 0, fmt.Errorf("get project: %w", err)
 	}
 
 	dir := p.Dir
@@ -31,15 +31,16 @@ func (srv Service) RunProject(ctx context.Context, id uint) (returnedErr error) 
 			run.Success = false
 			run.FailLog = returnedErr.Error()
 		}
+		var saveRunErr error
 
-		_, saveRunErr := srv.db.SetProjectRun(ctx, run)
+		runID, saveRunErr = srv.db.SetProjectRun(ctx, run)
 		returnedErr = errors.Join(returnedErr, saveRunErr)
 	}()
 
 	if p.HasGIT() {
 		commits, err := srv.git.Diff(ctx, dir, "HEAD", srv.git.OriginName()+"/"+p.GitBranch)
 		if err != nil {
-			return fmt.Errorf("git get diff: %w", err)
+			return 0, fmt.Errorf("git get diff: %w", err)
 		}
 
 		run.GitLogs = lo.Map(commits, func(c entity.Commit, i int) entity.ProjectRunGitLogs {
@@ -52,14 +53,14 @@ func (srv Service) RunProject(ctx context.Context, id uint) (returnedErr error) 
 
 		err = srv.git.Pull(ctx, dir, p.GitBranch)
 		if err != nil {
-			return fmt.Errorf("git pull origin: %w", err)
+			return 0, fmt.Errorf("git pull origin: %w", err)
 		}
 	}
 
 	for _, stage := range p.Stages {
 		p, err := srv.fs.CreateSHScript(ctx, id, stage.Number, stage.Script)
 		if err != nil {
-			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
+			return 0, fmt.Errorf("create stage %d script: %w", stage.Number, err)
 		}
 
 		out, err := srv.ex.Exec(ctx, dir, p)
@@ -71,9 +72,9 @@ func (srv Service) RunProject(ctx context.Context, id uint) (returnedErr error) 
 		})
 
 		if err != nil {
-			return fmt.Errorf("execute stage %d script: %w", stage.Number, err)
+			return 0, fmt.Errorf("execute stage %d script: %w", stage.Number, err)
 		}
 	}
 
-	return nil
+	return 0, nil
 }

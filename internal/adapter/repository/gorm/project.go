@@ -49,3 +49,18 @@ func (repo Repo) SetProject(ctx context.Context, p entity.Project) (uint, error)
 
 	return p.ID, nil
 }
+
+func (repo Repo) Projects(ctx context.Context) ([]entity.Project, error) {
+	var projects []entity.Project
+
+	res := repo.db.WithContext(ctx).Find(&projects)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	slices.SortStableFunc(projects, func(a, b entity.Project) int {
+		return int(a.ID) - int(b.ID)
+	})
+
+	return projects, nil
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/gbh007/easyjet/internal/core/port"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -17,14 +18,16 @@ type Config struct {
 }
 
 type Controller struct {
-	logger *slog.Logger
-	cfg    Config
+	logger  *slog.Logger
+	cfg     Config
+	service port.Service
 }
 
-func New(logger *slog.Logger, cfg Config) Controller {
+func New(logger *slog.Logger, cfg Config, service port.Service) Controller {
 	return Controller{
-		logger: logger,
-		cfg:    cfg,
+		logger:  logger,
+		cfg:     cfg,
+		service: service,
 	}
 }
 
@@ -69,6 +72,14 @@ func (cnt Controller) Serve(ctx context.Context) error {
 			},
 		}),
 	)
+
+	e.POST("/api/v1/projects", cnt.createProject)
+	e.GET("/api/v1/projects", cnt.projects)
+	e.PUT("/api/v1/projects/:project_id", cnt.updateProject)
+	e.GET("/api/v1/projects/:project_id", cnt.project)
+	e.POST("/api/v1/projects/:project_id/runs", cnt.createProjectRun)
+	e.GET("/api/v1/projects/:project_id/runs", cnt.projectRuns)
+	e.GET("/api/v1/projects/:project_id/runs/:run_id", cnt.projectRun)
 
 	go func() {
 		<-ctx.Done()
