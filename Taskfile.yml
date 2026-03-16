@@ -47,3 +47,11 @@ tasks:
   ts:format:check:
     dir: frontend
     cmd: npm run format:check
+
+  md:format:
+    cmd: npx prettier --write "docs/**/*.md"
+
+  md:lint:
+    cmds:
+      - npx markdownlint-cli --disable MD024 MD033 MD013 -- "docs/**/*.md"
+      - lychee --exclude-path frontend *.md docs/**/*.md
