@@ -5,11 +5,11 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
-import Index from '@/pages/index.vue'
-import Project from '@/pages/Project.vue'
-import ProjectEditor from '@/pages/ProjectEditor.vue'
-import ProjectRun from '@/pages/ProjectRun.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Index from '@/pages/index.vue';
+import Project from '@/pages/Project.vue';
+import ProjectEditor from '@/pages/ProjectEditor.vue';
+import ProjectRun from '@/pages/ProjectRun.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +35,6 @@ const router = createRouter({
       component: ProjectRun,
     },
   ],
-})
+});
 
-export default router
+export default router;

@@ -39,3 +39,11 @@ tasks:
   ts:lint:fix:
     dir: frontend
     cmd: npm run lint:fix
+
+  ts:format:
+    dir: frontend
+    cmd: npm run format
+
+  ts:format:check:
+    dir: frontend
+    cmd: npm run format:check

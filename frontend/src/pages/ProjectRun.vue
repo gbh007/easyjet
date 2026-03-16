@@ -1,9 +1,6 @@
 <template>
   <v-container v-if="run" class="d-flex ga-4 flex-column">
-    <v-sheet
-      class="d-flex pa-4 flex-row justify-space-between align-center"
-      elevation="2"
-    >
+    <v-sheet class="d-flex pa-4 flex-row justify-space-between align-center" elevation="2">
       <v-sheet class="d-flex pa-4 flex-column">
         <v-sheet class="d-flex flex-row justify-space-between align-center">
           <h2>Запуск #{{ run.id }}</h2>
@@ -28,12 +25,7 @@
       </v-sheet>
     </v-sheet>
 
-    <v-alert
-      v-if="!run.success && run.fail_log"
-      class="mb-2"
-      title="Ошибка"
-      type="error"
-    >
+    <v-alert v-if="!run.success && run.fail_log" class="mb-2" title="Ошибка" type="error">
       {{ run.fail_log }}
     </v-alert>
 
@@ -44,10 +36,7 @@
     >
       <h3>Результаты выполнения этапов</h3>
       <v-expansion-panels>
-        <v-expansion-panel
-          v-for="stage in run.stages"
-          :key="stage.stage_number"
-        >
+        <v-expansion-panel v-for="stage in run.stages" :key="stage.stage_number">
           <v-expansion-panel-title>
             <div class="d-flex align-center ga-2">
               <v-icon
@@ -84,84 +73,82 @@
 </template>
 
 <script setup lang="ts">
-  import axios from 'axios'
-  import { onMounted, ref } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-  const router = useRouter()
-  const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
-  interface Project {
-    id: number
-    name: string
-  }
+interface Project {
+  id: number;
+  name: string;
+}
 
-  interface ProjectRunStage {
-    stage_number: number
-    success: boolean
-    log: string
-  }
+interface ProjectRunStage {
+  stage_number: number;
+  success: boolean;
+  log: string;
+}
 
-  interface ProjectRunGitLog {
-    number: number
-    hash: string
-    subject: string
-  }
+interface ProjectRunGitLog {
+  number: number;
+  hash: string;
+  subject: string;
+}
 
-  interface ProjectRun {
-    id: number
-    created_at: string
-    project_id: number
-    success: boolean
-    pending: boolean
-    processing: boolean
-    fail_log: string
-    stages?: ProjectRunStage[]
-    git_logs?: ProjectRunGitLog[]
-  }
+interface ProjectRun {
+  id: number;
+  created_at: string;
+  project_id: number;
+  success: boolean;
+  pending: boolean;
+  processing: boolean;
+  fail_log: string;
+  stages?: ProjectRunStage[];
+  git_logs?: ProjectRunGitLog[];
+}
 
-  const run = ref<ProjectRun | null>(null)
-  const project = ref<Project | null>(null)
-  const loading = ref(false)
+const run = ref<ProjectRun | null>(null);
+const project = ref<Project | null>(null);
+const loading = ref(false);
 
-  function goBack () {
-    router.push(`/projects/${route.params.project_id}`)
-  }
+function goBack() {
+  router.push(`/projects/${route.params.project_id}`);
+}
 
-  function load () {
-    loading.value = true
-    axios
-      .get(
-        `/api/v1/projects/${route.params.project_id}/runs/${route.params.run_id}`,
-      )
-      .then(response => {
-        run.value = response.data
-        return axios.get(`/api/v1/projects/${route.params.project_id}`)
-      })
-      .then(response => {
-        project.value = response.data
-      })
-      .catch(error => {
-        console.error(error)
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  }
+function load() {
+  loading.value = true;
+  axios
+    .get(`/api/v1/projects/${route.params.project_id}/runs/${route.params.run_id}`)
+    .then((response) => {
+      run.value = response.data;
+      return axios.get(`/api/v1/projects/${route.params.project_id}`);
+    })
+    .then((response) => {
+      project.value = response.data;
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+}
 
-  function getStatusColor (run: ProjectRun): string {
-    if (run.pending) return 'warning'
-    if (run.processing) return 'info'
-    return run.success ? 'success' : 'error'
-  }
+function getStatusColor(run: ProjectRun): string {
+  if (run.pending) return 'warning';
+  if (run.processing) return 'info';
+  return run.success ? 'success' : 'error';
+}
 
-  function getStatusText (run: ProjectRun): string {
-    if (run.pending) return 'Ожидание'
-    if (run.processing) return 'Выполняется'
-    return run.success ? 'Успешно' : 'Ошибка'
-  }
+function getStatusText(run: ProjectRun): string {
+  if (run.pending) return 'Ожидание';
+  if (run.processing) return 'Выполняется';
+  return run.success ? 'Успешно' : 'Ошибка';
+}
 
-  onMounted(() => {
-    load()
-  })
+onMounted(() => {
+  load();
+});
 </script>

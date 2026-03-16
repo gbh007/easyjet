@@ -2,17 +2,10 @@
   <v-container v-if="form" class="d-flex ga-4 flex-column">
     <v-sheet class="d-flex pa-4 flex-column" elevation="2">
       <h2>
-        {{ isEdit ? "Редактирование" : "Создание" }} проекта{{
-          isEdit ? " #" + form.id : ""
-        }}
+        {{ isEdit ? 'Редактирование' : 'Создание' }} проекта{{ isEdit ? ' #' + form.id : '' }}
       </h2>
 
-      <v-text-field
-        v-model="form.name"
-        class="mt-4"
-        label="Название"
-        required
-      />
+      <v-text-field v-model="form.name" class="mt-4" label="Название" required />
 
       <v-text-field v-model="form.dir" class="mt-2" label="Директория" />
 
@@ -41,13 +34,7 @@
             @click="removeStage(index)"
           />
         </div>
-        <v-textarea
-          v-model="stage.script"
-          class="mt-2"
-          label="Скрипт"
-          monospace
-          rows="4"
-        />
+        <v-textarea v-model="stage.script" class="mt-2" label="Скрипт" monospace rows="4" />
       </v-sheet>
 
       <div class="d-flex flex-row ga-2 mt-4">
@@ -59,111 +46,109 @@
 </template>
 
 <script setup lang="ts">
-  import axios from 'axios'
-  import { computed, onMounted, ref } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-  const router = useRouter()
-  const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
-  interface Stage {
-    number: number
-    script: string
-  }
+interface Stage {
+  number: number;
+  script: string;
+}
 
-  interface ProjectForm {
-    id: number
-    name: string
-    dir?: string
-    git_url?: string
-    git_branch?: string
-    stages: Stage[]
-  }
+interface ProjectForm {
+  id: number;
+  name: string;
+  dir?: string;
+  git_url?: string;
+  git_branch?: string;
+  stages: Stage[];
+}
 
-  const form = ref<ProjectForm | null>(null)
+const form = ref<ProjectForm | null>(null);
 
-  const isEdit = computed(() => {
-    return form.value?.id !== undefined && form.value.id !== 0
-  })
+const isEdit = computed(() => {
+  return form.value?.id !== undefined && form.value.id !== 0;
+});
 
-  function addStage () {
-    if (!form.value) return
-    const nextNumber
-      = form.value.stages.length > 0
-        ? Math.max(...form.value.stages.map(s => s.number)) + 1
-        : 1
-    form.value.stages.push({ number: nextNumber, script: '' })
-  }
+function addStage() {
+  if (!form.value) return;
+  const nextNumber =
+    form.value.stages.length > 0 ? Math.max(...form.value.stages.map((s) => s.number)) + 1 : 1;
+  form.value.stages.push({ number: nextNumber, script: '' });
+}
 
-  function removeStage (index: number) {
-    if (!form.value) return
-    form.value.stages.splice(index, 1)
-  }
+function removeStage(index: number) {
+  if (!form.value) return;
+  form.value.stages.splice(index, 1);
+}
 
-  function saveProject () {
-    if (!form.value) return
-    if (isEdit.value) {
-      axios
-        .put(`/api/v1/projects/${form.value.id}`, form.value)
-        .then(() => {
-          router.push(`/projects/${form.value!.id}`)
-        })
-        .catch(error => {
-          console.error(error)
-        })
-    } else {
-      axios
-        .post(`/api/v1/projects`, form.value)
-        .then(response => {
-          router.push(`/projects/${response.data.id}`)
-        })
-        .catch(error => {
-          console.error(error)
-        })
-    }
-  }
-
-  function cancel () {
-    if (isEdit.value && form.value) {
-      router.push(`/projects/${form.value.id}`)
-    } else {
-      router.push('/')
-    }
-  }
-
-  function load () {
-    const id = route.params.id
-    if (!id || id === 'new') {
-      form.value = {
-        id: 0,
-        name: '',
-        dir: '',
-        git_url: '',
-        git_branch: '',
-        stages: [],
-      }
-      return
-    }
-
+function saveProject() {
+  if (!form.value) return;
+  if (isEdit.value) {
     axios
-      .get(`/api/v1/projects/${id}`)
-      .then(v => {
-        const data = v.data
-        form.value = {
-          id: data.id,
-          name: data.name,
-          dir: data.dir || '',
-          git_url: data.git_url || '',
-          git_branch: data.git_branch || '',
-          stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
-        }
+      .put(`/api/v1/projects/${form.value.id}`, form.value)
+      .then(() => {
+        router.push(`/projects/${form.value!.id}`);
       })
-      .catch(error => {
-        console.error(error)
+      .catch((error) => {
+        console.error(error);
+      });
+  } else {
+    axios
+      .post(`/api/v1/projects`, form.value)
+      .then((response) => {
+        router.push(`/projects/${response.data.id}`);
       })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+}
+
+function cancel() {
+  if (isEdit.value && form.value) {
+    router.push(`/projects/${form.value.id}`);
+  } else {
+    router.push('/');
+  }
+}
+
+function load() {
+  const id = route.params.id;
+  if (!id || id === 'new') {
+    form.value = {
+      id: 0,
+      name: '',
+      dir: '',
+      git_url: '',
+      git_branch: '',
+      stages: [],
+    };
+    return;
   }
 
-  onMounted(() => {
-    load()
-  })
+  axios
+    .get(`/api/v1/projects/${id}`)
+    .then((v) => {
+      const data = v.data;
+      form.value = {
+        id: data.id,
+        name: data.name,
+        dir: data.dir || '',
+        git_url: data.git_url || '',
+        git_branch: data.git_branch || '',
+        stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
+      };
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+onMounted(() => {
+  load();
+});
 </script>

@@ -1,9 +1,7 @@
 <template>
   <v-app-bar elevation="2">
     <v-app-bar-title>
-      <router-link class="text-decoration-none text-inherit" to="/">
-        EasyJet
-      </router-link>
+      <router-link class="text-decoration-none text-inherit" to="/"> EasyJet </router-link>
     </v-app-bar-title>
 
     <v-btn icon @click="toggleTheme">
@@ -13,11 +11,11 @@
 </template>
 
 <script setup lang="ts">
-  import { useThemeStore } from '@/stores/theme'
+import { useThemeStore } from '@/stores/theme';
 
-  const { isDark, toggle } = useThemeStore()
+const { isDark, toggle } = useThemeStore();
 
-  function toggleTheme () {
-    toggle()
-  }
+function toggleTheme() {
+  toggle();
+}
 </script>
