@@ -13,3 +13,4 @@
   - Библиотека для валидации данных - <github.com/go-playground/validator/v10>
   - Библиотека для логирования - <github.com/samber/slog-echo>
 - Для трансформации данных функциональными методами - <github.com/samber/lo>
+- Для планирования задач по расписанию (cron) - <github.com/go-co-op/gocron>
