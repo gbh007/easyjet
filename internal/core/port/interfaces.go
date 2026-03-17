@@ -3,6 +3,7 @@ package port
 import (
 	"context"
 
+	"github.com/gbh007/easyjet/internal/adapter/scheduler"
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
@@ -35,6 +36,11 @@ type Database interface {
 	SetProjectRunStage(ctx context.Context, rs entity.ProjectRunStage) error
 	SetProjectRunGitLogs(ctx context.Context, logs []entity.ProjectRunGitLogs) error
 	PendingProjectRuns(ctx context.Context) ([]uint, error)
+}
+
+// FIXME(ai-shit): переименовать в более подходящее название.
+type SchedulerEventPublisher interface {
+	Publish(event scheduler.SchedulerEvent) error
 }
 
 type Service interface {

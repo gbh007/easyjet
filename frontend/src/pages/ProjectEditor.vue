@@ -13,6 +13,28 @@
 
       <v-text-field v-model="form.git_branch" class="mt-2" label="Git branch" />
 
+      <v-divider class="mt-4 mb-2" />
+
+      <div class="d-flex flex-row align-center mt-4">
+        <v-switch
+          v-model="form.cron_enabled"
+          class="mr-2"
+          color="primary"
+          hide-details
+          label="Включить расписание"
+        />
+        <v-text-field
+          v-model="form.cron_schedule"
+          class="flex-grow-1"
+          :disabled="!form.cron_enabled"
+          hint="Формат: минута час день месяц день_недели (например, 0 5 * * * = ежедневно в 5:00)"
+          label="Cron расписание"
+          persistent-hint
+          placeholder="0 5 * * *"
+          :rules="cronRules"
+        />
+      </div>
+
       <div class="d-flex flex-row justify-space-between align-center mt-4">
         <h3>Этапы</h3>
         <v-btn prepend-icon="mdi-plus" @click="addStage"> Добавить этап </v-btn>
@@ -64,10 +86,22 @@ interface ProjectForm {
   dir?: string;
   git_url?: string;
   git_branch?: string;
+  cron_enabled: boolean;
+  cron_schedule: string;
   stages: Stage[];
 }
 
 const form = ref<ProjectForm | null>(null);
+
+const cronRules = [
+  (v: string) => {
+    if (!v || v.trim() === '') return true; // Empty is valid (no schedule)
+    // Basic cron validation (5 fields)
+    const parts = v.trim().split(/\s+/);
+    if (parts.length !== 5) return 'Cron выражение должно содержать 5 полей';
+    return true;
+  },
+];
 
 const isEdit = computed(() => {
   return form.value?.id !== undefined && form.value.id !== 0;
@@ -125,6 +159,8 @@ function load() {
       dir: '',
       git_url: '',
       git_branch: '',
+      cron_enabled: false,
+      cron_schedule: '',
       stages: [],
     };
     return;
@@ -140,6 +176,8 @@ function load() {
         dir: data.dir || '',
         git_url: data.git_url || '',
         git_branch: data.git_branch || '',
+        cron_enabled: data.cron_enabled || false,
+        cron_schedule: data.cron_schedule || '',
         stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
       };
     })

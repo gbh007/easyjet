@@ -5,9 +5,12 @@ import (
 )
 
 type Project struct {
-	ID        uint      `param:"project_id" json:"id" gorm:"column:id;not null;primarykey"`
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;not null;<-:create;autoCreateTime"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;not null;autoUpdateTime"`
+	ID          uint      `param:"project_id" json:"id" gorm:"column:id;not null;primarykey"`
+	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at;not null;<-:create;autoCreateTime"`
+	UpdatedAt   time.Time `json:"updated_at" gorm:"column:updated_at;not null;autoUpdateTime"`
+	CronEnabled bool      `json:"cron_enabled" gorm:"column:cron_enabled;not null;default:false"`
+	// FIXME(ai-shit): валидация через валидатор.
+	CronSchedule string `json:"cron_schedule" gorm:"column:cron_schedule;type:text;not null;default:''"`
 
 	Dir       string `json:"dir" gorm:"column:dir;not null"`
 	GitURL    string `json:"git_url" gorm:"column:git_url;not null"`

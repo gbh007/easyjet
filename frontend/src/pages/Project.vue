@@ -21,6 +21,31 @@
           <b>GIT branch</b>
           <span>{{ project.git_branch }}</span>
         </v-sheet>
+        <v-sheet class="d-flex flex-row ga-2">
+          <b>Cron</b>
+          <span>
+            <v-chip
+              v-if="project.cron_enabled && project.cron_schedule"
+              class="mr-2"
+              color="success"
+              size="small"
+              variant="tonal"
+            >
+              Активно
+            </v-chip>
+            <v-chip
+              v-else-if="!project.cron_enabled && project.cron_schedule"
+              class="mr-2"
+              color="warning"
+              size="small"
+              variant="tonal"
+            >
+              Пауза
+            </v-chip>
+            <span v-if="project.cron_schedule">{{ project.cron_schedule }}</span>
+            <span v-else>Не настроено</span>
+          </span>
+        </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex ga-2 flex-column">
         <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)"> Редактировать </v-btn>
@@ -86,6 +111,8 @@ interface Project {
   dir?: string;
   git_url?: string;
   git_branch?: string;
+  cron_enabled: boolean;
+  cron_schedule: string;
   stages?: Array<{
     number: number;
     script: string;
