@@ -4,17 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gbh007/easyjet/internal/adapter/scheduler"
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/samber/lo"
 )
 
 func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, error) {
-	// Validate cron expression if provided
-	if err := validateCronExpression(p.CronSchedule); err != nil {
-		return 0, err
-	}
-
 	p.Stages = lo.FilterMap(p.Stages, func(s entity.ProjectStage, i int) (entity.ProjectStage, bool) {
 		s.Number = i + 1
 
@@ -24,19 +18,6 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 	id, err := srv.db.SetProject(ctx, p)
 	if err != nil {
 		return 0, fmt.Errorf("create project: %w", err)
-	}
-
-	// Publish scheduler event for cron scheduling
-	if srv.publisher != nil {
-		err = srv.publisher.Publish(scheduler.SchedulerEvent{
-			Type:      scheduler.EventCreated,
-			ProjectID: id,
-			Schedule:  p.CronSchedule,
-			Enabled:   p.CronEnabled,
-		})
-		if err != nil {
-			srv.logger.Error("failed to publish scheduler event", "error", err, "project_id", id)
-		}
 	}
 
 	dir := p.Dir
@@ -49,6 +30,13 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 	}
 
 	if !p.HasGIT() {
+		srv.pubsub.PublishProjectEvent(entity.ProjectEvent{
+			Type:      entity.EventCreated,
+			ProjectID: id,
+			Schedule:  p.CronSchedule,
+			Enabled:   p.CronEnabled,
+		})
+
 		return id, nil
 	}
 
@@ -61,6 +49,13 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 	if err != nil {
 		return 0, fmt.Errorf("pull git: %w", err)
 	}
+
+	srv.pubsub.PublishProjectEvent(entity.ProjectEvent{
+		Type:      entity.EventCreated,
+		ProjectID: id,
+		Schedule:  p.CronSchedule,
+		Enabled:   p.CronEnabled,
+	})
 
 	return id, nil
 }

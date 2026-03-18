@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -17,8 +16,8 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
 	schedulerhandler "github.com/gbh007/easyjet/internal/adapter/handler/scheduler"
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
+	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
-	"github.com/gbh007/easyjet/internal/adapter/scheduler"
 	"github.com/gbh007/easyjet/internal/core/service"
 	"github.com/golang-cz/devslog"
 	"github.com/lmittmann/tint"
@@ -67,11 +66,8 @@ func main() {
 	ex := shellexec.New(logger)
 	fs := filesystem.New(logger, cfg.App.ProjectDir)
 	git := shellgit.New(logger)
-
-	// Create event queue for scheduler
-	eventQueue := scheduler.NewEventQueue(100) // buffer size of 100 events
-
-	srv := service.New(logger, ex, fs, git, db, eventQueue)
+	ps := eventbus.New(logger)
+	srv := service.New(logger, ex, fs, git, db, ps)
 
 	apiCnt := httpapi.New(
 		logger,
@@ -84,8 +80,7 @@ func main() {
 	)
 	workerCnt := worker.New(logger, srv)
 
-	// Create and start scheduler
-	schedulerCnt := schedulerhandler.NewScheduler(logger, eventQueue, db, srv)
+	schedulerCnt := schedulerhandler.NewScheduler(logger, ps, srv)
 
 	logger.Info("EasyJet starting")
 
@@ -97,10 +92,7 @@ func main() {
 	})
 
 	g.Go(func() error {
-		if err := schedulerCnt.Start(ctx); err != nil {
-			return fmt.Errorf("start scheduler: %w", err)
-		}
-		return nil
+		return schedulerCnt.Serve(ctx)
 	})
 
 	g.Go(func() error {
