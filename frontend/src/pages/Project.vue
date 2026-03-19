@@ -46,6 +46,26 @@
             <span v-else>Не настроено</span>
           </span>
         </v-sheet>
+        <v-sheet class="d-flex flex-row ga-2">
+          <b>Ротация запусков</b>
+          <span>
+            <v-chip
+              v-if="project.retention_count && project.retention_count > 0"
+              class="mr-2"
+              color="success"
+              size="small"
+              variant="tonal"
+            >
+              Активно
+            </v-chip>
+            <v-chip v-else class="mr-2" color="secondary" size="small" variant="tonal">
+              Отключена
+            </v-chip>
+            <span v-if="project.retention_count && project.retention_count > 0">
+              Сохранять последних {{ project.retention_count }} запусков
+            </span>
+          </span>
+        </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex ga-2 flex-column">
         <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)"> Редактировать </v-btn>
@@ -113,6 +133,7 @@ interface Project {
   git_branch?: string;
   cron_enabled: boolean;
   cron_schedule: string;
+  retention_count: number;
   stages?: Array<{
     number: number;
     script: string;

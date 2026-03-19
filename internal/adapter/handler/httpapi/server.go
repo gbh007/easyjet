@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/gbh007/easyjet/internal/core/port"
 	"github.com/go-playground/validator/v10"
@@ -14,9 +15,10 @@ import (
 )
 
 type Config struct {
-	Addr string
-	User string
-	Pass string
+	Addr            string
+	User            string
+	Pass            string
+	StaticFilesPath string
 }
 
 type Controller struct {
@@ -76,6 +78,10 @@ func (cnt Controller) Serve(ctx context.Context) error {
 			},
 		}),
 	)
+
+	if cnt.cfg.StaticFilesPath != "" {
+		e.GET("/", echo.StaticDirectoryHandler(os.DirFS(cnt.cfg.StaticFilesPath), false))
+	}
 
 	e.POST("/api/v1/projects", cnt.createProject)
 	e.GET("/api/v1/projects", cnt.projects)

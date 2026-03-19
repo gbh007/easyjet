@@ -35,6 +35,18 @@
         />
       </div>
 
+      <v-divider class="mt-4 mb-2" />
+
+      <v-text-field
+        v-model.number="form.retention_count"
+        class="flex-grow-1"
+        hint="Количество последних запусков для хранения (0 - отключить)"
+        label="Сохранять запусков"
+        min="0"
+        persistent-hint
+        type="number"
+      />
+
       <div class="d-flex flex-row justify-space-between align-center mt-4">
         <h3>Этапы</h3>
         <v-btn prepend-icon="mdi-plus" @click="addStage"> Добавить этап </v-btn>
@@ -88,6 +100,7 @@ interface ProjectForm {
   git_branch?: string;
   cron_enabled: boolean;
   cron_schedule: string;
+  retention_count: number;
   stages: Stage[];
 }
 
@@ -161,6 +174,7 @@ function load() {
       git_branch: '',
       cron_enabled: false,
       cron_schedule: '',
+      retention_count: 0,
       stages: [],
     };
     return;
@@ -178,6 +192,7 @@ function load() {
         git_branch: data.git_branch || '',
         cron_enabled: data.cron_enabled || false,
         cron_schedule: data.cron_schedule || '',
+        retention_count: data.retention_count || 0,
         stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
       };
     })

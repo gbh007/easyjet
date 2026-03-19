@@ -55,28 +55,28 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 
 	id := run.ProjectID
 
-	p, err := srv.db.Project(ctx, id)
+	project, err := srv.db.Project(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get project: %w", err)
 	}
 
-	dir := p.Dir
+	dir := project.Dir
 
 	if dir == "" {
 		dir = srv.fs.GetProjectDir(ctx, id)
 	}
 
-	if p.HasGIT() {
-		commits, err := srv.git.Diff(ctx, dir, "HEAD", srv.git.OriginName()+"/"+p.GitBranch)
+	if project.HasGIT() {
+		commits, err := srv.git.Diff(ctx, dir, "HEAD", srv.git.OriginName()+"/"+project.GitBranch)
 		if err != nil {
 			return fmt.Errorf("git get diff: %w", err)
 		}
 
 		if len(commits) > 0 {
-			err = srv.db.SetProjectRunGitLogs(
+			err = srv.db.SetProjectRunGitCommits(
 				ctx,
-				lo.Map(commits, func(c entity.Commit, i int) entity.ProjectRunGitLogs {
-					return entity.ProjectRunGitLogs{
+				lo.Map(commits, func(c entity.Commit, i int) entity.ProjectRunGitCommits {
+					return entity.ProjectRunGitCommits{
 						RunID:   runID,
 						Number:  i,
 						Hash:    c.Hash,
@@ -85,17 +85,17 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 				}),
 			)
 			if err != nil {
-				return fmt.Errorf("save git logs: %w", err)
+				return fmt.Errorf("save git commits: %w", err)
 			}
 		}
 
-		err = srv.git.Pull(ctx, dir, p.GitBranch)
+		err = srv.git.Pull(ctx, dir, project.GitBranch)
 		if err != nil {
 			return fmt.Errorf("git pull origin: %w", err)
 		}
 	}
 
-	for _, stage := range p.Stages {
+	for _, stage := range project.Stages {
 		p, err := srv.fs.CreateSHScript(ctx, id, stage.Number, stage.Script)
 		if err != nil {
 			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
@@ -119,6 +119,11 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		if err != nil {
 			return err
 		}
+	}
+
+	rotErr := srv.rotateProjectRuns(ctx, project)
+	if rotErr != nil {
+		srv.logger.Error("failed to rotate runs", "error", rotErr)
 	}
 
 	return nil

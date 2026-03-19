@@ -12,10 +12,11 @@ type Project struct {
 	CronEnabled  bool   `json:"cron_enabled" gorm:"column:cron_enabled;not null;default:false"`
 	CronSchedule string `json:"cron_schedule" gorm:"column:cron_schedule;type:text;not null;default:''" validate:"omitzero,cron"`
 
-	Dir       string `json:"dir" gorm:"column:dir;not null"`
-	GitURL    string `json:"git_url" gorm:"column:git_url;not null"`
-	GitBranch string `json:"git_branch" gorm:"column:git_branch;not null"`
-	Name      string `json:"name" gorm:"column:name;not null"`
+	Dir            string `json:"dir" gorm:"column:dir;not null"`
+	GitURL         string `json:"git_url" gorm:"column:git_url;not null"`
+	GitBranch      string `json:"git_branch" gorm:"column:git_branch;not null"`
+	Name           string `json:"name" gorm:"column:name;not null"`
+	RetentionCount int    `json:"retention_count" gorm:"column:retention_count;not null;default:0"`
 
 	Stages []ProjectStage `json:"stages" gorm:"foreignKey:ProjectID" validate:"min=1"`
 }

@@ -70,9 +70,9 @@
 | `Success`     | bool   | Флаг успешного выполнения этапа                                                     |
 | `Log`         | string | Лог выполнения этапа (вывод скрипта)                                                |
 
-## Коммит Git полученый в результате запуска проекта (ProjectRunGitLogs)
+## Коммит Git полученый в результате запуска проекта (ProjectRunGitCommits)
 
-**Название в коде:** `ProjectRunGitLogs`
+**Название в коде:** `ProjectRunGitCommits`
 
 Информация о Git-коммитах, которые были обработаны в рамках данного запуска. Позволяет отследить, какие изменения в коде вызвали выполнение пайплайна.
 
@@ -105,7 +105,7 @@ erDiagram
     Project ||--|{ ProjectStage : "имеет этапы"
     Project ||--|{ ProjectRun : "имеет запуски"
     ProjectRun ||--|{ ProjectRunStage : "имеет результаты этапов"
-    ProjectRun ||--|{ ProjectRunGitLogs : "имеет Git-логи"
+    ProjectRun ||--|{ ProjectRunGitCommits : "имеет Git-коммиты"
 
     Project {
         uint ID
@@ -117,6 +117,7 @@ erDiagram
         string Dir
         string GitURL
         string GitBranch
+        int RetentionCount
     }
 
     ProjectStage {
@@ -143,7 +144,7 @@ erDiagram
         string Log
     }
 
-    ProjectRunGitLogs {
+    ProjectRunGitCommits {
         uint RunID
         int Number
         string Hash
@@ -154,4 +155,4 @@ erDiagram
 - Один **Проект** имеет множество **Этапов проекта** (конфигурация пайплайна)
 - Один **Проект** может иметь множество **Запусков проекта** (история выполнений)
 - Один **Запуск проекта** имеет множество **Результатов этапов** (детали выполнения)
-- Один **Запуск проекта** имеет множество **Git-логов** (связанные коммиты)
+- Один **Запуск проекта** имеет множество **Git-коммитов** (связанные коммиты)

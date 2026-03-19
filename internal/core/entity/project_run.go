@@ -7,9 +7,9 @@ type ProjectRun struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;not null;<-:create;autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;not null;autoUpdateTime"`
 
-	Project Project             `json:"project,omitzero" gorm:"foreignKey:ProjectID"`
-	Stages  []ProjectRunStage   `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID" validate:"min=1"`
-	GitLogs []ProjectRunGitLogs `json:"git_logs,omitempty,omitzero" gorm:"foreignKey:RunID"`
+	Project    Project                `json:"project,omitzero" gorm:"foreignKey:ProjectID"`
+	Stages     []ProjectRunStage      `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID" validate:"min=1"`
+	GitCommits []ProjectRunGitCommits `json:"git_commits,omitempty,omitzero" gorm:"foreignKey:RunID"`
 
 	ProjectID  uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_runs_project_id"`
 	Success    bool   `json:"success" gorm:"column:success;not null"`
@@ -33,13 +33,13 @@ func (ProjectRunStage) TableName() string {
 	return "run_stages"
 }
 
-type ProjectRunGitLogs struct {
-	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_git_logs_run_id"`
+type ProjectRunGitCommits struct {
+	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_git_commits_run_id"`
 	Number  int    `json:"number" gorm:"column:num;not null"`
 	Hash    string `json:"hash" gorm:"column:hash;not null"`
 	Subject string `json:"subject" gorm:"column:subject;not null"`
 }
 
-func (ProjectRunGitLogs) TableName() string {
-	return "run_git_logs"
+func (ProjectRunGitCommits) TableName() string {
+	return "run_git_commits"
 }

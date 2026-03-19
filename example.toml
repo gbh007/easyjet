@@ -14,3 +14,5 @@ dns = "main.db"
 addr = ":8080"
 user = ""
 pass = ""
+# Если нужна раздача статики
+# static_files_path = "./frontend/dist"

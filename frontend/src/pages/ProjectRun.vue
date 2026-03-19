@@ -54,18 +54,18 @@
     </v-sheet>
 
     <v-sheet
-      v-if="run.git_logs && run.git_logs.length > 0"
+      v-if="run.git_commits && run.git_commits.length > 0"
       class="d-flex pa-4 flex-column"
       elevation="2"
     >
       <h3>Git изменения</h3>
       <v-list>
-        <v-list-item v-for="log in run.git_logs" :key="log.number">
+        <v-list-item v-for="commit in run.git_commits" :key="commit.number">
           <template #prepend>
             <v-icon icon="mdi-git" size="small" />
           </template>
-          <v-list-item-title>{{ log.subject }}</v-list-item-title>
-          <v-list-item-subtitle>{{ log.hash }}</v-list-item-subtitle>
+          <v-list-item-title>{{ commit.subject }}</v-list-item-title>
+          <v-list-item-subtitle>{{ commit.hash }}</v-list-item-subtitle>
         </v-list-item>
       </v-list>
     </v-sheet>
@@ -91,7 +91,7 @@ interface ProjectRunStage {
   log: string;
 }
 
-interface ProjectRunGitLog {
+interface ProjectRunGitCommit {
   number: number;
   hash: string;
   subject: string;
@@ -106,7 +106,7 @@ interface ProjectRun {
   processing: boolean;
   fail_log: string;
   stages?: ProjectRunStage[];
-  git_logs?: ProjectRunGitLog[];
+  git_commits?: ProjectRunGitCommit[];
 }
 
 const run = ref<ProjectRun | null>(null);

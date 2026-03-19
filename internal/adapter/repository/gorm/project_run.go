@@ -15,7 +15,7 @@ func (repo Repo) ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun,
 			ProjectID: id,
 		}).
 		Preload("Stages").
-		Preload("GitLogs").
+		Preload("GitCommits").
 		Find(&runs)
 	if res.Error != nil {
 		return nil, res.Error
@@ -25,7 +25,7 @@ func (repo Repo) ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun,
 		slices.SortStableFunc(runs[i].Stages, func(a, b entity.ProjectRunStage) int {
 			return a.StageNumber - b.StageNumber
 		})
-		slices.SortStableFunc(runs[i].GitLogs, func(a, b entity.ProjectRunGitLogs) int {
+		slices.SortStableFunc(runs[i].GitCommits, func(a, b entity.ProjectRunGitCommits) int {
 			return a.Number - b.Number
 		})
 	}
@@ -38,7 +38,7 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 
 	res := repo.db.WithContext(ctx).
 		Preload("Stages").
-		Preload("GitLogs").
+		Preload("GitCommits").
 		First(&run, id)
 	if res.Error != nil {
 		return entity.ProjectRun{}, res.Error
@@ -47,7 +47,7 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 	slices.SortStableFunc(run.Stages, func(a, b entity.ProjectRunStage) int {
 		return a.StageNumber - b.StageNumber
 	})
-	slices.SortStableFunc(run.GitLogs, func(a, b entity.ProjectRunGitLogs) int {
+	slices.SortStableFunc(run.GitCommits, func(a, b entity.ProjectRunGitCommits) int {
 		return a.Number - b.Number
 	})
 
@@ -72,8 +72,8 @@ func (repo Repo) SetProjectRunStage(ctx context.Context, rs entity.ProjectRunSta
 	return nil
 }
 
-func (repo Repo) SetProjectRunGitLogs(ctx context.Context, logs []entity.ProjectRunGitLogs) error {
-	res := repo.db.Save(&logs)
+func (repo Repo) SetProjectRunGitCommits(ctx context.Context, commits []entity.ProjectRunGitCommits) error {
+	res := repo.db.Save(&commits)
 	if res.Error != nil {
 		return res.Error
 	}
@@ -88,6 +88,32 @@ func (repo Repo) PendingProjectRuns(ctx context.Context) ([]uint, error) {
 		Model(&entity.ProjectRun{}).
 		Where(&entity.ProjectRun{
 			Pending: true,
+		}).
+		Select("id").
+		Pluck("id", &runIDs)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return runIDs, nil
+}
+
+func (repo Repo) DeleteProjectRuns(ctx context.Context, ids []uint) error {
+	res := repo.db.WithContext(ctx).Delete(&[]entity.ProjectRun{}, ids)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+func (repo Repo) ProjectRunIDs(ctx context.Context, id uint) ([]uint, error) {
+	var runIDs []uint
+
+	res := repo.db.WithContext(ctx).
+		Model(&entity.ProjectRun{}).
+		Where(&entity.ProjectRun{
+			ProjectID: id,
 		}).
 		Select("id").
 		Pluck("id", &runIDs)

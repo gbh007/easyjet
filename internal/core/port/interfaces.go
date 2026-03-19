@@ -31,9 +31,11 @@ type Database interface {
 
 	ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error)
 	ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error)
+	ProjectRunIDs(ctx context.Context, id uint) ([]uint, error)
 	SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint, error)
 	SetProjectRunStage(ctx context.Context, rs entity.ProjectRunStage) error
-	SetProjectRunGitLogs(ctx context.Context, logs []entity.ProjectRunGitLogs) error
+	SetProjectRunGitCommits(ctx context.Context, commits []entity.ProjectRunGitCommits) error
+	DeleteProjectRuns(ctx context.Context, ids []uint) error
 	PendingProjectRuns(ctx context.Context) ([]uint, error)
 }
 

@@ -72,9 +72,10 @@ func main() {
 	apiCnt := httpapi.New(
 		logger,
 		httpapi.Config{
-			Addr: cfg.Server.Addr,
-			User: cfg.Server.User,
-			Pass: cfg.Server.Pass,
+			Addr:            cfg.Server.Addr,
+			User:            cfg.Server.User,
+			Pass:            cfg.Server.Pass,
+			StaticFilesPath: cfg.Server.StaticFilesPath,
 		},
 		srv,
 	)
