@@ -80,7 +80,7 @@ func (cnt Controller) Serve(ctx context.Context) error {
 	)
 
 	if cnt.cfg.StaticFilesPath != "" {
-		e.GET("/", echo.StaticDirectoryHandler(os.DirFS(cnt.cfg.StaticFilesPath), false))
+		e.GET("/*", echo.StaticDirectoryHandler(os.DirFS(cnt.cfg.StaticFilesPath), false))
 	}
 
 	e.POST("/api/v1/projects", cnt.createProject)
