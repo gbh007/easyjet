@@ -70,8 +70,14 @@
    static_files_path = "/home/easyjet/web"
    ```
 
-10. Возвращаемся под основного пользователя
-11. Создаем настройку для linux daemon в `/etc/systemd/system/easyjet.service`
+10. При необходимости добавьте нужные переменные окружения для пользователя в `.profile`, на примере Go
+
+    ```shell
+    export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    ```
+
+11. Возвращаемся под основного пользователя
+12. Создаем настройку для linux daemon в `/etc/systemd/system/easyjet.service`
 
     ```ini
     [Unit]
@@ -90,21 +96,21 @@
     WantedBy=multi-user.target
     ```
 
-12. Обновляем конфигурацию демонов
+13. Обновляем конфигурацию демонов
 
     ```shell
     sudo systemctl daemon-reload
     ```
 
-13. Запускаем демона
+14. Запускаем демона
 
     ```shell
     sudo systemctl enable --now easyjet.service
     ```
 
-14. Проверяем демона и его логи
+15. Проверяем демона и его логи
 
     ```shell
-    systemctl status easyjet.service
-    journalctl -u easyjet.service
+    sudo systemctl status easyjet.service
+    sudo journalctl -u easyjet.service
     ```
