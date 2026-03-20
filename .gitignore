@@ -2,3 +2,5 @@
 /projects
 config.toml
 /server
+/build
+/easyjet
