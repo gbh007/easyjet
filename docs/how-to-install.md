@@ -2,25 +2,25 @@
 
 1. Создаем нового пользователя
 
-   ```shell
+   ```sh
    sudo useradd -m easyjet -s /bin/sh
    ```
 
 2. Добавляем пользователя в нужные группы (пример для docker)
 
-   ```shell
+   ```sh
    sudo usermod -aG docker easyjet
    ```
 
 3. Логинимся под новым пользователем
 
-   ```shell
+   ```sh
    sudo su - easyjet
    ```
 
 4. Генерируем SSH ключ для пользователя (если необходимо)
 
-   ```shell
+   ```sh
    ssh-keygen
    cat .ssh/id_rsa.pub
    ```
@@ -38,7 +38,7 @@
    Можно воспользоваться `build.sh`  
    Права на файлы должны быть переданы пользователю `easyjet`
 
-   ```shell
+   ```sh
    sudo chown -R easyjet:easyjet /home/easyjet/easyjet /home/easyjet/web
    ```
 
@@ -72,7 +72,7 @@
 
 10. При необходимости добавьте нужные переменные окружения для пользователя в `.profile`, на примере Go
 
-    ```shell
+    ```sh
     export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
     ```
 
@@ -98,19 +98,19 @@
 
 13. Обновляем конфигурацию демонов
 
-    ```shell
+    ```sh
     sudo systemctl daemon-reload
     ```
 
 14. Запускаем демона
 
-    ```shell
+    ```sh
     sudo systemctl enable --now easyjet.service
     ```
 
 15. Проверяем демона и его логи
 
-    ```shell
+    ```sh
     sudo systemctl status easyjet.service
     sudo journalctl -u easyjet.service
     ```
