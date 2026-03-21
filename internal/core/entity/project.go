@@ -18,6 +18,7 @@ type Project struct {
 	Name           string `json:"name" gorm:"column:name;not null"`
 	RestartAfter   bool   `json:"restart_after" gorm:"column:restart_after;not null;default:false"`
 	RetentionCount int    `json:"retention_count" gorm:"column:retention_count;not null;default:0"`
+	WithRootEnv    bool   `json:"with_root_env" gorm:"column:with_root_env;not null;default:false"`
 
 	Stages []ProjectStage `json:"stages" gorm:"foreignKey:ProjectID" validate:"min=1,dive"`
 }

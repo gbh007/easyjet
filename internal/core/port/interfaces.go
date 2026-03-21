@@ -7,7 +7,7 @@ import (
 )
 
 type Exec interface {
-	Exec(ctx context.Context, dir, p string) (string, error)
+	Exec(ctx context.Context, dir, p string, withRootEnv bool) (string, error)
 }
 
 type FileSystem interface {

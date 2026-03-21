@@ -83,6 +83,23 @@
             </v-chip>
           </span>
         </v-sheet>
+        <v-sheet class="d-flex flex-row ga-2">
+          <b>Использовать окружение хоста</b>
+          <span>
+            <v-chip
+              v-if="project.with_root_env"
+              class="mr-2"
+              color="success"
+              size="small"
+              variant="tonal"
+            >
+              Включено
+            </v-chip>
+            <v-chip v-else class="mr-2" color="secondary" size="small" variant="tonal">
+              Отключено
+            </v-chip>
+          </span>
+        </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex ga-2 flex-column">
         <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)"> Редактировать </v-btn>
@@ -151,6 +168,7 @@ interface Project {
   cron_enabled: boolean;
   cron_schedule: string;
   restart_after: boolean;
+  with_root_env: boolean;
   retention_count: number;
   stages?: Array<{
     number: number;

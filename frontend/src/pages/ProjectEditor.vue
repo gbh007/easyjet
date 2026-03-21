@@ -41,6 +41,14 @@
         label="Перезапускать приложение после выполнения задачи"
       />
 
+      <v-switch
+        v-model="form.with_root_env"
+        class="mt-4"
+        color="primary"
+        hide-details
+        label="Использовать переменные окружения хоста (withRootEnv)"
+      />
+
       <v-text-field
         v-model.number="form.retention_count"
         class="flex-grow-1"
@@ -137,6 +145,7 @@ interface ProjectForm {
   cron_enabled: boolean;
   cron_schedule: string;
   restart_after: boolean;
+  with_root_env: boolean;
   retention_count: number;
   stages: Stage[];
 }
@@ -212,6 +221,7 @@ function load() {
       cron_enabled: false,
       cron_schedule: '',
       restart_after: false,
+      with_root_env: false,
       retention_count: 0,
       stages: [],
     };
@@ -231,6 +241,7 @@ function load() {
         cron_enabled: data.cron_enabled || false,
         cron_schedule: data.cron_schedule || '',
         restart_after: data.restart_after || false,
+        with_root_env: data.with_root_env || false,
         retention_count: data.retention_count || 0,
         stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
       };

@@ -122,6 +122,8 @@ func (s *Scheduler) handleEvent(ctx context.Context, event entity.ProjectEvent) 
 		if err != nil {
 			return fmt.Errorf("remove job: %w", err)
 		}
+	case entity.EventRequireAppRestart:
+		// No action needed in scheduler
 	}
 
 	return nil

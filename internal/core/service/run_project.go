@@ -99,7 +99,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
 		}
 
-		out, err := srv.ex.Exec(ctx, dir, p)
+		out, err := srv.ex.Exec(ctx, dir, p, project.WithRootEnv)
 		if err != nil {
 			err = fmt.Errorf("execute stage %d script: %w", stage.Number, err)
 		}
