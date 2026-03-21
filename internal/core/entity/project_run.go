@@ -7,9 +7,9 @@ type ProjectRun struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;not null;<-:create;autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;not null;autoUpdateTime"`
 
-	Project    Project                `json:"project,omitzero" gorm:"foreignKey:ProjectID"`
-	Stages     []ProjectRunStage      `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID" validate:"min=1"`
-	GitCommits []ProjectRunGitCommits `json:"git_commits,omitempty,omitzero" gorm:"foreignKey:RunID"`
+	Project    Project                `json:"project,omitzero" gorm:"foreignKey:ProjectID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Stages     []ProjectRunStage      `json:"stages,omitempty,omitzero" gorm:"foreignKey:RunID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" validate:"min=1"`
+	GitCommits []ProjectRunGitCommits `json:"git_commits,omitempty,omitzero" gorm:"foreignKey:RunID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	ProjectID  uint   `json:"project_id" gorm:"column:project_id;not null;index:idx_runs_project_id"`
 	Success    bool   `json:"success" gorm:"column:success;not null"`

@@ -58,6 +58,13 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		return fmt.Errorf("get project: %w", err)
 	}
 
+	defer func() {
+		rotErr := srv.rotateProjectRuns(ctx, project)
+		if rotErr != nil {
+			srv.logger.Error("failed to rotate runs", "error", rotErr)
+		}
+	}()
+
 	dir := project.Dir
 
 	if dir == "" {
@@ -117,11 +124,6 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		if err != nil {
 			return err
 		}
-	}
-
-	rotErr := srv.rotateProjectRuns(ctx, project)
-	if rotErr != nil {
-		srv.logger.Error("failed to rotate runs", "error", rotErr)
 	}
 
 	if project.RestartAfter {

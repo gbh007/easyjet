@@ -45,7 +45,20 @@ func (Adapter) CurrentHash(ctx context.Context, dir string) (string, error) {
 	return strings.TrimSpace(out), nil
 }
 
-func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit, error) {
+func (adp Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit, error) {
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"fetch",
+			"--force",
+			adp.OriginName(),
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fetch: %w", err)
+	}
+
 	out, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
@@ -59,7 +72,7 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit,
 		Dir: dir,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("log: %w", err)
 	}
 
 	result := lo.Filter(
@@ -80,7 +93,7 @@ func (Adapter) Diff(ctx context.Context, dir, from, to string) ([]entity.Commit,
 	return result, nil
 }
 
-func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
+func (adp Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
 	_, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
@@ -99,7 +112,7 @@ func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
 		Args: []string{
 			"remote",
 			"add",
-			originName,
+			adp.OriginName(),
 			originURL,
 		},
 		Dir: dir,
@@ -111,13 +124,13 @@ func (Adapter) Init(ctx context.Context, dir, branch, originURL string) error {
 	return nil
 }
 
-func (Adapter) Pull(ctx context.Context, dir, branch string) error {
+func (adp Adapter) Pull(ctx context.Context, dir, branch string) error {
 	_, err := internal.Run(ctx, internal.Config{
 		Cmd: execPath,
 		Args: []string{
 			"pull",
 			"--force",
-			originName,
+			adp.OriginName(),
 			branch,
 		},
 		Dir: dir,

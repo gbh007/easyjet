@@ -30,6 +30,23 @@
     </v-alert>
 
     <v-sheet
+      v-if="run.git_commits && run.git_commits.length > 0"
+      class="d-flex pa-4 flex-column"
+      elevation="2"
+    >
+      <h3>Git изменения</h3>
+      <v-list>
+        <v-list-item v-for="commit in run.git_commits" :key="commit.number">
+          <template #prepend>
+            <v-icon icon="mdi-git" size="small" />
+          </template>
+          <v-list-item-title>{{ commit.subject }}</v-list-item-title>
+          <v-list-item-subtitle>{{ commit.hash }}</v-list-item-subtitle>
+        </v-list-item>
+      </v-list>
+    </v-sheet>
+
+    <v-sheet
       v-if="run.stages && run.stages.length > 0"
       class="d-flex pa-4 flex-column"
       elevation="2"
@@ -51,23 +68,6 @@
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-    </v-sheet>
-
-    <v-sheet
-      v-if="run.git_commits && run.git_commits.length > 0"
-      class="d-flex pa-4 flex-column"
-      elevation="2"
-    >
-      <h3>Git изменения</h3>
-      <v-list>
-        <v-list-item v-for="commit in run.git_commits" :key="commit.number">
-          <template #prepend>
-            <v-icon icon="mdi-git" size="small" />
-          </template>
-          <v-list-item-title>{{ commit.subject }}</v-list-item-title>
-          <v-list-item-subtitle>{{ commit.hash }}</v-list-item-subtitle>
-        </v-list-item>
-      </v-list>
     </v-sheet>
   </v-container>
 </template>

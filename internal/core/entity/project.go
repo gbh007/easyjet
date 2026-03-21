@@ -20,7 +20,7 @@ type Project struct {
 	RetentionCount int    `json:"retention_count" gorm:"column:retention_count;not null;default:0"`
 	WithRootEnv    bool   `json:"with_root_env" gorm:"column:with_root_env;not null;default:false"`
 
-	Stages []ProjectStage `json:"stages" gorm:"foreignKey:ProjectID" validate:"min=1,dive"`
+	Stages []ProjectStage `json:"stages" gorm:"foreignKey:ProjectID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" validate:"min=1,dive"`
 }
 
 func (Project) TableName() string {
