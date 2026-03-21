@@ -53,9 +53,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		returnedErr = errors.Join(returnedErr, saveRunErr)
 	}()
 
-	id := run.ProjectID
-
-	project, err := srv.db.Project(ctx, id)
+	project, err := srv.db.Project(ctx, run.ProjectID)
 	if err != nil {
 		return fmt.Errorf("get project: %w", err)
 	}
@@ -63,7 +61,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	dir := project.Dir
 
 	if dir == "" {
-		dir = srv.fs.GetProjectDir(ctx, id)
+		dir = srv.fs.GetProjectDir(ctx, project.ID)
 	}
 
 	if project.HasGIT() {
@@ -96,7 +94,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	}
 
 	for _, stage := range project.Stages {
-		p, err := srv.fs.CreateSHScript(ctx, id, stage.Number, stage.Script)
+		p, err := srv.fs.CreateSHScript(ctx, project.ID, stage.Number, stage.Script)
 		if err != nil {
 			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
 		}
@@ -124,6 +122,13 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	rotErr := srv.rotateProjectRuns(ctx, project)
 	if rotErr != nil {
 		srv.logger.Error("failed to rotate runs", "error", rotErr)
+	}
+
+	if project.RestartAfter {
+		srv.pubsub.PublishAppEvent(entity.AppEvent{
+			Type:      entity.EventRequireAppRestart,
+			ProjectID: project.ID,
+		})
 	}
 
 	return nil

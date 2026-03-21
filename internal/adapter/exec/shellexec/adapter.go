@@ -24,6 +24,9 @@ func (Adapter) Exec(ctx context.Context, dir, p string) (string, error) {
 			"-xe",
 			p,
 		},
+		Env: []string{
+			"WORKSPACE=" + dir,
+		},
 		Dir:        dir,
 		WithStdErr: true,
 	})

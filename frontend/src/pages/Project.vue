@@ -66,6 +66,23 @@
             </span>
           </span>
         </v-sheet>
+        <v-sheet class="d-flex flex-row ga-2">
+          <b>Перезапуск после задачи</b>
+          <span>
+            <v-chip
+              v-if="project.restart_after"
+              class="mr-2"
+              color="success"
+              size="small"
+              variant="tonal"
+            >
+              Включено
+            </v-chip>
+            <v-chip v-else class="mr-2" color="secondary" size="small" variant="tonal">
+              Отключено
+            </v-chip>
+          </span>
+        </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex ga-2 flex-column">
         <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)"> Редактировать </v-btn>
@@ -133,6 +150,7 @@ interface Project {
   git_branch?: string;
   cron_enabled: boolean;
   cron_schedule: string;
+  restart_after: boolean;
   retention_count: number;
   stages?: Array<{
     number: number;

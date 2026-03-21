@@ -6,7 +6,6 @@ import (
 	"slices"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
-	"gorm.io/gorm"
 )
 
 func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
@@ -25,26 +24,9 @@ func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
 }
 
 func (repo Repo) SetProject(ctx context.Context, p entity.Project) (uint, error) {
-	err := repo.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if p.ID > 0 {
-			res := tx.Where(&entity.ProjectStage{
-				ProjectID: p.ID,
-			}).
-				Delete(&entity.ProjectStage{})
-			if res.Error != nil {
-				return fmt.Errorf("delete stages: %w", res.Error)
-			}
-		}
-
-		res := tx.Save(&p)
-		if res.Error != nil {
-			return fmt.Errorf("save project: %w", res.Error)
-		}
-
-		return nil
-	})
-	if err != nil {
-		return 0, err
+	res := repo.db.WithContext(ctx).Save(&p)
+	if res.Error != nil {
+		return 0, fmt.Errorf("save stage: %w", res.Error)
 	}
 
 	return p.ID, nil

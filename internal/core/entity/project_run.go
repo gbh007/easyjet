@@ -23,8 +23,8 @@ func (ProjectRun) TableName() string {
 }
 
 type ProjectRunStage struct {
-	RunID       uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_stages_run_id"`
-	StageNumber int    `json:"stage_number" gorm:"column:stage_num;not null" validate:"min=1"`
+	RunID       uint   `json:"run_id" gorm:"column:run_id;not null;primaryKey;autoIncrement:false"`
+	StageNumber int    `json:"stage_number" gorm:"column:stage_num;not null;primaryKey;autoIncrement:false" validate:"min=1"`
 	Success     bool   `json:"success" gorm:"column:success;not null"`
 	Log         string `json:"log" gorm:"column:log;not null"`
 }
@@ -34,8 +34,8 @@ func (ProjectRunStage) TableName() string {
 }
 
 type ProjectRunGitCommits struct {
-	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;index:idx_run_git_commits_run_id"`
-	Number  int    `json:"number" gorm:"column:num;not null"`
+	RunID   uint   `json:"run_id" gorm:"column:run_id;not null;primaryKey;autoIncrement:false"`
+	Number  int    `json:"number" gorm:"column:num;not null;primaryKey;autoIncrement:false"`
 	Hash    string `json:"hash" gorm:"column:hash;not null"`
 	Subject string `json:"subject" gorm:"column:subject;not null"`
 }

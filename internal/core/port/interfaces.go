@@ -57,4 +57,6 @@ type Service interface {
 type PubSub interface {
 	PublishProjectEvent(event entity.ProjectEvent)
 	SubscribeProjectEvent(name string, c int) <-chan entity.ProjectEvent
+	PublishAppEvent(event entity.AppEvent)
+	SubscribeAppEvent(name string, c int) <-chan entity.AppEvent
 }

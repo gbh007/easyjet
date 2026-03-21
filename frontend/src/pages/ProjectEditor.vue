@@ -13,8 +13,6 @@
 
       <v-text-field v-model="form.git_branch" class="mt-2" label="Git branch" />
 
-      <v-divider class="mt-4 mb-2" />
-
       <div class="d-flex flex-row align-center mt-4">
         <v-switch
           v-model="form.cron_enabled"
@@ -35,7 +33,13 @@
         />
       </div>
 
-      <v-divider class="mt-4 mb-2" />
+      <v-switch
+        v-model="form.restart_after"
+        class="mt-4"
+        color="primary"
+        hide-details
+        label="Перезапускать приложение после выполнения задачи"
+      />
 
       <v-text-field
         v-model.number="form.retention_count"
@@ -47,10 +51,42 @@
         type="number"
       />
 
+      <v-divider class="mt-4 mb-2" />
+
       <div class="d-flex flex-row justify-space-between align-center mt-4">
         <h3>Этапы</h3>
         <v-btn prepend-icon="mdi-plus" @click="addStage"> Добавить этап </v-btn>
       </div>
+
+      <v-sheet class="d-flex pa-4 flex-column">
+        <v-expansion-panels variant="accordion">
+          <v-expansion-panel>
+            <v-expansion-panel-title class="d-flex align-center">
+              <v-icon class="mr-2" color="info" icon="mdi-information-outline" size="small" />
+              <span class="text-subtitle-1 font-weight-bold">Переменные окружения</span>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="text-body-2 mt-2">
+                В скриптах этапов доступны следующие переменные окружения:
+              </div>
+              <v-table class="mt-2" density="compact" variant="outlined">
+                <thead>
+                  <tr>
+                    <th class="text-left">Переменная</th>
+                    <th class="text-left">Описание</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code class="text-primary">WORKSPACE</code></td>
+                    <td>Рабочая директория проекта (путь к папке на сервере)</td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-sheet>
 
       <v-sheet
         v-for="(stage, index) in form.stages"
@@ -100,6 +136,7 @@ interface ProjectForm {
   git_branch?: string;
   cron_enabled: boolean;
   cron_schedule: string;
+  restart_after: boolean;
   retention_count: number;
   stages: Stage[];
 }
@@ -174,6 +211,7 @@ function load() {
       git_branch: '',
       cron_enabled: false,
       cron_schedule: '',
+      restart_after: false,
       retention_count: 0,
       stages: [],
     };
@@ -192,6 +230,7 @@ function load() {
         git_branch: data.git_branch || '',
         cron_enabled: data.cron_enabled || false,
         cron_schedule: data.cron_schedule || '',
+        restart_after: data.restart_after || false,
         retention_count: data.retention_count || 0,
         stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
       };

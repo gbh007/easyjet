@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/glebarez/sqlite"
@@ -22,6 +23,10 @@ func NewRepo(logger *slog.Logger, tp, dns string) (Repo, error) {
 
 	switch tp {
 	case "sqlite":
+		if !strings.Contains(dns, "?") {
+			dns += "?_pragma=foreign_keys(1)"
+		}
+
 		dialector = sqlite.Open(dns)
 	case "postgres":
 		dialector = postgres.Open(dns)

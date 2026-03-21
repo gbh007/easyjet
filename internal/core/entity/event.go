@@ -6,6 +6,7 @@ const (
 	EventCreated EventType = iota
 	EventUpdated
 	EventDeleted
+	EventRequireAppRestart
 )
 
 type ProjectEvent struct {
@@ -13,4 +14,9 @@ type ProjectEvent struct {
 	ProjectID uint
 	Schedule  string
 	Enabled   bool
+}
+
+type AppEvent struct {
+	Type      EventType
+	ProjectID uint
 }

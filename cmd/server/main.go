@@ -18,6 +18,7 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
 	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
+	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/gbh007/easyjet/internal/core/service"
 	"github.com/golang-cz/devslog"
 	"github.com/lmittmann/tint"
@@ -86,6 +87,24 @@ func main() {
 	logger.Info("EasyJet starting")
 
 	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		<-ctx.Done()
+		ps.Close()
+
+		return nil
+	})
+
+	g.Go(func() error {
+		for event := range ps.SubscribeAppEvent("main", 10) {
+			if event.Type == entity.EventRequireAppRestart {
+				cancel()
+				return nil
+			}
+		}
+
+		return nil
+	})
 
 	g.Go(func() error {
 		workerCnt.Start(ctx)
