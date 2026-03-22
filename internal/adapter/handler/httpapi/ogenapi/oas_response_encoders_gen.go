@@ -127,5 +127,4 @@ func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span 
 		return errors.Wrapf(ht.ErrInternalServerErrorResponse, "code: %d, message: %s", code, http.StatusText(code))
 	}
 	return nil
-
 }

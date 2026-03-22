@@ -20,7 +20,7 @@ tasks:
 
   go:generate:
     cmds:
-      - go tool ogen --target internal/adapter/handler/httpapiogen/ogenapi --package ogenapi --clean openapi.yaml
+      - go tool ogen --target internal/adapter/handler/httpapi/ogenapi --package ogenapi --clean openapi.yaml
       - go generate ./...
 
   run:server:

@@ -14,7 +14,7 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/exec/shellexec"
 	"github.com/gbh007/easyjet/internal/adapter/filesystem/filesystem"
 	"github.com/gbh007/easyjet/internal/adapter/git/shellgit"
-	"github.com/gbh007/easyjet/internal/adapter/handler/httpapiogen"
+	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
 	schedulerhandler "github.com/gbh007/easyjet/internal/adapter/handler/scheduler"
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
 	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
@@ -83,9 +83,9 @@ func main() {
 	ps := eventbus.New(logger)
 	srv := service.New(logger, ex, fs, git, db, ps)
 
-	apiCnt := httpapiogen.New(
+	apiCnt := httpapi.New(
 		logger,
-		httpapiogen.Config{
+		httpapi.Config{
 			Addr:            cfg.Server.Addr,
 			User:            cfg.Server.User,
 			Pass:            cfg.Server.Pass,

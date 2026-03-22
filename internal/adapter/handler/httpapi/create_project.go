@@ -1,33 +1,21 @@
 package httpapi
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gbh007/easyjet/internal/core/entity"
-	"github.com/labstack/echo/v4"
+	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
 )
 
-func (cnt Controller) createProject(c echo.Context) error {
-	ctx := c.Request().Context()
+// CreateProject handles POST /project endpoint.
+func (h *Handler) CreateProject(ctx context.Context, req *ogenapi.ProjectCreate) (*ogenapi.CreateProjectCreated, error) {
+	project := convertProjectCreate(req)
 
-	var req entity.Project
-
-	err := c.Bind(&req)
+	id, err := h.service.CreateProject(ctx, project)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = c.Validate(&req)
-	if err != nil {
-		return err
-	}
-
-	id, err := cnt.service.CreateProject(ctx, req)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusCreated, echo.Map{
-		"id": id,
-	})
+	return &ogenapi.CreateProjectCreated{
+		ID: ogenapi.NewOptUint(id),
+	}, nil
 }

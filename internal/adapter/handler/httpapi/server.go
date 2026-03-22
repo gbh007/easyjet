@@ -5,13 +5,11 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"os"
+	"time"
 
+	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
 	"github.com/gbh007/easyjet/internal/core/port"
-	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	slogecho "github.com/samber/slog-echo"
+	"github.com/ogen-go/ogen/middleware"
 )
 
 type Config struct {
@@ -36,73 +34,100 @@ func New(logger *slog.Logger, cfg Config, service port.Service) Controller {
 }
 
 func (cnt Controller) Serve(ctx context.Context) error {
-	e := echo.New()
-	e.Validator = vldr{validator: validator.New()}
-	e.HideBanner = true
-	e.HidePort = true
+	handler := NewHandler(cnt.service)
 
-	e.Use(
-		slogecho.NewWithConfig(cnt.logger, slogecho.Config{
-			DefaultLevel:     slog.LevelDebug,
-			ClientErrorLevel: slog.LevelWarn,
-			ServerErrorLevel: slog.LevelError,
-
-			WithUserAgent:      true,
-			WithRequestID:      true,
-			WithRequestBody:    true,
-			WithRequestHeader:  true,
-			WithResponseBody:   true,
-			WithResponseHeader: true,
-			WithClientIP:       true,
-		}),
-		middleware.CORS(),
-		middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
-			Skipper: func(c echo.Context) bool {
-				if c.Path() == "/metrics" {
-					return true
-				}
-
-				if cnt.cfg.User == "" || cnt.cfg.Pass == "" {
-					return true
-				}
-
-				return false
-			},
-			Realm: "easyjet",
-			Validator: func(s1, s2 string, ctx echo.Context) (bool, error) {
-				if cnt.cfg.User == s1 && cnt.cfg.Pass == s2 {
-					return true, nil
-				}
-
-				return false, nil
-			},
-		}),
+	server, err := ogenapi.NewServer(handler,
+		ogenapi.WithMiddleware(middlewareFunc(cnt.logger)),
 	)
-
-	if cnt.cfg.StaticFilesPath != "" {
-		e.GET("/*", echo.StaticDirectoryHandler(os.DirFS(cnt.cfg.StaticFilesPath), false))
+	if err != nil {
+		return err
 	}
 
-	e.POST("/api/v1/projects", cnt.createProject)
-	e.GET("/api/v1/projects", cnt.projects)
-	e.PUT("/api/v1/projects/:project_id", cnt.updateProject)
-	e.GET("/api/v1/projects/:project_id", cnt.project)
-	e.POST("/api/v1/projects/:project_id/runs", cnt.createProjectRun)
-	e.GET("/api/v1/projects/:project_id/runs", cnt.projectRuns)
-	e.GET("/api/v1/projects/:project_id/runs/:run_id", cnt.projectRun)
+	mux := http.NewServeMux()
+	mux.Handle("/api/v1/", server)
+
+	if cnt.cfg.StaticFilesPath != "" {
+		mux.Handle("GET /*", http.FileServer(http.Dir(cnt.cfg.StaticFilesPath)))
+	}
+
+	srv := &http.Server{
+		Addr:    cnt.cfg.Addr,
+		Handler: cnt.authMiddleware(mux),
+	}
 
 	go func() {
 		<-ctx.Done()
-		err := e.Shutdown(context.Background()) //nolint:contextcheck // будет исправлено позднее
-		if err != nil {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		//nolint:contextcheck // shutdown requires new context after original is cancelled
+		if err := srv.Shutdown(shutdownCtx); err != nil {
 			cnt.logger.Error("shutdown http", slog.String("error", err.Error()))
 		}
 	}()
 
-	err := e.Start(cnt.cfg.Addr)
+	err = srv.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 
 	return nil
+}
+
+func middlewareFunc(logger *slog.Logger) middleware.Middleware {
+	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
+		// Log request
+		logger.Debug("HTTP request",
+			slog.String("method", req.Raw.Method),
+			slog.String("path", req.Raw.URL.Path),
+			slog.String("remote_addr", req.Raw.RemoteAddr),
+			slog.String("operation", req.OperationName),
+		)
+
+		resp, err := next(req)
+
+		if err != nil {
+			logger.Error("HTTP response error",
+				slog.String("method", req.Raw.Method),
+				slog.String("path", req.Raw.URL.Path),
+				slog.String("operation", req.OperationName),
+				slog.String("error", err.Error()),
+			)
+		} else {
+			logger.Debug("HTTP response",
+				slog.String("method", req.Raw.Method),
+				slog.String("path", req.Raw.URL.Path),
+				slog.String("operation", req.OperationName),
+			)
+		}
+
+		return resp, err
+	}
+}
+
+func (cnt Controller) authMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/metrics" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		if cnt.cfg.User == "" || cnt.cfg.Pass == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		username, password, ok := r.BasicAuth()
+		if !ok || cnt.cfg.User != username || cnt.cfg.Pass != password {
+			w.Header().Set("WWW-Authenticate", `Basic realm="easyjet"`)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			_, err := w.Write([]byte(`{"error":"Unauthorized"}`))
+			if err != nil {
+				cnt.logger.Debug("write response error", slog.String("error", err.Error()))
+			}
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

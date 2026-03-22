@@ -5,26 +5,22 @@ import (
 )
 
 type Project struct {
-	ID        uint      `param:"project_id" json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        uint
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
-	CronEnabled  bool   `json:"cron_enabled"`
-	CronSchedule string `json:"cron_schedule" validate:"omitzero,cron"`
+	CronEnabled  bool
+	CronSchedule string
 
-	Dir            string `json:"dir"`
-	GitURL         string `json:"git_url"`
-	GitBranch      string `json:"git_branch"`
-	Name           string `json:"name"`
-	RestartAfter   bool   `json:"restart_after"`
-	RetentionCount int    `json:"retention_count"`
-	WithRootEnv    bool   `json:"with_root_env"`
+	Dir            string
+	GitURL         string
+	GitBranch      string
+	Name           string
+	RestartAfter   bool
+	RetentionCount int
+	WithRootEnv    bool
 
-	Stages []ProjectStage `json:"stages" validate:"min=1,dive"`
-}
-
-func (Project) TableName() string {
-	return "projects"
+	Stages []ProjectStage
 }
 
 func (p Project) HasGIT() bool {
@@ -32,11 +28,7 @@ func (p Project) HasGIT() bool {
 }
 
 type ProjectStage struct {
-	ProjectID uint   `json:"project_id"`
-	Number    int    `json:"number" validate:"min=1"`
-	Script    string `json:"script" validate:"required,gt=1"`
-}
-
-func (ProjectStage) TableName() string {
-	return "stages"
+	ProjectID uint
+	Number    int
+	Script    string
 }

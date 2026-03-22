@@ -1,31 +1,19 @@
 package httpapi
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gbh007/easyjet/internal/core/entity"
-	"github.com/labstack/echo/v4"
+	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
 )
 
-func (cnt Controller) updateProject(c echo.Context) error {
-	ctx := c.Request().Context()
+// UpdateProject handles PUT /project/{projectID} endpoint.
+func (h *Handler) UpdateProject(ctx context.Context, req *ogenapi.ProjectUpdate, params ogenapi.UpdateProjectParams) error {
+	project := convertProjectUpdate(req, params.ProjectID)
 
-	var req entity.Project
-
-	err := c.Bind(&req)
+	err := h.service.UpdateProject(ctx, project)
 	if err != nil {
 		return err
 	}
 
-	err = c.Validate(&req)
-	if err != nil {
-		return err
-	}
-
-	err = cnt.service.UpdateProject(ctx, req)
-	if err != nil {
-		return err
-	}
-
-	return c.NoContent(http.StatusNoContent)
+	return nil
 }
