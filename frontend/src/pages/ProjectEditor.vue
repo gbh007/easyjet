@@ -124,12 +124,13 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { getEasyJetAPI, type ProjectCreate, type ProjectUpdate } from '@/api';
 
 const router = useRouter();
 const route = useRoute();
+const api = getEasyJetAPI();
 
 interface Stage {
   number: number;
@@ -181,8 +182,21 @@ function removeStage(index: number) {
 function saveProject() {
   if (!form.value) return;
   if (isEdit.value) {
-    axios
-      .put(`/api/v1/projects/${form.value.id}`, form.value)
+    const payload: ProjectUpdate = {
+      id: form.value.id,
+      name: form.value.name,
+      dir: form.value.dir || undefined,
+      git_url: form.value.git_url || undefined,
+      git_branch: form.value.git_branch || undefined,
+      cron_enabled: form.value.cron_enabled,
+      cron_schedule: form.value.cron_schedule || undefined,
+      restart_after: form.value.restart_after,
+      retention_count: form.value.retention_count,
+      with_root_env: form.value.with_root_env,
+      stages: form.value.stages,
+    };
+    api
+      .updateProject(form.value.id, payload)
       .then(() => {
         router.push(`/projects/${form.value!.id}`);
       })
@@ -190,8 +204,20 @@ function saveProject() {
         console.error(error);
       });
   } else {
-    axios
-      .post(`/api/v1/projects`, form.value)
+    const payload: ProjectCreate = {
+      name: form.value.name,
+      dir: form.value.dir || undefined,
+      git_url: form.value.git_url || undefined,
+      git_branch: form.value.git_branch || undefined,
+      cron_enabled: form.value.cron_enabled,
+      cron_schedule: form.value.cron_schedule || undefined,
+      restart_after: form.value.restart_after,
+      retention_count: form.value.retention_count,
+      with_root_env: form.value.with_root_env,
+      stages: form.value.stages,
+    };
+    api
+      .createProject(payload)
       .then((response) => {
         router.push(`/projects/${response.data.id}`);
       })
@@ -228,13 +254,13 @@ function load() {
     return;
   }
 
-  axios
-    .get(`/api/v1/projects/${id}`)
+  api
+    .getProject(Number(id))
     .then((v) => {
       const data = v.data;
       form.value = {
-        id: data.id,
-        name: data.name,
+        id: data.id ?? 0,
+        name: data.name ?? '',
         dir: data.dir || '',
         git_url: data.git_url || '',
         git_branch: data.git_branch || '',

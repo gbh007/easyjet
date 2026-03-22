@@ -151,12 +151,13 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { getEasyJetAPI } from '@/api';
 
 const router = useRouter();
 const route = useRoute();
+const api = getEasyJetAPI();
 
 interface Project {
   id: number;
@@ -206,8 +207,8 @@ const runsLoading = ref(false);
 
 function runProject(id: number) {
   running.value = true;
-  axios
-    .post(`/api/v1/projects/${id}/runs`)
+  api
+    .createProjectRun(id)
     .catch((error) => {
       console.error(error);
     })
@@ -219,15 +220,24 @@ function runProject(id: number) {
 
 function loadRuns() {
   runsLoading.value = true;
-  axios
-    .get(`/api/v1/projects/${route.params.id}/runs`)
+  api
+    .getProjectRuns(Number(route.params.id))
     .then((response) => {
-      runs.value = response.data.runs || [];
-      if (runs.value) {
-        runs.value.sort((a: ProjectRun, b: ProjectRun) => {
-          return b.id - a.id;
-        });
+      const runsData = response.data.runs;
+      if (runsData) {
+        runs.value = runsData.map((r) => ({
+          id: r.id ?? 0,
+          created_at: r.created_at ?? '',
+          project_id: r.project_id ?? 0,
+          success: r.success ?? false,
+          pending: r.pending ?? false,
+          processing: r.processing ?? false,
+          fail_log: r.fail_log ?? '',
+        }));
       }
+      runs.value.sort((a: ProjectRun, b: ProjectRun) => {
+        return b.id - a.id;
+      });
     })
     .catch((error) => {
       console.error(error);
@@ -240,10 +250,27 @@ function loadRuns() {
 const project = ref<Project>();
 
 function load() {
-  axios
-    .get(`/api/v1/projects/${route.params.id}`)
+  api
+    .getProject(Number(route.params.id))
     .then((v) => {
-      project.value = v.data;
+      const data = v.data;
+      project.value = {
+        id: data.id ?? 0,
+        name: data.name ?? '',
+        created_at: data.created_at ?? '',
+        dir: data.dir,
+        git_url: data.git_url,
+        git_branch: data.git_branch,
+        cron_enabled: data.cron_enabled ?? false,
+        cron_schedule: data.cron_schedule ?? '',
+        restart_after: data.restart_after ?? false,
+        with_root_env: data.with_root_env ?? false,
+        retention_count: data.retention_count ?? 0,
+        stages: data.stages?.map((s) => ({
+          number: s.number ?? 0,
+          script: s.script ?? '',
+        })),
+      };
     })
     .catch((error) => {
       console.error(error);

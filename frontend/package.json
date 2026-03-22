@@ -12,7 +12,8 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "api:generate": "orval --config orval.config.ts"
   },
   "dependencies": {
     "@fontsource/roboto": "^5.2.9",
@@ -24,6 +25,8 @@
     "vuetify": "^4.0.0"
   },
   "devDependencies": {
+    "@orval/axios": "^8.5.3",
+    "@orval/core": "^8.5.3",
     "@tsconfig/node22": "^22.0.5",
     "@types/node": "^22.0.5",
     "@vitejs/plugin-vue": "^6.0.5",
@@ -33,6 +36,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-vuetify": "^4.3.4",
     "npm-run-all2": "^8.0.4",
+    "orval": "^8.5.3",
     "prettier": "^3.8.1",
     "sass-embedded": "^1.97.1",
     "typescript": "~5.9.3",

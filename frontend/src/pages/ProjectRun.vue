@@ -73,12 +73,13 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { getEasyJetAPI } from '@/api';
 
 const router = useRouter();
 const route = useRoute();
+const api = getEasyJetAPI();
 
 interface Project {
   id: number;
@@ -119,14 +120,37 @@ function goBack() {
 
 function load() {
   loading.value = true;
-  axios
-    .get(`/api/v1/projects/${route.params.project_id}/runs/${route.params.run_id}`)
+  api
+    .getProjectRun(Number(route.params.project_id), Number(route.params.run_id))
     .then((response) => {
-      run.value = response.data;
-      return axios.get(`/api/v1/projects/${route.params.project_id}`);
+      const data = response.data;
+      run.value = {
+        id: data.id ?? 0,
+        created_at: data.created_at ?? '',
+        project_id: data.project_id ?? 0,
+        success: data.success ?? false,
+        pending: data.pending ?? false,
+        processing: data.processing ?? false,
+        fail_log: data.fail_log ?? '',
+        stages: data.stages?.map((s) => ({
+          stage_number: s.stage_number ?? 0,
+          success: s.success ?? false,
+          log: s.log ?? '',
+        })),
+        git_commits: data.git_commits?.map((c) => ({
+          number: c.number ?? 0,
+          hash: c.hash ?? '',
+          subject: c.subject ?? '',
+        })),
+      };
+      return api.getProject(Number(route.params.project_id));
     })
     .then((response) => {
-      project.value = response.data;
+      const data = response.data;
+      project.value = {
+        id: data.id ?? 0,
+        name: data.name ?? '',
+      };
     })
     .catch((error) => {
       console.error(error);

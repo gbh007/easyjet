@@ -17,11 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { getEasyJetAPI } from '@/api';
 
 const router = useRouter();
+const api = getEasyJetAPI();
 
 interface Project {
   id: number;
@@ -31,10 +32,16 @@ interface Project {
 const projects = ref<Array<Project>>(new Array<Project>());
 
 function load() {
-  axios
-    .get('/api/v1/projects')
+  api
+    .getProjects()
     .then((v) => {
-      projects.value = v.data.projects;
+      const projectsData = v.data.projects;
+      if (projectsData) {
+        projects.value = projectsData.map((p) => ({
+          id: p.id ?? 0,
+          name: p.name ?? '',
+        }));
+      }
     })
     .catch((error) => {
       console.log(error);

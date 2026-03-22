@@ -55,6 +55,10 @@ tasks:
     dir: frontend
     cmd: npm run format:check
 
+  ts:generate:
+    dir: frontend
+    cmd: npm run api:generate
+
   md:format:
     cmd: npx prettier --write "docs/**/*.md"
 

@@ -6,4 +6,7 @@ export default (async () => [
     ts: true,
   })),
   prettier,
+  {
+    ignores: ['src/api/generated.ts', 'src/api/generated.schemas.ts'],
+  },
 ])();

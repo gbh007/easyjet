@@ -233,12 +233,6 @@ paths:
           $ref: "#/components/responses/Error"
 
 components:
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-      description: Базовая аутентификация (username/password)
-
   schemas:
     Project:
       type: object
