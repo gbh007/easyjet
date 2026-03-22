@@ -18,6 +18,11 @@ tasks:
   go:tidy:
     cmd: go mod tidy
 
+  go:generate:
+    cmds:
+      - go tool ogen --target internal/adapter/handler/httpapiogen/ogenapi --package ogenapi --clean openapi.yaml
+      - go generate ./...
+
   run:server:
     cmd: go run cmd/server/main.go
 

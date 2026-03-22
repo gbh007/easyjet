@@ -22,9 +22,6 @@ servers:
   - url: http://localhost:8080
     description: Local development server
 
-security:
-  - basicAuth: []
-
 tags:
   - name: Projects
     description: Управление проектами
@@ -310,7 +307,6 @@ components:
           minItems: 1
       required:
         - name
-        - dir
         - stages
 
     ProjectCreate:
@@ -362,7 +358,6 @@ components:
           minItems: 1
       required:
         - name
-        - dir
         - stages
 
     ProjectUpdate:
@@ -411,7 +406,6 @@ components:
       required:
         - id
         - name
-        - dir
         - stages
 
     ProjectStage:
