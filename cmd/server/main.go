@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -17,7 +18,6 @@ import (
 	schedulerhandler "github.com/gbh007/easyjet/internal/adapter/handler/scheduler"
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
 	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
-	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
 	"github.com/gbh007/easyjet/internal/adapter/repository/postgres"
 	"github.com/gbh007/easyjet/internal/adapter/repository/sqlite"
 	"github.com/gbh007/easyjet/internal/core/entity"
@@ -69,7 +69,7 @@ func main() {
 	case "sqlite":
 		db, err = sqlite.NewRepo(ctx, logger, cfg.Database.DNS)
 	default:
-		db, err = gorm.NewRepo(logger, cfg.Database.Type, cfg.Database.DNS)
+		err = fmt.Errorf("unsupported db type: %s", cfg.Database.Type)
 	}
 
 	if err != nil {
