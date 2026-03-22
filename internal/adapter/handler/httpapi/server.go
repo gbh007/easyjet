@@ -44,11 +44,12 @@ func (cnt Controller) Serve(ctx context.Context) error {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/api/v1/", server)
 
 	if cnt.cfg.StaticFilesPath != "" {
-		mux.Handle("GET /*", http.FileServer(http.Dir(cnt.cfg.StaticFilesPath)))
+		mux.Handle("/", http.FileServer(http.Dir(cnt.cfg.StaticFilesPath)))
 	}
+
+	mux.Handle("/api/", server)
 
 	srv := &http.Server{
 		Addr:    cnt.cfg.Addr,
