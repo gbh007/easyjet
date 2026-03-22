@@ -19,6 +19,7 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
 	"github.com/gbh007/easyjet/internal/adapter/repository/postgres"
+	"github.com/gbh007/easyjet/internal/adapter/repository/sqlite"
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/gbh007/easyjet/internal/core/port"
 	"github.com/gbh007/easyjet/internal/core/service"
@@ -65,6 +66,8 @@ func main() {
 	switch cfg.Database.Type {
 	case "postgres":
 		db, err = postgres.NewRepo(ctx, logger, cfg.Database.DNS)
+	case "sqlite":
+		db, err = sqlite.NewRepo(ctx, logger, cfg.Database.DNS)
 	default:
 		db, err = gorm.NewRepo(logger, cfg.Database.Type, cfg.Database.DNS)
 	}

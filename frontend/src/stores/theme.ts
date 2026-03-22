@@ -13,14 +13,14 @@ export function useThemeStore() {
 
   onMounted(() => {
     if (storedTheme !== null) {
-      theme.global.name.value = storedTheme;
+      theme.change(storedTheme);
       isDark.value = storedTheme === 'dark';
     }
   });
 
   watch(isDark, (newVal) => {
     const newTheme = newVal ? 'dark' : 'light';
-    theme.global.name.value = newTheme;
+    theme.change(newTheme);
     localStorage.setItem(THEME_STORAGE_KEY, newTheme);
   });
 

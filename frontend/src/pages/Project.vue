@@ -222,10 +222,12 @@ function loadRuns() {
   axios
     .get(`/api/v1/projects/${route.params.id}/runs`)
     .then((response) => {
-      runs.value = response.data.runs;
-      runs.value.sort((a: ProjectRun, b: ProjectRun) => {
-        return b.id - a.id;
-      });
+      runs.value = response.data.runs || [];
+      if (runs.value) {
+        runs.value.sort((a: ProjectRun, b: ProjectRun) => {
+          return b.id - a.id;
+        });
+      }
     })
     .catch((error) => {
       console.error(error);

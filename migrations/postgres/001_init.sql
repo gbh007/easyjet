@@ -62,12 +62,12 @@ CREATE TABLE
 CREATE INDEX idx_run_git_commits_run_id ON run_git_commits (run_id);
 
 -- +goose Down
-DROP TABLE IF EXISTS run_git_commits;
+DROP TABLE run_git_commits;
 
-DROP TABLE IF EXISTS runs;
+DROP TABLE runs;
 
-DROP TABLE IF EXISTS stages;
+DROP TABLE stages;
 
-DROP TABLE IF EXISTS projects;
+DROP TABLE projects;
 
-DROP TABLE IF EXISTS run_stages;
+DROP TABLE run_stages;
