@@ -18,7 +18,9 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
 	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
 	"github.com/gbh007/easyjet/internal/adapter/repository/gorm"
+	"github.com/gbh007/easyjet/internal/adapter/repository/postgres"
 	"github.com/gbh007/easyjet/internal/core/entity"
+	"github.com/gbh007/easyjet/internal/core/port"
 	"github.com/gbh007/easyjet/internal/core/service"
 	"github.com/golang-cz/devslog"
 	"github.com/lmittmann/tint"
@@ -58,7 +60,15 @@ func main() {
 		}))
 	}
 
-	db, err := gorm.NewRepo(logger, cfg.Database.Type, cfg.Database.DNS)
+	var db port.Database
+
+	switch cfg.Database.Type {
+	case "postgres":
+		db, err = postgres.NewRepo(ctx, logger, cfg.Database.DNS)
+	default:
+		db, err = gorm.NewRepo(logger, cfg.Database.Type, cfg.Database.DNS)
+	}
+
 	if err != nil {
 		logger.Error("create database adapter", "error", err.Error())
 		os.Exit(1) //nolint:gocritic // будет исправлено позднее

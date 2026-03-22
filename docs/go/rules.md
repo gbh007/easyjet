@@ -35,3 +35,45 @@
 - Позволяют избежать человеческих ошибок
 
 **Нарушение этих правил приводит к техническому долгу и несогласованности кода.**
+
+## Правила написания SQL-запросов (squirrel)
+
+### Используй `SetMap` для INSERT и UPDATE
+
+**ВСЕГДА** используй `.SetMap(map[string]any{...})` вместо:
+
+- ❌ `.Columns(...).Values(...)`
+- ❌ `.Set("column", value)` для нескольких полей
+
+**Пример правильного использования:**
+
+```go
+// INSERT
+insertQuery, insertArgs, err := repo.psql.
+    Insert("runs").
+    SetMap(map[string]any{
+        "project_id": run.ProjectID,
+        "success":    run.Success,
+        "pending":    run.Pending,
+    }).
+    Suffix("RETURNING id").
+    ToSql()
+
+// UPDATE
+updateQuery, updateArgs, err := repo.psql.
+    Update("runs").
+    SetMap(map[string]any{
+        "updated_at": run.UpdatedAt,
+        "success":    run.Success,
+        "pending":    run.Pending,
+    }).
+    Where(squirrel.Eq{"id": run.ID}).
+    ToSql()
+```
+
+**Преимущества `SetMap`:**
+
+- ✅ Чище и читаемее — видно соответствие колонка=значение
+- ✅ Легче добавлять/удалять поля
+- ✅ Меньше шансов ошибиться с порядком значений
+- ✅ Единый стиль для INSERT и UPDATE
