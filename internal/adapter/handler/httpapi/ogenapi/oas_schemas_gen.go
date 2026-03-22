@@ -83,30 +83,30 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 }
 
 type GetProjectRunsOK struct {
-	Runs []ProjectRun `json:"runs"`
+	Runs OptNilProjectRunArray `json:"runs"`
 }
 
 // GetRuns returns the value of Runs.
-func (s *GetProjectRunsOK) GetRuns() []ProjectRun {
+func (s *GetProjectRunsOK) GetRuns() OptNilProjectRunArray {
 	return s.Runs
 }
 
 // SetRuns sets the value of Runs.
-func (s *GetProjectRunsOK) SetRuns(val []ProjectRun) {
+func (s *GetProjectRunsOK) SetRuns(val OptNilProjectRunArray) {
 	s.Runs = val
 }
 
 type GetProjectsOK struct {
-	Projects []Project `json:"projects"`
+	Projects OptNilProjectArray `json:"projects"`
 }
 
 // GetProjects returns the value of Projects.
-func (s *GetProjectsOK) GetProjects() []Project {
+func (s *GetProjectsOK) GetProjects() OptNilProjectArray {
 	return s.Projects
 }
 
 // SetProjects sets the value of Projects.
-func (s *GetProjectsOK) SetProjects(val []Project) {
+func (s *GetProjectsOK) SetProjects(val OptNilProjectArray) {
 	s.Projects = val
 }
 
@@ -242,6 +242,258 @@ func (o OptInt32) Get() (v int32, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptInt32) Or(d int32) int32 {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectArray returns new OptNilProjectArray with value set to v.
+func NewOptNilProjectArray(v []Project) OptNilProjectArray {
+	return OptNilProjectArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectArray is optional nullable []Project.
+type OptNilProjectArray struct {
+	Value []Project
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectArray was set.
+func (o OptNilProjectArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectArray) Reset() {
+	var v []Project
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectArray) SetTo(v []Project) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []Project
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectArray) Get() (v []Project, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectArray) Or(d []Project) []Project {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectRunArray returns new OptNilProjectRunArray with value set to v.
+func NewOptNilProjectRunArray(v []ProjectRun) OptNilProjectRunArray {
+	return OptNilProjectRunArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectRunArray is optional nullable []ProjectRun.
+type OptNilProjectRunArray struct {
+	Value []ProjectRun
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectRunArray was set.
+func (o OptNilProjectRunArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectRunArray) Reset() {
+	var v []ProjectRun
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectRunArray) SetTo(v []ProjectRun) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectRunArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectRunArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []ProjectRun
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectRunArray) Get() (v []ProjectRun, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectRunArray) Or(d []ProjectRun) []ProjectRun {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectRunGitCommitArray returns new OptNilProjectRunGitCommitArray with value set to v.
+func NewOptNilProjectRunGitCommitArray(v []ProjectRunGitCommit) OptNilProjectRunGitCommitArray {
+	return OptNilProjectRunGitCommitArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectRunGitCommitArray is optional nullable []ProjectRunGitCommit.
+type OptNilProjectRunGitCommitArray struct {
+	Value []ProjectRunGitCommit
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectRunGitCommitArray was set.
+func (o OptNilProjectRunGitCommitArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectRunGitCommitArray) Reset() {
+	var v []ProjectRunGitCommit
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectRunGitCommitArray) SetTo(v []ProjectRunGitCommit) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectRunGitCommitArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectRunGitCommitArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []ProjectRunGitCommit
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectRunGitCommitArray) Get() (v []ProjectRunGitCommit, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectRunGitCommitArray) Or(d []ProjectRunGitCommit) []ProjectRunGitCommit {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectRunStageArray returns new OptNilProjectRunStageArray with value set to v.
+func NewOptNilProjectRunStageArray(v []ProjectRunStage) OptNilProjectRunStageArray {
+	return OptNilProjectRunStageArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectRunStageArray is optional nullable []ProjectRunStage.
+type OptNilProjectRunStageArray struct {
+	Value []ProjectRunStage
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectRunStageArray was set.
+func (o OptNilProjectRunStageArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectRunStageArray) Reset() {
+	var v []ProjectRunStage
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectRunStageArray) SetTo(v []ProjectRunStage) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectRunStageArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectRunStageArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []ProjectRunStage
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectRunStageArray) Get() (v []ProjectRunStage, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectRunStageArray) Or(d []ProjectRunStage) []ProjectRunStage {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -650,9 +902,9 @@ type ProjectRun struct {
 	// Лог ошибки, если запуск завершился неудачей.
 	FailLog OptString `json:"fail_log"`
 	// Результаты выполнения этапов.
-	Stages []ProjectRunStage `json:"stages"`
+	Stages OptNilProjectRunStageArray `json:"stages"`
 	// Git-коммиты, связанные с запуском.
-	GitCommits []ProjectRunGitCommit `json:"git_commits"`
+	GitCommits OptNilProjectRunGitCommitArray `json:"git_commits"`
 }
 
 // GetID returns the value of ID.
@@ -696,12 +948,12 @@ func (s *ProjectRun) GetFailLog() OptString {
 }
 
 // GetStages returns the value of Stages.
-func (s *ProjectRun) GetStages() []ProjectRunStage {
+func (s *ProjectRun) GetStages() OptNilProjectRunStageArray {
 	return s.Stages
 }
 
 // GetGitCommits returns the value of GitCommits.
-func (s *ProjectRun) GetGitCommits() []ProjectRunGitCommit {
+func (s *ProjectRun) GetGitCommits() OptNilProjectRunGitCommitArray {
 	return s.GitCommits
 }
 
@@ -746,12 +998,12 @@ func (s *ProjectRun) SetFailLog(val OptString) {
 }
 
 // SetStages sets the value of Stages.
-func (s *ProjectRun) SetStages(val []ProjectRunStage) {
+func (s *ProjectRun) SetStages(val OptNilProjectRunStageArray) {
 	s.Stages = val
 }
 
 // SetGitCommits sets the value of GitCommits.
-func (s *ProjectRun) SetGitCommits(val []ProjectRunGitCommit) {
+func (s *ProjectRun) SetGitCommits(val OptNilProjectRunGitCommitArray) {
 	s.GitCommits = val
 }
 

@@ -212,13 +212,9 @@ func (s *GetProjectRunsOK) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *GetProjectRunsOK) encodeFields(e *jx.Encoder) {
 	{
-		if s.Runs != nil {
+		if s.Runs.Set {
 			e.FieldStart("runs")
-			e.ArrStart()
-			for _, elem := range s.Runs {
-				elem.Encode(e)
-			}
-			e.ArrEnd()
+			s.Runs.Encode(e)
 		}
 	}
 }
@@ -237,15 +233,8 @@ func (s *GetProjectRunsOK) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "runs":
 			if err := func() error {
-				s.Runs = make([]ProjectRun, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem ProjectRun
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.Runs = append(s.Runs, elem)
-					return nil
-				}); err != nil {
+				s.Runs.Reset()
+				if err := s.Runs.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -286,13 +275,9 @@ func (s *GetProjectsOK) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *GetProjectsOK) encodeFields(e *jx.Encoder) {
 	{
-		if s.Projects != nil {
+		if s.Projects.Set {
 			e.FieldStart("projects")
-			e.ArrStart()
-			for _, elem := range s.Projects {
-				elem.Encode(e)
-			}
-			e.ArrEnd()
+			s.Projects.Encode(e)
 		}
 	}
 }
@@ -311,15 +296,8 @@ func (s *GetProjectsOK) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "projects":
 			if err := func() error {
-				s.Projects = make([]Project, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem Project
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.Projects = append(s.Projects, elem)
-					return nil
-				}); err != nil {
+				s.Projects.Reset()
+				if err := s.Projects.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -451,6 +429,250 @@ func (s OptInt32) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptInt32) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes []Project as json.
+func (o OptNilProjectArray) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	if o.Null {
+		e.Null()
+		return
+	}
+	e.ArrStart()
+	for _, elem := range o.Value {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+}
+
+// Decode decodes []Project from json.
+func (o *OptNilProjectArray) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptNilProjectArray to nil")
+	}
+	if d.Next() == jx.Null {
+		if err := d.Null(); err != nil {
+			return err
+		}
+
+		var v []Project
+		o.Value = v
+		o.Set = true
+		o.Null = true
+		return nil
+	}
+	o.Set = true
+	o.Null = false
+	o.Value = make([]Project, 0)
+	if err := d.Arr(func(d *jx.Decoder) error {
+		var elem Project
+		if err := elem.Decode(d); err != nil {
+			return err
+		}
+		o.Value = append(o.Value, elem)
+		return nil
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptNilProjectArray) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptNilProjectArray) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes []ProjectRun as json.
+func (o OptNilProjectRunArray) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	if o.Null {
+		e.Null()
+		return
+	}
+	e.ArrStart()
+	for _, elem := range o.Value {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+}
+
+// Decode decodes []ProjectRun from json.
+func (o *OptNilProjectRunArray) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptNilProjectRunArray to nil")
+	}
+	if d.Next() == jx.Null {
+		if err := d.Null(); err != nil {
+			return err
+		}
+
+		var v []ProjectRun
+		o.Value = v
+		o.Set = true
+		o.Null = true
+		return nil
+	}
+	o.Set = true
+	o.Null = false
+	o.Value = make([]ProjectRun, 0)
+	if err := d.Arr(func(d *jx.Decoder) error {
+		var elem ProjectRun
+		if err := elem.Decode(d); err != nil {
+			return err
+		}
+		o.Value = append(o.Value, elem)
+		return nil
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptNilProjectRunArray) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptNilProjectRunArray) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes []ProjectRunGitCommit as json.
+func (o OptNilProjectRunGitCommitArray) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	if o.Null {
+		e.Null()
+		return
+	}
+	e.ArrStart()
+	for _, elem := range o.Value {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+}
+
+// Decode decodes []ProjectRunGitCommit from json.
+func (o *OptNilProjectRunGitCommitArray) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptNilProjectRunGitCommitArray to nil")
+	}
+	if d.Next() == jx.Null {
+		if err := d.Null(); err != nil {
+			return err
+		}
+
+		var v []ProjectRunGitCommit
+		o.Value = v
+		o.Set = true
+		o.Null = true
+		return nil
+	}
+	o.Set = true
+	o.Null = false
+	o.Value = make([]ProjectRunGitCommit, 0)
+	if err := d.Arr(func(d *jx.Decoder) error {
+		var elem ProjectRunGitCommit
+		if err := elem.Decode(d); err != nil {
+			return err
+		}
+		o.Value = append(o.Value, elem)
+		return nil
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptNilProjectRunGitCommitArray) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptNilProjectRunGitCommitArray) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes []ProjectRunStage as json.
+func (o OptNilProjectRunStageArray) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	if o.Null {
+		e.Null()
+		return
+	}
+	e.ArrStart()
+	for _, elem := range o.Value {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+}
+
+// Decode decodes []ProjectRunStage from json.
+func (o *OptNilProjectRunStageArray) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptNilProjectRunStageArray to nil")
+	}
+	if d.Next() == jx.Null {
+		if err := d.Null(); err != nil {
+			return err
+		}
+
+		var v []ProjectRunStage
+		o.Value = v
+		o.Set = true
+		o.Null = true
+		return nil
+	}
+	o.Set = true
+	o.Null = false
+	o.Value = make([]ProjectRunStage, 0)
+	if err := d.Arr(func(d *jx.Decoder) error {
+		var elem ProjectRunStage
+		if err := elem.Decode(d); err != nil {
+			return err
+		}
+		o.Value = append(o.Value, elem)
+		return nil
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptNilProjectRunStageArray) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptNilProjectRunStageArray) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -606,11 +828,15 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("stages")
-		e.ArrStart()
-		for _, elem := range s.Stages {
-			elem.Encode(e)
+		if s.Stages == nil {
+			e.Null()
+		} else {
+			e.ArrStart()
+			for _, elem := range s.Stages {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
 		}
-		e.ArrEnd()
 	}
 }
 
@@ -765,16 +991,23 @@ func (s *Project) Decode(d *jx.Decoder) error {
 		case "stages":
 			requiredBitSet[1] |= 1 << 4
 			if err := func() error {
-				s.Stages = make([]ProjectStage, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem ProjectStage
-					if err := elem.Decode(d); err != nil {
+				switch tt := d.Next(); tt {
+				case jx.Null:
+					if err := d.Skip(); err != nil {
 						return err
 					}
-					s.Stages = append(s.Stages, elem)
-					return nil
-				}); err != nil {
-					return err
+				default:
+					s.Stages = make([]ProjectStage, 0)
+					if err := d.Arr(func(d *jx.Decoder) error {
+						var elem ProjectStage
+						if err := elem.Decode(d); err != nil {
+							return err
+						}
+						s.Stages = append(s.Stages, elem)
+						return nil
+					}); err != nil {
+						return err
+					}
 				}
 				return nil
 			}(); err != nil {
@@ -1156,23 +1389,15 @@ func (s *ProjectRun) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Stages != nil {
+		if s.Stages.Set {
 			e.FieldStart("stages")
-			e.ArrStart()
-			for _, elem := range s.Stages {
-				elem.Encode(e)
-			}
-			e.ArrEnd()
+			s.Stages.Encode(e)
 		}
 	}
 	{
-		if s.GitCommits != nil {
+		if s.GitCommits.Set {
 			e.FieldStart("git_commits")
-			e.ArrStart()
-			for _, elem := range s.GitCommits {
-				elem.Encode(e)
-			}
-			e.ArrEnd()
+			s.GitCommits.Encode(e)
 		}
 	}
 }
@@ -1280,15 +1505,8 @@ func (s *ProjectRun) Decode(d *jx.Decoder) error {
 			}
 		case "stages":
 			if err := func() error {
-				s.Stages = make([]ProjectRunStage, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem ProjectRunStage
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.Stages = append(s.Stages, elem)
-					return nil
-				}); err != nil {
+				s.Stages.Reset()
+				if err := s.Stages.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -1297,15 +1515,8 @@ func (s *ProjectRun) Decode(d *jx.Decoder) error {
 			}
 		case "git_commits":
 			if err := func() error {
-				s.GitCommits = make([]ProjectRunGitCommit, 0)
-				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem ProjectRunGitCommit
-					if err := elem.Decode(d); err != nil {
-						return err
-					}
-					s.GitCommits = append(s.GitCommits, elem)
-					return nil
-				}); err != nil {
+				s.GitCommits.Reset()
+				if err := s.GitCommits.Decode(d); err != nil {
 					return err
 				}
 				return nil

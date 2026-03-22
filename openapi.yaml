@@ -46,6 +46,7 @@ paths:
                 properties:
                   projects:
                     type: array
+                    nullable: true
                     items:
                       $ref: "#/components/schemas/Project"
         default:
@@ -160,6 +161,7 @@ paths:
                 properties:
                   runs:
                     type: array
+                    nullable: true
                     items:
                       $ref: "#/components/schemas/ProjectRun"
         default:
@@ -305,6 +307,7 @@ components:
             $ref: "#/components/schemas/ProjectStage"
           description: Этапы пайплайна (выполняются последовательно)
           minItems: 1
+          nullable: true
       required:
         - name
         - stages
@@ -477,12 +480,14 @@ components:
             $ref: "#/components/schemas/ProjectRunStage"
           description: Результаты выполнения этапов
           readOnly: true
+          nullable: true
         git_commits:
           type: array
           items:
             $ref: "#/components/schemas/ProjectRunGitCommit"
           description: Git-коммиты, связанные с запуском
           readOnly: true
+          nullable: true
 
     ProjectRunStage:
       type: object

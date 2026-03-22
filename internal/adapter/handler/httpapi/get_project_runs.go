@@ -14,6 +14,6 @@ func (h *Handler) GetProjectRuns(ctx context.Context, params ogenapi.GetProjectR
 	}
 
 	return &ogenapi.GetProjectRunsOK{
-		Runs: convertProjectRunsToOgen(runs),
+		Runs: ogenapi.NewOptNilProjectRunArray(convertProjectRunsToOgen(runs)),
 	}, nil
 }

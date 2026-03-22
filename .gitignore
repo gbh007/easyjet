@@ -4,3 +4,6 @@ config.toml
 /server
 /build
 /easyjet
+/configsync
+.hidden
+dump.json

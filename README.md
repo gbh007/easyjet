@@ -58,6 +58,10 @@ mv $WORKSPACE/build/easyjet /home/easyjet/easyjet
 mv $WORKSPACE/frontend/dist /home/easyjet/web
 ```
 
+## Экспорт и импорт проектов
+
+Инструкции по экспорту, импорту проектов: [Экспорт и импорт](docs/how-to-export-import.md)
+
 ## Архитектура проекта
 
 Фронт и возможно в будущем остальное пишется с использованием ИИ, просто потому что 🥴  

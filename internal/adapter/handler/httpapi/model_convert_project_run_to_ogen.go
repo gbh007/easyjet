@@ -33,7 +33,7 @@ func convertProjectRunToOgen(run entity.ProjectRun) ogenapi.ProjectRun {
 		Pending:    ogenapi.NewOptBool(run.Pending),
 		Processing: ogenapi.NewOptBool(run.Processing),
 		FailLog:    ogenapi.NewOptString(run.FailLog),
-		Stages:     stages,
-		GitCommits: commits,
+		Stages:     ogenapi.NewOptNilProjectRunStageArray(stages),
+		GitCommits: ogenapi.NewOptNilProjectRunGitCommitArray(commits),
 	}
 }

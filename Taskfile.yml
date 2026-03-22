@@ -31,7 +31,9 @@ tasks:
     cmd: npm run dev
 
   build:server:
-    cmd: go build -o server cmd/server/main.go
+    cmds:
+      - go build -o server cmd/server/main.go
+      - go build -o configsync cmd/configsync/main.go
 
   build:front:
     dir: frontend

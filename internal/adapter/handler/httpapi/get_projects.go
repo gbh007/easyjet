@@ -14,6 +14,6 @@ func (h *Handler) GetProjects(ctx context.Context) (*ogenapi.GetProjectsOK, erro
 	}
 
 	return &ogenapi.GetProjectsOK{
-		Projects: convertProjectsToOgen(projects),
+		Projects: ogenapi.NewOptNilProjectArray(convertProjectsToOgen(projects)),
 	}, nil
 }
