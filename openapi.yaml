@@ -1,0 +1,546 @@
+openapi: 3.0.3
+info:
+  title: EasyJet API
+  description: |
+    API для системы непрерывной интеграции и доставки EasyJet.
+
+    EasyJet — легковесная CI/CD система для домашних серверов и пет-проектов.
+
+    ## Возможности
+
+    - Управление проектами (создание, чтение, обновление)
+    - Запуск пайплайнов и мониторинг выполнения
+    - Просмотр истории запусков и логов
+    - Интеграция с Git
+  version: 1.0.0
+  contact:
+    name: EasyJet
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+security:
+  - basicAuth: []
+
+tags:
+  - name: Projects
+    description: Управление проектами
+  - name: Project Runs
+    description: Запуски пайплайнов и история выполнений
+
+paths:
+  /api/v1/projects:
+    get:
+      tags:
+        - Projects
+      summary: Получить список всех проектов
+      description: Возвращает список всех проектов в системе
+      operationId: getProjects
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Project"
+        default:
+          $ref: "#/components/responses/Error"
+
+    post:
+      tags:
+        - Projects
+      summary: Создать новый проект
+      description: Создаёт новый проект с конфигурацией пайплайна
+      operationId: createProject
+      requestBody:
+        description: Конфигурация проекта для создания
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectCreate"
+      responses:
+        "201":
+          description: Проект успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: uint
+                    description: Уникальный идентификатор созданного проекта
+                    example: 1
+        default:
+          $ref: "#/components/responses/Error"
+
+  /api/v1/projects/{project_id}:
+    get:
+      tags:
+        - Projects
+      summary: Получить информацию о проекте
+      description: Возвращает полную информацию о проекте по его идентификатору
+      operationId: getProject
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: Уникальный идентификатор проекта
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        default:
+          $ref: "#/components/responses/Error"
+
+    put:
+      tags:
+        - Projects
+      summary: Обновить проект
+      description: Обновляет конфигурацию существующего проекта
+      operationId: updateProject
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: Уникальный идентификатор проекта
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      requestBody:
+        description: Новая конфигурация проекта
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUpdate"
+      responses:
+        "204":
+          description: Проект успешно обновлён
+        default:
+          $ref: "#/components/responses/Error"
+
+  /api/v1/projects/{project_id}/runs:
+    get:
+      tags:
+        - Project Runs
+      summary: Получить историю запусков проекта
+      description: Возвращает список всех запусков для указанного проекта
+      operationId: getProjectRuns
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: Уникальный идентификатор проекта
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  runs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProjectRun"
+        default:
+          $ref: "#/components/responses/Error"
+
+    post:
+      tags:
+        - Project Runs
+      summary: Запустить пайплайн проекта
+      description: Создаёт новый запуск пайплайна для указанного проекта
+      operationId: createProjectRun
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: Уникальный идентификатор проекта
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      responses:
+        "201":
+          description: Запуск успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: uint
+                    description: Уникальный идентификатор созданного запуска
+                    example: 1
+        default:
+          $ref: "#/components/responses/Error"
+
+  /api/v1/projects/{project_id}/runs/{run_id}:
+    get:
+      tags:
+        - Project Runs
+      summary: Получить информацию о запуске
+      description: Возвращает детальную информацию о конкретном запуске проекта
+      operationId: getProjectRun
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: Уникальный идентификатор проекта
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+        - name: run_id
+          in: path
+          required: true
+          description: Уникальный идентификатор запуска
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectRun"
+        default:
+          $ref: "#/components/responses/Error"
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Базовая аутентификация (username/password)
+
+  schemas:
+    Project:
+      type: object
+      description: Проект — конфигурация автоматизированного пайплайна для репозитория
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор проекта
+          readOnly: true
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          description: Дата и время создания проекта
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата и время последнего изменения конфигурации
+          readOnly: true
+        cron_enabled:
+          type: boolean
+          description: Флаг включения автоматического расписания (cron)
+          default: false
+          example: true
+        cron_schedule:
+          type: string
+          description: Cron-выражение для автоматического запуска
+          example: "0 5 * * *"
+        name:
+          type: string
+          description: Человеко-читаемое имя проекта
+          example: My Pet Project
+        dir:
+          type: string
+          description: Локальный путь к рабочей директории проекта
+          example: /home/easyjet/projects/myproject
+        git_url:
+          type: string
+          description: URL Git-репозитория
+          example: https://github.com/user/myproject.git
+        git_branch:
+          type: string
+          description: Имя ветки Git для сборки
+          example: main
+        restart_after:
+          type: boolean
+          description: Флаг перезапуска приложения после выполнения задачи
+          default: false
+          example: true
+        retention_count:
+          type: integer
+          format: int32
+          description: Количество последних запусков для хранения (0 - отключить)
+          default: 10
+          example: 20
+        with_root_env:
+          type: boolean
+          description: Флаг использования переменных окружения root пользователя
+          default: false
+          example: true
+        stages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectStage"
+          description: Этапы пайплайна (выполняются последовательно)
+          minItems: 1
+      required:
+        - name
+        - dir
+        - stages
+
+    ProjectCreate:
+      type: object
+      description: Данные для создания нового проекта
+      properties:
+        cron_enabled:
+          type: boolean
+          description: Флаг включения автоматического расписания (cron)
+          default: false
+        cron_schedule:
+          type: string
+          description: Cron-выражение для автоматического запуска
+          example: "0 5 * * *"
+        name:
+          type: string
+          description: Человеко-читаемое имя проекта
+          example: My Pet Project
+        dir:
+          type: string
+          description: Локальный путь к рабочей директории проекта
+          example: /home/easyjet/projects/myproject
+        git_url:
+          type: string
+          description: URL Git-репозитория
+          example: https://github.com/user/myproject.git
+        git_branch:
+          type: string
+          description: Имя ветки Git для сборки
+          example: main
+        restart_after:
+          type: boolean
+          description: Флаг перезапуска приложения после выполнения задачи
+          default: false
+        retention_count:
+          type: integer
+          format: int32
+          description: Количество последних запусков для хранения
+          default: 10
+        with_root_env:
+          type: boolean
+          description: Флаг использования переменных окружения root пользователя
+          default: false
+        stages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectStage"
+          description: Этапы пайплайна (выполняются последовательно)
+          minItems: 1
+      required:
+        - name
+        - dir
+        - stages
+
+    ProjectUpdate:
+      type: object
+      description: Данные для обновления проекта
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор проекта
+          example: 1
+        cron_enabled:
+          type: boolean
+          description: Флаг включения автоматического расписания (cron)
+        cron_schedule:
+          type: string
+          description: Cron-выражение для автоматического запуска
+        name:
+          type: string
+          description: Человеко-читаемое имя проекта
+        dir:
+          type: string
+          description: Локальный путь к рабочей директории проекта
+        git_url:
+          type: string
+          description: URL Git-репозитория
+        git_branch:
+          type: string
+          description: Имя ветки Git для сборки
+        restart_after:
+          type: boolean
+          description: Флаг перезапуска приложения после выполнения задачи
+        retention_count:
+          type: integer
+          format: int32
+          description: Количество последних запусков для хранения
+        with_root_env:
+          type: boolean
+          description: Флаг использования переменных окружения root пользователя
+        stages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectStage"
+          description: Этапы пайплайна (выполняются последовательно)
+          minItems: 1
+      required:
+        - id
+        - name
+        - dir
+        - stages
+
+    ProjectStage:
+      type: object
+      description: Этап проекта — один шаг в пайплайне выполнения
+      properties:
+        number:
+          type: integer
+          format: int32
+          description: Порядковый номер этапа (начинается с 1)
+          minimum: 1
+          example: 1
+        script:
+          type: string
+          description: Команда или скрипт для выполнения
+          example: docker-compose up -d --build
+      required:
+        - number
+        - script
+
+    ProjectRun:
+      type: object
+      description: Запуск проекта — результат выполнения пайплайна
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор запуска
+          readOnly: true
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          description: Время начала запуска
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Время последнего обновления статуса
+          readOnly: true
+        project_id:
+          type: integer
+          format: uint
+          description: Ссылка на проект
+          readOnly: true
+          example: 1
+        success:
+          type: boolean
+          description: Флаг успешного завершения всех этапов
+          readOnly: true
+          example: true
+        pending:
+          type: boolean
+          description: Флаг ожидания начала выполнения
+          readOnly: true
+          example: false
+        processing:
+          type: boolean
+          description: Флаг активного выполнения
+          readOnly: true
+          example: false
+        fail_log:
+          type: string
+          description: Лог ошибки, если запуск завершился неудачей
+          readOnly: true
+        stages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectRunStage"
+          description: Результаты выполнения этапов
+          readOnly: true
+        git_commits:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectRunGitCommit"
+          description: Git-коммиты, связанные с запуском
+          readOnly: true
+
+    ProjectRunStage:
+      type: object
+      description: Результат выполнения конкретного этапа запуска
+      properties:
+        stage_number:
+          type: integer
+          format: int32
+          description: Номер этапа
+          minimum: 1
+          example: 1
+        success:
+          type: boolean
+          description: Флаг успешного выполнения этапа
+          readOnly: true
+          example: true
+        log:
+          type: string
+          description: Лог выполнения этапа
+          readOnly: true
+          example: |
+            Building image...
+            Starting container...
+            Done!
+
+    ProjectRunGitCommit:
+      type: object
+      description: Git-коммит, связанный с запуском
+      properties:
+        number:
+          type: integer
+          format: int32
+          description: Порядковый номер коммита
+          example: 1
+        hash:
+          type: string
+          description: Хэш коммита в Git
+          example: a1b2c3d4e5f6
+        subject:
+          type: string
+          description: Сообщение коммита (первая строка)
+          example: Fix bug in authentication
+
+  responses:
+    Error:
+      description: Ошибка
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Сообщение об ошибке
+                example: Error message
