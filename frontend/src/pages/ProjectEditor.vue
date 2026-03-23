@@ -124,9 +124,10 @@
 </template>
 
 <script setup lang="ts">
+import type { ProjectCreate, ProjectUpdate } from '@/api/generated.schemas';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getEasyJetAPI, type ProjectCreate, type ProjectUpdate } from '@/api';
+import { getEasyJetAPI } from '@/api/generated';
 
 const router = useRouter();
 const route = useRoute();

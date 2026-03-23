@@ -48,7 +48,7 @@ paths:
                     type: array
                     nullable: true
                     items:
-                      $ref: "#/components/schemas/Project"
+                      $ref: "#/components/schemas/ProjectListItem"
         default:
           $ref: "#/components/responses/Error"
 
@@ -305,6 +305,62 @@ components:
       required:
         - name
         - stages
+
+    ProjectListItem:
+      type: object
+      description: Элемент списка проектов — краткая информация о проекте
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор проекта
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          description: Человеко-читаемое имя проекта
+          example: My Pet Project
+        cron_enabled:
+          type: boolean
+          description: Флаг включения автоматического расписания (cron)
+          default: false
+          example: true
+        last_successful_run_at:
+          type: string
+          format: date-time
+          description: Время последнего успешного запуска
+          readOnly: true
+          nullable: true
+        last_run:
+          $ref: "#/components/schemas/ProjectLastRun"
+      required:
+        - id
+        - name
+
+    ProjectLastRun:
+      type: object
+      description: Информация о последнем запуске проекта
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Время начала запуска
+          readOnly: true
+        success:
+          type: boolean
+          description: Флаг успешного завершения всех этапов
+          readOnly: true
+          example: false
+        pending:
+          type: boolean
+          description: Флаг ожидания начала выполнения
+          readOnly: true
+          example: false
+        processing:
+          type: boolean
+          description: Флаг активного выполнения
+          readOnly: true
+          example: true
 
     ProjectCreate:
       type: object

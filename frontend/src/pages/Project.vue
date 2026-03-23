@@ -153,7 +153,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getEasyJetAPI } from '@/api';
+import { getEasyJetAPI } from '@/api/generated';
 
 const router = useRouter();
 const route = useRoute();

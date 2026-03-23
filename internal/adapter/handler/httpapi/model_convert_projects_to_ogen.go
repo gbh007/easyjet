@@ -5,10 +5,37 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func convertProjectsToOgen(projects []entity.Project) []ogenapi.Project {
-	result := make([]ogenapi.Project, len(projects))
-	for i, project := range projects {
-		result[i] = convertProjectToOgen(project)
+func convertProjectListItemsToOgen(items []entity.ProjectsWithRunInfo) []ogenapi.ProjectListItem {
+	result := make([]ogenapi.ProjectListItem, len(items))
+	for i, item := range items {
+		result[i] = convertProjectListItemToOgen(item)
 	}
 	return result
+}
+
+func convertProjectListItemToOgen(item entity.ProjectsWithRunInfo) ogenapi.ProjectListItem {
+	result := ogenapi.ProjectListItem{
+		ID:          item.ID,
+		Name:        item.Name,
+		CronEnabled: ogenapi.NewOptBool(item.CronEnabled),
+	}
+
+	if item.LastSuccessfulRunAt != nil {
+		result.LastSuccessfulRunAt = ogenapi.NewOptNilDateTime(*item.LastSuccessfulRunAt)
+	}
+
+	if item.LastRun != nil {
+		result.LastRun = ogenapi.NewOptProjectLastRun(convertProjectLastRunToOgen(*item.LastRun))
+	}
+
+	return result
+}
+
+func convertProjectLastRunToOgen(lastRun entity.ProjectLastRun) ogenapi.ProjectLastRun {
+	return ogenapi.ProjectLastRun{
+		CreatedAt:  ogenapi.NewOptDateTime(lastRun.CreatedAt),
+		Success:    ogenapi.NewOptBool(lastRun.Success),
+		Pending:    ogenapi.NewOptBool(lastRun.Pending),
+		Processing: ogenapi.NewOptBool(lastRun.Processing),
+	}
 }

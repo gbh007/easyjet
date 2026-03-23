@@ -6,14 +6,13 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
 )
 
-// GetProjects handles GET /projects endpoint.
 func (h *Handler) GetProjects(ctx context.Context) (*ogenapi.GetProjectsOK, error) {
-	projects, err := h.service.Projects(ctx)
+	items, err := h.service.ProjectsWithRunInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ogenapi.GetProjectsOK{
-		Projects: ogenapi.NewOptNilProjectArray(convertProjectsToOgen(projects)),
+		Projects: ogenapi.NewOptNilProjectListItemArray(convertProjectListItemsToOgen(items)),
 	}, nil
 }

@@ -97,16 +97,16 @@ func (s *GetProjectRunsOK) SetRuns(val OptNilProjectRunArray) {
 }
 
 type GetProjectsOK struct {
-	Projects OptNilProjectArray `json:"projects"`
+	Projects OptNilProjectListItemArray `json:"projects"`
 }
 
 // GetProjects returns the value of Projects.
-func (s *GetProjectsOK) GetProjects() OptNilProjectArray {
+func (s *GetProjectsOK) GetProjects() OptNilProjectListItemArray {
 	return s.Projects
 }
 
 // SetProjects sets the value of Projects.
-func (s *GetProjectsOK) SetProjects(val OptNilProjectArray) {
+func (s *GetProjectsOK) SetProjects(val OptNilProjectListItemArray) {
 	s.Projects = val
 }
 
@@ -248,52 +248,52 @@ func (o OptInt32) Or(d int32) int32 {
 	return d
 }
 
-// NewOptNilProjectArray returns new OptNilProjectArray with value set to v.
-func NewOptNilProjectArray(v []Project) OptNilProjectArray {
-	return OptNilProjectArray{
+// NewOptNilDateTime returns new OptNilDateTime with value set to v.
+func NewOptNilDateTime(v time.Time) OptNilDateTime {
+	return OptNilDateTime{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptNilProjectArray is optional nullable []Project.
-type OptNilProjectArray struct {
-	Value []Project
+// OptNilDateTime is optional nullable time.Time.
+type OptNilDateTime struct {
+	Value time.Time
 	Set   bool
 	Null  bool
 }
 
-// IsSet returns true if OptNilProjectArray was set.
-func (o OptNilProjectArray) IsSet() bool { return o.Set }
+// IsSet returns true if OptNilDateTime was set.
+func (o OptNilDateTime) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptNilProjectArray) Reset() {
-	var v []Project
+func (o *OptNilDateTime) Reset() {
+	var v time.Time
 	o.Value = v
 	o.Set = false
 	o.Null = false
 }
 
 // SetTo sets value to v.
-func (o *OptNilProjectArray) SetTo(v []Project) {
+func (o *OptNilDateTime) SetTo(v time.Time) {
 	o.Set = true
 	o.Null = false
 	o.Value = v
 }
 
 // IsNull returns true if value is Null.
-func (o OptNilProjectArray) IsNull() bool { return o.Null }
+func (o OptNilDateTime) IsNull() bool { return o.Null }
 
 // SetToNull sets value to null.
-func (o *OptNilProjectArray) SetToNull() {
+func (o *OptNilDateTime) SetToNull() {
 	o.Set = true
 	o.Null = true
-	var v []Project
+	var v time.Time
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptNilProjectArray) Get() (v []Project, ok bool) {
+func (o OptNilDateTime) Get() (v time.Time, ok bool) {
 	if o.Null {
 		return v, false
 	}
@@ -304,7 +304,70 @@ func (o OptNilProjectArray) Get() (v []Project, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptNilProjectArray) Or(d []Project) []Project {
+func (o OptNilDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectListItemArray returns new OptNilProjectListItemArray with value set to v.
+func NewOptNilProjectListItemArray(v []ProjectListItem) OptNilProjectListItemArray {
+	return OptNilProjectListItemArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectListItemArray is optional nullable []ProjectListItem.
+type OptNilProjectListItemArray struct {
+	Value []ProjectListItem
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectListItemArray was set.
+func (o OptNilProjectListItemArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectListItemArray) Reset() {
+	var v []ProjectListItem
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectListItemArray) SetTo(v []ProjectListItem) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectListItemArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectListItemArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []ProjectListItem
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectListItemArray) Get() (v []ProjectListItem, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectListItemArray) Or(d []ProjectListItem) []ProjectListItem {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -494,6 +557,52 @@ func (o OptNilProjectRunStageArray) Get() (v []ProjectRunStage, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptNilProjectRunStageArray) Or(d []ProjectRunStage) []ProjectRunStage {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptProjectLastRun returns new OptProjectLastRun with value set to v.
+func NewOptProjectLastRun(v ProjectLastRun) OptProjectLastRun {
+	return OptProjectLastRun{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptProjectLastRun is optional ProjectLastRun.
+type OptProjectLastRun struct {
+	Value ProjectLastRun
+	Set   bool
+}
+
+// IsSet returns true if OptProjectLastRun was set.
+func (o OptProjectLastRun) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptProjectLastRun) Reset() {
+	var v ProjectLastRun
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptProjectLastRun) SetTo(v ProjectLastRun) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptProjectLastRun) Get() (v ProjectLastRun, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptProjectLastRun) Or(d ProjectLastRun) ProjectLastRun {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -880,6 +989,124 @@ func (s *ProjectCreate) SetWithRootEnv(val OptBool) {
 // SetStages sets the value of Stages.
 func (s *ProjectCreate) SetStages(val []ProjectStage) {
 	s.Stages = val
+}
+
+// Информация о последнем запуске проекта.
+// Ref: #/components/schemas/ProjectLastRun
+type ProjectLastRun struct {
+	// Время начала запуска.
+	CreatedAt OptDateTime `json:"created_at"`
+	// Флаг успешного завершения всех этапов.
+	Success OptBool `json:"success"`
+	// Флаг ожидания начала выполнения.
+	Pending OptBool `json:"pending"`
+	// Флаг активного выполнения.
+	Processing OptBool `json:"processing"`
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ProjectLastRun) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetSuccess returns the value of Success.
+func (s *ProjectLastRun) GetSuccess() OptBool {
+	return s.Success
+}
+
+// GetPending returns the value of Pending.
+func (s *ProjectLastRun) GetPending() OptBool {
+	return s.Pending
+}
+
+// GetProcessing returns the value of Processing.
+func (s *ProjectLastRun) GetProcessing() OptBool {
+	return s.Processing
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ProjectLastRun) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetSuccess sets the value of Success.
+func (s *ProjectLastRun) SetSuccess(val OptBool) {
+	s.Success = val
+}
+
+// SetPending sets the value of Pending.
+func (s *ProjectLastRun) SetPending(val OptBool) {
+	s.Pending = val
+}
+
+// SetProcessing sets the value of Processing.
+func (s *ProjectLastRun) SetProcessing(val OptBool) {
+	s.Processing = val
+}
+
+// Элемент списка проектов — краткая информация о
+// проекте.
+// Ref: #/components/schemas/ProjectListItem
+type ProjectListItem struct {
+	// Уникальный идентификатор проекта.
+	ID uint `json:"id"`
+	// Человеко-читаемое имя проекта.
+	Name string `json:"name"`
+	// Флаг включения автоматического расписания (cron).
+	CronEnabled OptBool `json:"cron_enabled"`
+	// Время последнего успешного запуска.
+	LastSuccessfulRunAt OptNilDateTime    `json:"last_successful_run_at"`
+	LastRun             OptProjectLastRun `json:"last_run"`
+}
+
+// GetID returns the value of ID.
+func (s *ProjectListItem) GetID() uint {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *ProjectListItem) GetName() string {
+	return s.Name
+}
+
+// GetCronEnabled returns the value of CronEnabled.
+func (s *ProjectListItem) GetCronEnabled() OptBool {
+	return s.CronEnabled
+}
+
+// GetLastSuccessfulRunAt returns the value of LastSuccessfulRunAt.
+func (s *ProjectListItem) GetLastSuccessfulRunAt() OptNilDateTime {
+	return s.LastSuccessfulRunAt
+}
+
+// GetLastRun returns the value of LastRun.
+func (s *ProjectListItem) GetLastRun() OptProjectLastRun {
+	return s.LastRun
+}
+
+// SetID sets the value of ID.
+func (s *ProjectListItem) SetID(val uint) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *ProjectListItem) SetName(val string) {
+	s.Name = val
+}
+
+// SetCronEnabled sets the value of CronEnabled.
+func (s *ProjectListItem) SetCronEnabled(val OptBool) {
+	s.CronEnabled = val
+}
+
+// SetLastSuccessfulRunAt sets the value of LastSuccessfulRunAt.
+func (s *ProjectListItem) SetLastSuccessfulRunAt(val OptNilDateTime) {
+	s.LastSuccessfulRunAt = val
+}
+
+// SetLastRun sets the value of LastRun.
+func (s *ProjectListItem) SetLastRun(val OptProjectLastRun) {
+	s.LastRun = val
 }
 
 // Запуск проекта — результат выполнения пайплайна.

@@ -178,10 +178,10 @@ func fetchProjects(ctx context.Context, client *ogenapi.Client) ([]ogenapi.Proje
 
 	for _, p := range resp.Projects.Value {
 		resp, err := client.GetProject(ctx, ogenapi.GetProjectParams{
-			ProjectID: p.ID.Value,
+			ProjectID: p.ID,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("get project %d: %w", p.ID.Value, err)
+			return nil, fmt.Errorf("get project %d: %w", p.ID, err)
 		}
 
 		projects = append(projects, *resp)

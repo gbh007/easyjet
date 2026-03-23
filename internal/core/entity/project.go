@@ -32,3 +32,18 @@ type ProjectStage struct {
 	Number    int
 	Script    string
 }
+
+type ProjectsWithRunInfo struct {
+	ID                  uint
+	Name                string
+	CronEnabled         bool
+	LastSuccessfulRunAt *time.Time
+	LastRun             *ProjectLastRun
+}
+
+type ProjectLastRun struct {
+	CreatedAt  time.Time
+	Success    bool
+	Pending    bool
+	Processing bool
+}

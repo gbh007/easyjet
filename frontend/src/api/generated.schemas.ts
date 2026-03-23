@@ -65,6 +65,38 @@ export interface Project {
 }
 
 /**
+ * Информация о последнем запуске проекта
+ */
+export interface ProjectLastRun {
+  /** Время начала запуска */
+  readonly created_at?: string;
+  /** Флаг успешного завершения всех этапов */
+  readonly success?: boolean;
+  /** Флаг ожидания начала выполнения */
+  readonly pending?: boolean;
+  /** Флаг активного выполнения */
+  readonly processing?: boolean;
+}
+
+/**
+ * Элемент списка проектов — краткая информация о проекте
+ */
+export interface ProjectListItem {
+  /** Уникальный идентификатор проекта */
+  readonly id: number;
+  /** Человеко-читаемое имя проекта */
+  name: string;
+  /** Флаг включения автоматического расписания (cron) */
+  cron_enabled?: boolean;
+  /**
+   * Время последнего успешного запуска
+   * @nullable
+   */
+  readonly last_successful_run_at?: string | null;
+  last_run?: ProjectLastRun;
+}
+
+/**
  * Данные для создания нового проекта
  */
 export interface ProjectCreate {
@@ -190,7 +222,7 @@ export type ErrorResponse = {
 
 export type GetProjects200 = {
   /** @nullable */
-  projects?: Project[] | null;
+  projects?: ProjectListItem[] | null;
 };
 
 export type CreateProject201 = {
@@ -207,4 +239,3 @@ export type CreateProjectRun201 = {
   /** Уникальный идентификатор созданного запуска */
   id?: number;
 };
-

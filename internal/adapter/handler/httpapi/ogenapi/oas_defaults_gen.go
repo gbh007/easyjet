@@ -41,3 +41,11 @@ func (s *ProjectCreate) setDefaults() {
 		s.WithRootEnv.SetTo(val)
 	}
 }
+
+// setDefaults set default value of fields.
+func (s *ProjectListItem) setDefaults() {
+	{
+		val := bool(false)
+		s.CronEnabled.SetTo(val)
+	}
+}
