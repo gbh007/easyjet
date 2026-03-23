@@ -114,14 +114,16 @@
       </v-sheet>
     </v-sheet>
 
-    <v-sheet
-      v-for="stage in project.stages"
-      :key="stage.number"
-      class="d-flex pa-4 flex-column"
-      elevation="2"
-    >
-      <h3>Этап {{ stage.number }}</h3>
-      <pre>{{ stage.script }}</pre>
+    <v-sheet class="d-flex pa-4 flex-column" elevation="2">
+      <h3>Этапы</h3>
+      <v-expansion-panels>
+        <v-expansion-panel v-for="stage in project.stages" :key="stage.number">
+          <v-expansion-panel-title> Этап {{ stage.number }} </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <pre class="pa-2 rounded">{{ stage.script }}</pre>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-sheet>
 
     <v-sheet class="d-flex pa-4 flex-column" elevation="2">
