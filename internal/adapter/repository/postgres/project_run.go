@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/gbh007/easyjet/internal/core/entity"
@@ -22,6 +23,7 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 			"pending",
 			"processing",
 			"fail_log",
+			"duration",
 		).
 		From("runs").
 		Where(squirrel.Eq{"id": id}).
@@ -29,6 +31,8 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 	if err != nil {
 		return entity.ProjectRun{}, fmt.Errorf("build run query: %w", err)
 	}
+
+	var durationMs int64
 
 	err = repo.pool.QueryRow(ctx, runQuery, runArgs...).Scan(
 		&run.ID,
@@ -39,13 +43,16 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 		&run.Pending,
 		&run.Processing,
 		&run.FailLog,
+		&durationMs,
 	)
 	if err != nil {
 		return entity.ProjectRun{}, fmt.Errorf("query run: %w", err)
 	}
 
+	run.Duration = time.Duration(durationMs) * time.Millisecond
+
 	stagesQuery, stagesArgs, err := repo.psql.
-		Select("run_id", "stage_num", "success", "log").
+		Select("run_id", "stage_num", "success", "log", "duration").
 		From("run_stages").
 		Where(squirrel.Eq{"run_id": id}).
 		ToSql()
@@ -61,9 +68,11 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 
 	for rows.Next() {
 		var stage entity.ProjectRunStage
-		if err := rows.Scan(&stage.RunID, &stage.StageNumber, &stage.Success, &stage.Log); err != nil {
+		var durationMs int64
+		if err := rows.Scan(&stage.RunID, &stage.StageNumber, &stage.Success, &stage.Log, &durationMs); err != nil {
 			return entity.ProjectRun{}, fmt.Errorf("scan stage: %w", err)
 		}
+		stage.Duration = time.Duration(durationMs) * time.Millisecond
 		run.Stages = append(run.Stages, stage)
 	}
 

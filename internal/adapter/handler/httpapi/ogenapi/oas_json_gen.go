@@ -433,6 +433,41 @@ func (s *OptInt32) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes int64 as json.
+func (o OptInt64) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Int64(int64(o.Value))
+}
+
+// Decode decodes int64 from json.
+func (o *OptInt64) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptInt64 to nil")
+	}
+	o.Set = true
+	v, err := d.Int64()
+	if err != nil {
+		return err
+	}
+	o.Value = int64(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptInt64) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptInt64) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes time.Time as json.
 func (o OptNilDateTime) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
 	if !o.Set {
@@ -1448,13 +1483,20 @@ func (s *ProjectLastRun) encodeFields(e *jx.Encoder) {
 			s.Processing.Encode(e)
 		}
 	}
+	{
+		if s.Duration.Set {
+			e.FieldStart("duration")
+			s.Duration.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfProjectLastRun = [4]string{
+var jsonFieldsNameOfProjectLastRun = [5]string{
 	0: "created_at",
 	1: "success",
 	2: "pending",
 	3: "processing",
+	4: "duration",
 }
 
 // Decode decodes ProjectLastRun from json.
@@ -1504,6 +1546,16 @@ func (s *ProjectLastRun) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"processing\"")
+			}
+		case "duration":
+			if err := func() error {
+				s.Duration.Reset()
+				if err := s.Duration.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"duration\"")
 			}
 		default:
 			return d.Skip()
@@ -1746,6 +1798,12 @@ func (s *ProjectRun) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Duration.Set {
+			e.FieldStart("duration")
+			s.Duration.Encode(e)
+		}
+	}
+	{
 		if s.FailLog.Set {
 			e.FieldStart("fail_log")
 			s.FailLog.Encode(e)
@@ -1765,17 +1823,18 @@ func (s *ProjectRun) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectRun = [10]string{
-	0: "id",
-	1: "created_at",
-	2: "updated_at",
-	3: "project_id",
-	4: "success",
-	5: "pending",
-	6: "processing",
-	7: "fail_log",
-	8: "stages",
-	9: "git_commits",
+var jsonFieldsNameOfProjectRun = [11]string{
+	0:  "id",
+	1:  "created_at",
+	2:  "updated_at",
+	3:  "project_id",
+	4:  "success",
+	5:  "pending",
+	6:  "processing",
+	7:  "duration",
+	8:  "fail_log",
+	9:  "stages",
+	10: "git_commits",
 }
 
 // Decode decodes ProjectRun from json.
@@ -1855,6 +1914,16 @@ func (s *ProjectRun) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"processing\"")
+			}
+		case "duration":
+			if err := func() error {
+				s.Duration.Reset()
+				if err := s.Duration.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"duration\"")
 			}
 		case "fail_log":
 			if err := func() error {
@@ -2029,6 +2098,12 @@ func (s *ProjectRunStage) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Duration.Set {
+			e.FieldStart("duration")
+			s.Duration.Encode(e)
+		}
+	}
+	{
 		if s.Log.Set {
 			e.FieldStart("log")
 			s.Log.Encode(e)
@@ -2036,10 +2111,11 @@ func (s *ProjectRunStage) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectRunStage = [3]string{
+var jsonFieldsNameOfProjectRunStage = [4]string{
 	0: "stage_number",
 	1: "success",
-	2: "log",
+	2: "duration",
+	3: "log",
 }
 
 // Decode decodes ProjectRunStage from json.
@@ -2069,6 +2145,16 @@ func (s *ProjectRunStage) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"success\"")
+			}
+		case "duration":
+			if err := func() error {
+				s.Duration.Reset()
+				if err := s.Duration.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"duration\"")
 			}
 		case "log":
 			if err := func() error {

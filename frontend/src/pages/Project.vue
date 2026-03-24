@@ -144,6 +144,9 @@
             {{ getStatusText(item) }}
           </v-chip>
         </template>
+        <template #item.duration="{ item }">
+          {{ item.duration ? formatDuration(item.duration) : '—' }}
+        </template>
         <template #item.created_at="{ item }">
           {{ new Date(item.created_at).toLocaleString() }}
         </template>
@@ -156,6 +159,7 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getEasyJetAPI } from '@/api/generated';
+import { formatDuration } from '@/utils/formatDuration';
 
 const router = useRouter();
 const route = useRoute();
@@ -187,11 +191,13 @@ interface ProjectRun {
   pending: boolean;
   processing: boolean;
   fail_log: string;
+  duration?: number;
 }
 
 const runsHeaders = [
   { title: 'ID', key: 'id', sortable: true },
   { title: 'Статус', key: 'success', sortable: true },
+  { title: 'Длительность', key: 'duration', sortable: true },
   { title: 'Дата', key: 'created_at', sortable: true },
 ];
 
@@ -235,6 +241,7 @@ function loadRuns() {
           pending: r.pending ?? false,
           processing: r.processing ?? false,
           fail_log: r.fail_log ?? '',
+          duration: r.duration ?? 0,
         }));
       }
       runs.value.sort((a: ProjectRun, b: ProjectRun) => {

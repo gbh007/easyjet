@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
 func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWithRunInfo, error) {
 	query := `
-		SELECT 
+		SELECT
 			p.id,
 			p.name,
 			p.cron_enabled,
@@ -18,10 +19,11 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 			last_run.created_at as last_run_created_at,
 			last_run.success as last_run_success,
 			last_run.pending as last_run_pending,
-			last_run.processing as last_run_processing
+			last_run.processing as last_run_processing,
+			last_run.duration as last_run_duration
 		FROM projects p
 		LEFT JOIN (
-			SELECT 
+			SELECT
 				project_id,
 				MAX(created_at) as last_successful_run_at
 			FROM runs
@@ -29,12 +31,13 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 			GROUP BY project_id
 		) last_successful_run ON p.id = last_successful_run.project_id
 		LEFT JOIN (
-			SELECT 
+			SELECT
 				r1.project_id,
 				r1.created_at,
 				r1.success,
 				r1.pending,
-				r1.processing
+				r1.processing,
+				r1.duration
 			FROM runs r1
 			INNER JOIN (
 				SELECT project_id, MAX(created_at) as max_created_at
@@ -59,6 +62,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 		var lastRunSuccess sql.NullBool
 		var lastRunPending sql.NullBool
 		var lastRunProcessing sql.NullBool
+		var lastRunDuration sql.NullInt64
 
 		if err := rows.Scan(
 			&item.ID,
@@ -69,6 +73,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 			&lastRunSuccess,
 			&lastRunPending,
 			&lastRunProcessing,
+			&lastRunDuration,
 		); err != nil {
 			return nil, fmt.Errorf("scan project list item: %w", err)
 		}
@@ -83,6 +88,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 				Success:    lastRunSuccess.Bool,
 				Pending:    lastRunPending.Bool,
 				Processing: lastRunProcessing.Bool,
+				Duration:   time.Duration(lastRunDuration.Int64) * time.Millisecond,
 			}
 		}
 

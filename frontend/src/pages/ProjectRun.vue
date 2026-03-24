@@ -19,6 +19,13 @@
             {{ getStatusText(run) }}
           </v-chip>
         </v-sheet>
+        <v-sheet
+          v-if="run.duration && !run.processing && !run.pending"
+          class="d-flex flex-row ga-2"
+        >
+          <b>Длительность</b>
+          <span>{{ formatDuration(run.duration) }}</span>
+        </v-sheet>
       </v-sheet>
       <v-sheet class="d-flex ga-2 flex-column">
         <v-btn variant="outlined" @click="goBack"> Назад </v-btn>
@@ -61,6 +68,15 @@
                 :icon="stage.success ? 'mdi-check-circle' : 'mdi-alert-circle'"
               />
               Этап {{ stage.stage_number }}
+              <v-chip
+                v-if="stage.duration"
+                class="ml-2"
+                color="primary"
+                size="x-small"
+                variant="tonal"
+              >
+                {{ formatDuration(stage.duration) }}
+              </v-chip>
             </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
@@ -76,6 +92,7 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getEasyJetAPI } from '@/api/generated';
+import { formatDuration } from '@/utils/formatDuration';
 
 const router = useRouter();
 const route = useRoute();
@@ -90,6 +107,7 @@ interface ProjectRunStage {
   stage_number: number;
   success: boolean;
   log: string;
+  duration?: number;
 }
 
 interface ProjectRunGitCommit {
@@ -106,6 +124,7 @@ interface ProjectRun {
   pending: boolean;
   processing: boolean;
   fail_log: string;
+  duration?: number;
   stages?: ProjectRunStage[];
   git_commits?: ProjectRunGitCommit[];
 }
@@ -132,10 +151,12 @@ function load() {
         pending: data.pending ?? false,
         processing: data.processing ?? false,
         fail_log: data.fail_log ?? '',
+        duration: data.duration ?? 0,
         stages: data.stages?.map((s) => ({
           stage_number: s.stage_number ?? 0,
           success: s.success ?? false,
           log: s.log ?? '',
+          duration: s.duration ?? 0,
         })),
         git_commits: data.git_commits?.map((c) => ({
           number: c.number ?? 0,

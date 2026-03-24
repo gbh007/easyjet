@@ -28,6 +28,7 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 				"pending":    run.Pending,
 				"processing": run.Processing,
 				"fail_log":   run.FailLog,
+				"duration":   run.Duration.Milliseconds(),
 			}).
 			Where(squirrel.Eq{"id": run.ID}).
 			ToSql()
@@ -48,6 +49,7 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 				"pending":    run.Pending,
 				"processing": run.Processing,
 				"fail_log":   run.FailLog,
+				"duration":   run.Duration.Milliseconds(),
 			}).
 			ToSql()
 		if err != nil {
@@ -74,8 +76,9 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 				"stage_num": stage.StageNumber,
 				"success":   stage.Success,
 				"log":       stage.Log,
+				"duration":  stage.Duration.Milliseconds(),
 			}).
-			Suffix("ON CONFLICT (run_id, stage_num) DO UPDATE SET success = EXCLUDED.success, log = EXCLUDED.log").
+			Suffix("ON CONFLICT (run_id, stage_num) DO UPDATE SET success = EXCLUDED.success, log = EXCLUDED.log, duration = EXCLUDED.duration").
 			ToSql()
 		if err != nil {
 			return 0, fmt.Errorf("build insert stage query: %w", err)

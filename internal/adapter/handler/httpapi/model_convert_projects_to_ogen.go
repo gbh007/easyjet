@@ -37,5 +37,6 @@ func convertProjectLastRunToOgen(lastRun entity.ProjectLastRun) ogenapi.ProjectL
 		Success:    ogenapi.NewOptBool(lastRun.Success),
 		Pending:    ogenapi.NewOptBool(lastRun.Pending),
 		Processing: ogenapi.NewOptBool(lastRun.Processing),
+		Duration:   ogenapi.NewOptInt64(lastRun.Duration.Milliseconds()),
 	}
 }

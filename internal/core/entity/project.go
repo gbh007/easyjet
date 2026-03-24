@@ -46,4 +46,5 @@ type ProjectLastRun struct {
 	Success    bool
 	Pending    bool
 	Processing bool
+	Duration   time.Duration
 }

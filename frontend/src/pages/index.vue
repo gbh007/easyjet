@@ -28,6 +28,16 @@
               size="small"
             />
             Последний запуск: {{ formatLastRun(project.last_run) }}
+            <span
+              v-if="
+                project.last_run.duration &&
+                !project.last_run.processing &&
+                !project.last_run.pending
+              "
+              class="text-medium-emphasis ml-1"
+            >
+              ({{ formatDuration(project.last_run.duration) }})
+            </span>
           </span>
           <span v-if="project.last_successful_run_at">
             <v-icon class="mr-1" color="success" icon="mdi-check-circle-outline" size="small" />
@@ -44,6 +54,7 @@ import type { ProjectLastRun, ProjectListItem } from '@/api/generated.schemas';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getEasyJetAPI } from '@/api/generated';
+import { formatDuration } from '@/utils/formatDuration';
 
 const router = useRouter();
 const api = getEasyJetAPI();

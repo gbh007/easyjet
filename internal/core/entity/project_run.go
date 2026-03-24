@@ -16,10 +16,7 @@ type ProjectRun struct {
 	Pending    bool
 	Processing bool
 	FailLog    string
-}
-
-func (ProjectRun) TableName() string {
-	return "runs"
+	Duration   time.Duration
 }
 
 type ProjectRunStage struct {
@@ -27,6 +24,7 @@ type ProjectRunStage struct {
 	StageNumber int
 	Success     bool
 	Log         string
+	Duration    time.Duration
 }
 
 type ProjectRunGitCommits struct {

@@ -361,6 +361,12 @@ components:
           description: Флаг активного выполнения
           readOnly: true
           example: true
+        duration:
+          type: integer
+          format: int64
+          description: Время выполнения последнего запуска (в миллисекундах)
+          readOnly: true
+          example: 120000
 
     ProjectCreate:
       type: object
@@ -520,6 +526,12 @@ components:
           description: Флаг активного выполнения
           readOnly: true
           example: false
+        duration:
+          type: integer
+          format: int64
+          description: Время выполнения запуска (в миллисекундах)
+          readOnly: true
+          example: 120000
         fail_log:
           type: string
           description: Лог ошибки, если запуск завершился неудачей
@@ -554,6 +566,12 @@ components:
           description: Флаг успешного выполнения этапа
           readOnly: true
           example: true
+        duration:
+          type: integer
+          format: int64
+          description: Время выполнения этапа (в миллисекундах)
+          readOnly: true
+          example: 45000
         log:
           type: string
           description: Лог выполнения этапа

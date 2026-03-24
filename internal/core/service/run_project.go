@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 	"github.com/samber/lo"
@@ -42,11 +43,16 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	run.Processing = false
 	run.Success = true
 
+	runStart := time.Now()
+
 	defer func() {
 		if returnedErr != nil {
 			run.Success = false
 			run.FailLog = returnedErr.Error()
 		}
+
+		run.Duration = time.Since(runStart)
+
 		var saveRunErr error
 
 		_, saveRunErr = srv.db.SetProjectRun(ctx, run)
@@ -101,6 +107,8 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	}
 
 	for _, stage := range project.Stages {
+		stageStart := time.Now()
+
 		p, err := srv.fs.CreateSHScript(ctx, project.ID, stage.Number, stage.Script)
 		if err != nil {
 			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
@@ -116,6 +124,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 			StageNumber: stage.Number,
 			Success:     err == nil,
 			Log:         out,
+			Duration:    time.Since(stageStart),
 		})
 		if saveStageErr != nil {
 			err = errors.Join(err, fmt.Errorf("save stage %d result: %w", stage.Number, saveStageErr))

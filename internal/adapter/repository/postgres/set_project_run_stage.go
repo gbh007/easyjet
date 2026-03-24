@@ -15,8 +15,9 @@ func (repo Repo) SetProjectRunStage(ctx context.Context, rs entity.ProjectRunSta
 			"stage_num": rs.StageNumber,
 			"success":   rs.Success,
 			"log":       rs.Log,
+			"duration":  rs.Duration.Milliseconds(),
 		}).
-		Suffix("ON CONFLICT (run_id, stage_num) DO UPDATE SET success = EXCLUDED.success, log = EXCLUDED.log").
+		Suffix("ON CONFLICT (run_id, stage_num) DO UPDATE SET success = EXCLUDED.success, log = EXCLUDED.log, duration = EXCLUDED.duration").
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("build upsert query: %w", err)

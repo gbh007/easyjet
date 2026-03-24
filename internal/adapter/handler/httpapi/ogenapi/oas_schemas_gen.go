@@ -248,6 +248,52 @@ func (o OptInt32) Or(d int32) int32 {
 	return d
 }
 
+// NewOptInt64 returns new OptInt64 with value set to v.
+func NewOptInt64(v int64) OptInt64 {
+	return OptInt64{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt64 is optional int64.
+type OptInt64 struct {
+	Value int64
+	Set   bool
+}
+
+// IsSet returns true if OptInt64 was set.
+func (o OptInt64) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt64) Reset() {
+	var v int64
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt64) SetTo(v int64) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt64) Get() (v int64, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt64) Or(d int64) int64 {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptNilDateTime returns new OptNilDateTime with value set to v.
 func NewOptNilDateTime(v time.Time) OptNilDateTime {
 	return OptNilDateTime{
@@ -1002,6 +1048,8 @@ type ProjectLastRun struct {
 	Pending OptBool `json:"pending"`
 	// Флаг активного выполнения.
 	Processing OptBool `json:"processing"`
+	// Время выполнения последнего запуска (в миллисекундах).
+	Duration OptInt64 `json:"duration"`
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -1024,6 +1072,11 @@ func (s *ProjectLastRun) GetProcessing() OptBool {
 	return s.Processing
 }
 
+// GetDuration returns the value of Duration.
+func (s *ProjectLastRun) GetDuration() OptInt64 {
+	return s.Duration
+}
+
 // SetCreatedAt sets the value of CreatedAt.
 func (s *ProjectLastRun) SetCreatedAt(val OptDateTime) {
 	s.CreatedAt = val
@@ -1042,6 +1095,11 @@ func (s *ProjectLastRun) SetPending(val OptBool) {
 // SetProcessing sets the value of Processing.
 func (s *ProjectLastRun) SetProcessing(val OptBool) {
 	s.Processing = val
+}
+
+// SetDuration sets the value of Duration.
+func (s *ProjectLastRun) SetDuration(val OptInt64) {
+	s.Duration = val
 }
 
 // Элемент списка проектов — краткая информация о
@@ -1126,6 +1184,8 @@ type ProjectRun struct {
 	Pending OptBool `json:"pending"`
 	// Флаг активного выполнения.
 	Processing OptBool `json:"processing"`
+	// Время выполнения запуска (в миллисекундах).
+	Duration OptInt64 `json:"duration"`
 	// Лог ошибки, если запуск завершился неудачей.
 	FailLog OptString `json:"fail_log"`
 	// Результаты выполнения этапов.
@@ -1167,6 +1227,11 @@ func (s *ProjectRun) GetPending() OptBool {
 // GetProcessing returns the value of Processing.
 func (s *ProjectRun) GetProcessing() OptBool {
 	return s.Processing
+}
+
+// GetDuration returns the value of Duration.
+func (s *ProjectRun) GetDuration() OptInt64 {
+	return s.Duration
 }
 
 // GetFailLog returns the value of FailLog.
@@ -1217,6 +1282,11 @@ func (s *ProjectRun) SetPending(val OptBool) {
 // SetProcessing sets the value of Processing.
 func (s *ProjectRun) SetProcessing(val OptBool) {
 	s.Processing = val
+}
+
+// SetDuration sets the value of Duration.
+func (s *ProjectRun) SetDuration(val OptInt64) {
+	s.Duration = val
 }
 
 // SetFailLog sets the value of FailLog.
@@ -1282,6 +1352,8 @@ type ProjectRunStage struct {
 	StageNumber OptInt32 `json:"stage_number"`
 	// Флаг успешного выполнения этапа.
 	Success OptBool `json:"success"`
+	// Время выполнения этапа (в миллисекундах).
+	Duration OptInt64 `json:"duration"`
 	// Лог выполнения этапа.
 	Log OptString `json:"log"`
 }
@@ -1294,6 +1366,11 @@ func (s *ProjectRunStage) GetStageNumber() OptInt32 {
 // GetSuccess returns the value of Success.
 func (s *ProjectRunStage) GetSuccess() OptBool {
 	return s.Success
+}
+
+// GetDuration returns the value of Duration.
+func (s *ProjectRunStage) GetDuration() OptInt64 {
+	return s.Duration
 }
 
 // GetLog returns the value of Log.
@@ -1309,6 +1386,11 @@ func (s *ProjectRunStage) SetStageNumber(val OptInt32) {
 // SetSuccess sets the value of Success.
 func (s *ProjectRunStage) SetSuccess(val OptBool) {
 	s.Success = val
+}
+
+// SetDuration sets the value of Duration.
+func (s *ProjectRunStage) SetDuration(val OptInt64) {
+	s.Duration = val
 }
 
 // SetLog sets the value of Log.

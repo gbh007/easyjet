@@ -76,6 +76,8 @@ export interface ProjectLastRun {
   readonly pending?: boolean;
   /** Флаг активного выполнения */
   readonly processing?: boolean;
+  /** Время выполнения последнего запуска (в миллисекундах) */
+  readonly duration?: number;
 }
 
 /**
@@ -167,6 +169,8 @@ export interface ProjectRunStage {
   stage_number?: number;
   /** Флаг успешного выполнения этапа */
   readonly success?: boolean;
+  /** Время выполнения этапа (в миллисекундах) */
+  readonly duration?: number;
   /** Лог выполнения этапа */
   readonly log?: string;
 }
@@ -201,6 +205,8 @@ export interface ProjectRun {
   readonly pending?: boolean;
   /** Флаг активного выполнения */
   readonly processing?: boolean;
+  /** Время выполнения запуска (в миллисекундах) */
+  readonly duration?: number;
   /** Лог ошибки, если запуск завершился неудачей */
   readonly fail_log?: string;
   /**
