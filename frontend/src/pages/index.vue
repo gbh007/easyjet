@@ -20,7 +20,10 @@
             <v-icon class="mr-1" icon="mdi-clock-outline" size="small" />
             Cron включен
           </span>
-          <span v-if="project.last_run">
+          <span
+            v-if="project.last_run"
+            :title="formatDateTimeForTooltip(project.last_run.created_at)"
+          >
             <v-icon
               class="mr-1"
               :color="getLastRunColor(project.last_run)"
@@ -39,9 +42,14 @@
               ({{ formatDuration(project.last_run.duration) }})
             </span>
           </span>
-          <span v-if="project.last_successful_run_at">
+          <span
+            v-if="
+              project.last_successful_run_at && (!project.last_run || !project.last_run.success)
+            "
+            :title="formatDateTimeForTooltip(project.last_successful_run_at)"
+          >
             <v-icon class="mr-1" color="success" icon="mdi-check-circle-outline" size="small" />
-            Последний успешный: {{ formatDateTime(project.last_successful_run_at) }}
+            Последний успешный: {{ formatTimeAgo(project.last_successful_run_at) }}
           </span>
         </div>
       </v-card-text>
@@ -121,12 +129,12 @@ function formatLastRun(lastRun: ProjectLastRun): string {
     return 'В очереди...';
   }
   if (lastRun.success) {
-    return `Успешно ${formatDateTime(lastRun.created_at)}`;
+    return `Успешно ${formatTimeAgo(lastRun.created_at)}`;
   }
-  return `Ошибка ${formatDateTime(lastRun.created_at)}`;
+  return `Ошибка ${formatTimeAgo(lastRun.created_at)}`;
 }
 
-function formatDateTime(dateString?: string): string {
+function formatDateTimeForTooltip(dateString?: string): string {
   if (!dateString) {
     return '';
   }
@@ -134,10 +142,36 @@ function formatDateTime(dateString?: string): string {
   return date.toLocaleString('ru-RU', {
     day: '2-digit',
     month: '2-digit',
-    year: '2-digit',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
   });
+}
+
+function formatTimeAgo(dateString?: string): string {
+  if (!dateString) {
+    return '';
+  }
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffSeconds < 60) {
+    return 'только что';
+  }
+  if (diffMinutes < 60) {
+    return `${diffMinutes} мин назад`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours} ч назад`;
+  }
+
+  return `${diffDays} дн назад`;
 }
 
 onMounted(() => {
