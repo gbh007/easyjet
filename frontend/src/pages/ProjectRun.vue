@@ -80,7 +80,7 @@
             </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <pre class="pa-2 rounded">{{ stage.log }}</pre>
+            <pre class="pa-2 rounded code-block">{{ stage.log }}</pre>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -197,3 +197,12 @@ onMounted(() => {
   load();
 });
 </script>
+
+<style scoped>
+.code-block {
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+</style>

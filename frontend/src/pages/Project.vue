@@ -120,7 +120,7 @@
         <v-expansion-panel v-for="stage in project.stages" :key="stage.number">
           <v-expansion-panel-title> Этап {{ stage.number }} </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <pre class="pa-2 rounded">{{ stage.script }}</pre>
+            <pre class="pa-2 rounded code-block">{{ stage.script }}</pre>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -303,3 +303,12 @@ onMounted(() => {
   loadRuns();
 });
 </script>
+
+<style scoped>
+.code-block {
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+</style>
