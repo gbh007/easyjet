@@ -109,7 +109,7 @@ func main() {
 	})
 
 	g.Go(func() error {
-		for event := range ps.SubscribeAppEvent("main", 10) {
+		for event := range ps.SubscribeEvent("main", 10) {
 			if event.Type == entity.EventRequireAppRestart {
 				cancel()
 				return nil

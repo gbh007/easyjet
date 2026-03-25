@@ -3,20 +3,14 @@ package entity
 type EventType int
 
 const (
-	EventCreated EventType = iota
-	EventUpdated
-	EventDeleted
+	EventProjectCreated EventType = iota
+	EventProjectUpdated
+	EventProjectDeleted
 	EventRequireAppRestart
 )
 
-type ProjectEvent struct {
+type Event struct {
 	Type      EventType
 	ProjectID uint
-	Schedule  string
-	Enabled   bool
-}
-
-type AppEvent struct {
-	Type      EventType
-	ProjectID uint
+	RunID     uint
 }

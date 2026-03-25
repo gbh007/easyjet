@@ -20,11 +20,9 @@ func (srv Service) UpdateProject(ctx context.Context, p entity.Project) error {
 		return fmt.Errorf("create project: %w", err)
 	}
 
-	srv.pubsub.PublishProjectEvent(entity.ProjectEvent{
-		Type:      entity.EventUpdated,
+	srv.pubsub.PublishEvent(entity.Event{
+		Type:      entity.EventProjectUpdated,
 		ProjectID: p.ID,
-		Schedule:  p.CronSchedule,
-		Enabled:   p.CronEnabled,
 	})
 
 	// TODO: обновлять и настройки гита + создавать папку если нужно

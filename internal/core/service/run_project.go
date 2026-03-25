@@ -136,9 +136,10 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	}
 
 	if project.RestartAfter {
-		srv.pubsub.PublishAppEvent(entity.AppEvent{
+		srv.pubsub.PublishEvent(entity.Event{
 			Type:      entity.EventRequireAppRestart,
 			ProjectID: project.ID,
+			RunID:     runID,
 		})
 	}
 

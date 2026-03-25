@@ -8,28 +8,24 @@ import (
 )
 
 type EventQueue struct {
-	projectEventHandlers   map[string]chan entity.ProjectEvent
-	projectEventHandlersMu *sync.RWMutex
-	appEventHandlers       map[string]chan entity.AppEvent
-	appEventHandlersMu     *sync.RWMutex
-	logger                 *slog.Logger
+	eventHandlers   map[string]chan entity.Event
+	eventHandlersMu *sync.RWMutex
+	logger          *slog.Logger
 }
 
 func New(logger *slog.Logger) *EventQueue {
 	return &EventQueue{
-		projectEventHandlers:   make(map[string]chan entity.ProjectEvent),
-		projectEventHandlersMu: &sync.RWMutex{},
-		appEventHandlers:       make(map[string]chan entity.AppEvent),
-		appEventHandlersMu:     &sync.RWMutex{},
-		logger:                 logger,
+		eventHandlers:   make(map[string]chan entity.Event),
+		eventHandlersMu: &sync.RWMutex{},
+		logger:          logger,
 	}
 }
 
-func (eq *EventQueue) PublishProjectEvent(event entity.ProjectEvent) {
-	eq.projectEventHandlersMu.RLock()
-	defer eq.projectEventHandlersMu.RUnlock()
+func (eq *EventQueue) PublishEvent(event entity.Event) {
+	eq.eventHandlersMu.RLock()
+	defer eq.eventHandlersMu.RUnlock()
 
-	for name, ch := range eq.projectEventHandlers {
+	for name, ch := range eq.eventHandlers {
 		select {
 		case ch <- event:
 		default:
@@ -38,59 +34,25 @@ func (eq *EventQueue) PublishProjectEvent(event entity.ProjectEvent) {
 	}
 }
 
-func (eq *EventQueue) SubscribeProjectEvent(name string, c int) <-chan entity.ProjectEvent {
-	eq.projectEventHandlersMu.Lock()
-	defer eq.projectEventHandlersMu.Unlock()
+func (eq *EventQueue) SubscribeEvent(name string, c int) <-chan entity.Event {
+	eq.eventHandlersMu.Lock()
+	defer eq.eventHandlersMu.Unlock()
 
-	ch, ok := eq.projectEventHandlers[name]
+	ch, ok := eq.eventHandlers[name]
 	if !ok {
-		ch = make(chan entity.ProjectEvent, c)
-		eq.projectEventHandlers[name] = ch
-	}
-
-	return ch
-}
-
-func (eq *EventQueue) PublishAppEvent(event entity.AppEvent) {
-	eq.appEventHandlersMu.RLock()
-	defer eq.appEventHandlersMu.RUnlock()
-
-	for name, ch := range eq.appEventHandlers {
-		select {
-		case ch <- event:
-		default:
-			eq.logger.Warn("overflow app pubsub chan", "name", name)
-		}
-	}
-}
-
-func (eq *EventQueue) SubscribeAppEvent(name string, c int) <-chan entity.AppEvent {
-	eq.appEventHandlersMu.Lock()
-	defer eq.appEventHandlersMu.Unlock()
-
-	ch, ok := eq.appEventHandlers[name]
-	if !ok {
-		ch = make(chan entity.AppEvent, c)
-		eq.appEventHandlers[name] = ch
+		ch = make(chan entity.Event, c)
+		eq.eventHandlers[name] = ch
 	}
 
 	return ch
 }
 
 func (eq *EventQueue) Close() {
-	eq.projectEventHandlersMu.Lock()
-	defer eq.projectEventHandlersMu.Unlock()
+	eq.eventHandlersMu.Lock()
+	defer eq.eventHandlersMu.Unlock()
 
-	for k, ch := range eq.projectEventHandlers {
+	for k, ch := range eq.eventHandlers {
 		close(ch)
-		delete(eq.projectEventHandlers, k)
-	}
-
-	eq.appEventHandlersMu.Lock()
-	defer eq.appEventHandlersMu.Unlock()
-
-	for k, ch := range eq.appEventHandlers {
-		close(ch)
-		delete(eq.appEventHandlers, k)
+		delete(eq.eventHandlers, k)
 	}
 }

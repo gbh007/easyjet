@@ -30,11 +30,9 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 	}
 
 	if !p.HasGIT() {
-		srv.pubsub.PublishProjectEvent(entity.ProjectEvent{
-			Type:      entity.EventCreated,
+		srv.pubsub.PublishEvent(entity.Event{
+			Type:      entity.EventProjectCreated,
 			ProjectID: id,
-			Schedule:  p.CronSchedule,
-			Enabled:   p.CronEnabled,
 		})
 
 		return id, nil
@@ -50,11 +48,9 @@ func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, e
 		return 0, fmt.Errorf("pull git: %w", err)
 	}
 
-	srv.pubsub.PublishProjectEvent(entity.ProjectEvent{
-		Type:      entity.EventCreated,
+	srv.pubsub.PublishEvent(entity.Event{
+		Type:      entity.EventProjectCreated,
 		ProjectID: id,
-		Schedule:  p.CronSchedule,
-		Enabled:   p.CronEnabled,
 	})
 
 	return id, nil

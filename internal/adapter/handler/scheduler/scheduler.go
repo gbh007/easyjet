@@ -13,7 +13,7 @@ import (
 
 type Scheduler struct {
 	scheduler  gocron.Scheduler
-	eventQueue <-chan entity.ProjectEvent
+	eventQueue <-chan entity.Event
 	service    port.Service
 	logger     *slog.Logger
 	jobs       map[uint]gocron.Job
@@ -22,7 +22,7 @@ type Scheduler struct {
 
 func NewScheduler(logger *slog.Logger, ps port.PubSub, service port.Service) *Scheduler {
 	return &Scheduler{
-		eventQueue: ps.SubscribeProjectEvent("scheduler", 100),
+		eventQueue: ps.SubscribeEvent("scheduler", 100),
 		service:    service,
 		logger:     logger,
 		jobs:       make(map[uint]gocron.Job),
@@ -100,14 +100,14 @@ func (s *Scheduler) processEvents(ctx context.Context) {
 	}
 }
 
-func (s *Scheduler) handleEvent(ctx context.Context, event entity.ProjectEvent) (err error) {
+func (s *Scheduler) handleEvent(ctx context.Context, event entity.Event) (err error) {
 	switch event.Type {
-	case entity.EventCreated:
+	case entity.EventProjectCreated:
 		err = s.registerJob(ctx, event.ProjectID)
 		if err != nil {
 			return fmt.Errorf("register job: %w", err)
 		}
-	case entity.EventUpdated:
+	case entity.EventProjectUpdated:
 		err = s.removeJob(event.ProjectID)
 		if err != nil {
 			return fmt.Errorf("remove job: %w", err)
@@ -117,7 +117,7 @@ func (s *Scheduler) handleEvent(ctx context.Context, event entity.ProjectEvent) 
 		if err != nil {
 			return fmt.Errorf("register job: %w", err)
 		}
-	case entity.EventDeleted:
+	case entity.EventProjectDeleted:
 		err = s.removeJob(event.ProjectID)
 		if err != nil {
 			return fmt.Errorf("remove job: %w", err)
