@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
+	"github.com/gbh007/easyjet/pkg/metrics"
 	"github.com/samber/lo"
 )
 
@@ -52,6 +53,8 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		}
 
 		run.Duration = time.Since(runStart)
+		// TODO: унести за pubsub в контроллер метрик
+		metrics.ObserveRun(run.ProjectID, run.Success, run.Duration)
 
 		var saveRunErr error
 
