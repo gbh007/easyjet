@@ -26,6 +26,9 @@ tasks:
   run:server:
     cmd: go run cmd/server/main.go
 
+  run:gg:
+    cmd: go run cmd/grafanagenerator/main.go
+
   run:front:
     dir: frontend
     cmd: npm run dev
@@ -34,6 +37,7 @@ tasks:
     cmds:
       - go build -o server cmd/server/main.go
       - go build -o configsync cmd/configsync/main.go
+      - go build -o grafanagenerator cmd/grafanagenerator/main.go
 
   build:front:
     dir: frontend

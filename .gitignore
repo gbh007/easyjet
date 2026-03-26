@@ -7,3 +7,5 @@ config.toml
 /configsync
 .hidden
 dump.json
+/grafanagenerator
+gg-config.toml

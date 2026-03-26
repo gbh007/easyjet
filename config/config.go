@@ -77,10 +77,10 @@ func Write(filename string, cfg Config) (returnedErr error) {
 	return nil
 }
 
-func Read(filename string) (cfg Config, returnedErr error) {
+func Read[T any](filename string) (cfg T, returnedErr error) {
 	f, err := os.Open(filename)
 	if err != nil {
-		return Config{}, fmt.Errorf("open config file: %w", err)
+		return cfg, fmt.Errorf("open config file: %w", err)
 	}
 
 	defer func() {
@@ -92,7 +92,7 @@ func Read(filename string) (cfg Config, returnedErr error) {
 
 	_, err = toml.NewDecoder(f).Decode(&cfg)
 	if err != nil {
-		return Config{}, fmt.Errorf("decode toml: %w", err)
+		return cfg, fmt.Errorf("decode toml: %w", err)
 	}
 
 	return cfg, nil

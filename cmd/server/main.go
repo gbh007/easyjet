@@ -36,7 +36,7 @@ func main() {
 	)
 	defer cancel()
 
-	cfg, err := config.Read("config.toml")
+	cfg, err := config.Read[config.Config]("config.toml")
 	if err != nil {
 		panic(err)
 	}

@@ -51,7 +51,7 @@ func (cnt Controller) Serve(ctx context.Context) error {
 		mux.Handle("/", http.FileServer(http.Dir(cnt.cfg.StaticFilesPath)))
 	}
 
-	mux.Handle("/metrics/", promhttp.HandlerFor(metrics.DefaultRegistry, promhttp.HandlerOpts{}))
+	mux.Handle("GET /metrics", promhttp.HandlerFor(metrics.DefaultRegistry, promhttp.HandlerOpts{}))
 	mux.Handle("/api/", server)
 
 	srv := &http.Server{
