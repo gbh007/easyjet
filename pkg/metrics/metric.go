@@ -28,6 +28,11 @@ var (
 		Help:      "Время выполнения задачи",
 		Buckets:   []float64{0.1, 0.5, 2, 5, 10, 30, 60, 120, 300, 600},
 	}, []string{"project_id", "result"})
+	startTime = promauto.With(DefaultRegistry).NewGauge(prometheus.GaugeOpts{
+		Namespace: MetricsNamespace,
+		Name:      "start_timestamp",
+		Help:      "Время запуска приложения в секундах",
+	})
 )
 
 func init() {
@@ -38,6 +43,7 @@ func init() {
 			collectors.WithGoCollectorRuntimeMetrics(collectors.MetricsAll),
 		),
 	)
+	startTime.Set(float64(time.Now().Unix()))
 }
 
 func ConvertOk(ok bool) string {
