@@ -17,9 +17,9 @@ func (g *Generator) Build() (dashboard.Dashboard, error) {
 		Refresh("1m").
 		Tooltip(dashboard.DashboardCursorSyncCrosshair)
 
-	g.WithPanels(builder)
-	g.WithVariables(builder)
-	g.WithTagsAndAnnotations(builder)
+	g.withPanels(builder)
+	g.withVariables(builder)
+	g.withTagsAndAnnotations(builder)
 
 	d, err := builder.Build()
 	if err != nil {

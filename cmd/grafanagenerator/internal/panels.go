@@ -11,37 +11,82 @@ import (
 	"github.com/grafana/grafana-foundation-sdk/go/units"
 )
 
-func (g *Generator) WithPanels(builder *dashboard.DashboardBuilder) *dashboard.DashboardBuilder {
+func (g *Generator) withPanels(builder *dashboard.DashboardBuilder) *dashboard.DashboardBuilder {
 	builder.WithRow(dashboard.NewRowBuilder("Resource usage"))
 	builder.WithPanel(g.cpuUsageTS())
-	builder.WithPanel(g.cpuUsageTSK8s())
 	builder.WithPanel(g.memUsageTS())
-	builder.WithPanel(g.memUsageGoTS())
 	builder.WithRow(dashboard.NewRowBuilder("Task Execution"))
 	builder.WithPanel(g.runDurationTS())
+	builder.WithPanel(g.runRPSTS())
 	return builder
 }
 
 func (g *Generator) runDurationTS() *timeseries.PanelBuilder {
-	query := fmt.Sprintf(
-		`histogram_quantile(0.95, 
-			sum(
-				rate(easyjet_core_run_duration_bucket{project_id=~"$%s", instance=~"$%s"}[$__rate_interval])
-			) by (le, project_id, result)
-		)`,
-		projectIDVariableName,
-		instanceVariableName,
-	)
-
 	return timeseries.NewPanelBuilder().
-		Title("P95 Run Duration").
+		Title("Run Duration").
 		Targets([]cog.Builder[variants.Dataquery]{
 			prometheus.NewDataqueryBuilder().
-				Expr(query).
-				LegendFormat("{{project_id}} - {{result}}").
+				Expr(fmt.Sprintf(
+					`histogram_quantile(0.95, 
+						sum(
+							rate(easyjet_core_run_duration_bucket{project_id=~"$%s", instance=~"$%s"}[$__rate_interval])
+						) by (le, project_id, result)
+					)`,
+					projectIDVariableName,
+					instanceVariableName,
+				)).
+				LegendFormat("P95 {{project_id}} - {{result}}").
+				Datasource(metricDatasource),
+			prometheus.NewDataqueryBuilder().
+				Expr(fmt.Sprintf(
+					`histogram_quantile(0.80, 
+						sum(
+							rate(easyjet_core_run_duration_bucket{project_id=~"$%s", instance=~"$%s"}[$__rate_interval])
+						) by (le, project_id, result)
+					)`,
+					projectIDVariableName,
+					instanceVariableName,
+				)).
+				LegendFormat("P80 {{project_id}} - {{result}}").
+				Datasource(metricDatasource),
+			prometheus.NewDataqueryBuilder().
+				Expr(fmt.Sprintf(
+					`sum(rate(easyjet_core_run_duration_sum{project_id=~"$%s", instance=~"$%s"}[$__rate_interval])) by (project_id, result)
+					/ sum(rate(easyjet_core_run_duration_count{project_id=~"$%s", instance=~"$%s"}[$__rate_interval])) by (project_id, result)`,
+					projectIDVariableName,
+					instanceVariableName,
+					projectIDVariableName,
+					instanceVariableName,
+				)).
+				LegendFormat("Avg {{project_id}} - {{result}}").
+				Datasource(metricDatasource),
+			prometheus.NewDataqueryBuilder().
+				Expr(fmt.Sprintf(
+					`last_over_time(easyjet_core_run_duration_sum{project_id=~"$%s", instance=~"$%s"})`,
+					projectIDVariableName,
+					instanceVariableName,
+				)).
+				LegendFormat("Last {{project_id}} - {{result}}").
 				Datasource(metricDatasource),
 		}).
 		Unit(units.Seconds).
+		Datasource(metricDatasource)
+}
+
+func (g *Generator) runRPSTS() *timeseries.PanelBuilder {
+	return timeseries.NewPanelBuilder().
+		Title("Run RPS").
+		Targets([]cog.Builder[variants.Dataquery]{
+			prometheus.NewDataqueryBuilder().
+				Expr(fmt.Sprintf(
+					`sum(rate(easyjet_core_run_duration_count{project_id=~"$%s", instance=~"$%s"}[$__rate_interval])) by (project_id, result)`,
+					projectIDVariableName,
+					instanceVariableName,
+				)).
+				LegendFormat("RPS {{project_id}} - {{result}}").
+				Datasource(metricDatasource),
+		}).
+		Unit(units.RequestsPerSecond).
 		Datasource(metricDatasource)
 }
 
@@ -58,26 +103,18 @@ func (g *Generator) cpuUsageTS() *timeseries.PanelBuilder {
 				Expr(query).
 				LegendFormat("{{instance}}").
 				Datasource(metricDatasource),
-		}).
-		Unit(units.Seconds).
-		Datasource(metricDatasource)
-}
-
-func (g *Generator) cpuUsageTSK8s() *timeseries.PanelBuilder {
-	query := fmt.Sprintf(
-		`sum(rate(process_cpu_seconds_total{instance=~"$%s"}[$__rate_interval])) by (instance)`,
-		instanceVariableName,
-	)
-
-	return timeseries.NewPanelBuilder().
-		Title("CPU usage (k8s format)").
-		Targets([]cog.Builder[variants.Dataquery]{
 			prometheus.NewDataqueryBuilder().
 				Expr(query).
 				LegendFormat("{{instance}}").
 				Datasource(metricDatasource),
 		}).
-		Unit(units.PercentUnit).
+		OverrideByQuery("B", []dashboard.DynamicConfigValue{
+			{
+				Id:    "unit",
+				Value: units.PercentUnit,
+			},
+		}).
+		Unit(units.Seconds).
 		Datasource(metricDatasource)
 }
 
@@ -86,31 +123,21 @@ func (g *Generator) memUsageTS() *timeseries.PanelBuilder {
 		`sum(process_resident_memory_bytes{instance=~"$%s"}) by (instance)`,
 		instanceVariableName,
 	)
+	query2 := fmt.Sprintf(
+		`sum(go_memstats_sys_bytes{instance=~"$%s"}) by (instance)`,
+		instanceVariableName,
+	)
 
 	return timeseries.NewPanelBuilder().
 		Title("Memory usage").
 		Targets([]cog.Builder[variants.Dataquery]{
 			prometheus.NewDataqueryBuilder().
 				Expr(query).
-				LegendFormat("{{instance}}").
+				LegendFormat("{{instance}} process resident").
 				Datasource(metricDatasource),
-		}).
-		Unit(units.BytesIEC).
-		Datasource(metricDatasource)
-}
-
-func (g *Generator) memUsageGoTS() *timeseries.PanelBuilder {
-	query := fmt.Sprintf(
-		`sum(go_memstats_sys_bytes{instance=~"$%s"}) by (instance)`,
-		instanceVariableName,
-	)
-
-	return timeseries.NewPanelBuilder().
-		Title("Memory usage (Go)").
-		Targets([]cog.Builder[variants.Dataquery]{
 			prometheus.NewDataqueryBuilder().
-				Expr(query).
-				LegendFormat("{{instance}}").
+				Expr(query2).
+				LegendFormat("{{instance}} go sys").
 				Datasource(metricDatasource),
 		}).
 		Unit(units.BytesIEC).

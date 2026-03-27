@@ -4,7 +4,7 @@ import (
 	"github.com/grafana/grafana-foundation-sdk/go/dashboard"
 )
 
-func (g *Generator) WithVariables(builder *dashboard.DashboardBuilder) *dashboard.DashboardBuilder {
+func (g *Generator) withVariables(builder *dashboard.DashboardBuilder) *dashboard.DashboardBuilder {
 	builder.WithVariable(
 		dashboard.NewDatasourceVariableBuilder(metricVariableName).
 			Type(prometheusDatasourceType),
@@ -23,7 +23,7 @@ func (g *Generator) WithVariables(builder *dashboard.DashboardBuilder) *dashboar
 	builder.WithVariable(
 		dashboard.NewQueryVariableBuilder(instanceVariableName).
 			Query(dashboard.StringOrMap{
-				String: new("label_values(process_cpu_seconds_total, instance)"),
+				String: new("label_values(easyjet_start_timestamp, instance)"),
 			}).
 			Datasource(metricDatasource).
 			Multi(true).

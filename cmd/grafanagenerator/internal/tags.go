@@ -4,7 +4,7 @@ import (
 	"github.com/grafana/grafana-foundation-sdk/go/dashboard"
 )
 
-func (g *Generator) WithTagsAndAnnotations(builder *dashboard.DashboardBuilder) *dashboard.DashboardBuilder {
+func (g *Generator) withTagsAndAnnotations(builder *dashboard.DashboardBuilder) *dashboard.DashboardBuilder {
 	tags := []string{"easyjet"}
 	builder.Tags(tags)
 
@@ -24,6 +24,17 @@ func (g *Generator) WithTagsAndAnnotations(builder *dashboard.DashboardBuilder) 
 			KeepTime(true).
 			AsDropdown(true).
 			TargetBlank(true),
+	)
+
+	builder.Annotation(
+		dashboard.
+			NewAnnotationQueryBuilder().
+			Enable(true).
+			Expr(`sum(changes(easyjet_start_timestamp{instance=~"$instance"}[$__interval])) by (instance)`).
+			IconColor("super-light-blue").
+			Placement(dashboard.AnnotationQueryPlacementInControlsMenu).
+			Name("app started (metrics)").
+			Datasource(metricDatasource),
 	)
 
 	return builder
