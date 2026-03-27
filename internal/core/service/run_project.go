@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
-	"github.com/gbh007/easyjet/pkg/metrics"
-	"github.com/samber/lo"
 )
 
 func (srv Service) RunProject(ctx context.Context, id uint) (uint, error) {
@@ -53,8 +51,14 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		}
 
 		run.Duration = time.Since(runStart)
-		// TODO: унести за pubsub в контроллер метрик
-		metrics.ObserveRun(run.ProjectID, run.Success, run.Duration)
+
+		srv.pubsub.PublishEvent(entity.Event{
+			Type:      entity.EventRunFinished,
+			ProjectID: run.ProjectID,
+			RunID:     runID,
+			Err:       returnedErr,
+			Duration:  run.Duration,
+		})
 
 		var saveRunErr error
 
@@ -68,7 +72,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	}
 
 	defer func() {
-		rotErr := srv.rotateProjectRuns(ctx, project)
+		rotErr := srv.rotateProjectRuns(ctx, project, runID)
 		if rotErr != nil {
 			srv.logger.Error("failed to rotate runs", "error", rotErr)
 		}
@@ -81,58 +85,14 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 	}
 
 	if project.HasGIT() {
-		commits, err := srv.git.Diff(ctx, dir, "HEAD", srv.git.OriginName()+"/"+project.GitBranch)
+		err := srv.runGitPull(ctx, project, runID, dir)
 		if err != nil {
-			return fmt.Errorf("git get diff: %w", err)
-		}
-
-		if len(commits) > 0 {
-			err = srv.db.SetProjectRunGitCommits(
-				ctx,
-				lo.Map(commits, func(c entity.Commit, i int) entity.ProjectRunGitCommits {
-					return entity.ProjectRunGitCommits{
-						RunID:   runID,
-						Number:  i,
-						Hash:    c.Hash,
-						Subject: c.Subject,
-					}
-				}),
-			)
-			if err != nil {
-				return fmt.Errorf("save git commits: %w", err)
-			}
-		}
-
-		err = srv.git.Pull(ctx, dir, project.GitBranch)
-		if err != nil {
-			return fmt.Errorf("git pull origin: %w", err)
+			return err
 		}
 	}
 
 	for _, stage := range project.Stages {
-		stageStart := time.Now()
-
-		p, err := srv.fs.CreateSHScript(ctx, project.ID, stage.Number, stage.Script)
-		if err != nil {
-			return fmt.Errorf("create stage %d script: %w", stage.Number, err)
-		}
-
-		out, err := srv.ex.Exec(ctx, dir, p, project.WithRootEnv)
-		if err != nil {
-			err = fmt.Errorf("execute stage %d script: %w", stage.Number, err)
-		}
-
-		saveStageErr := srv.db.SetProjectRunStage(ctx, entity.ProjectRunStage{
-			RunID:       runID,
-			StageNumber: stage.Number,
-			Success:     err == nil,
-			Log:         out,
-			Duration:    time.Since(stageStart),
-		})
-		if saveStageErr != nil {
-			err = errors.Join(err, fmt.Errorf("save stage %d result: %w", stage.Number, saveStageErr))
-		}
-
+		err = srv.runStage(ctx, project, runID, dir, stage)
 		if err != nil {
 			return err
 		}

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
+	"github.com/gbh007/easyjet/internal/adapter/handler/internal"
 	"github.com/gbh007/easyjet/internal/core/port"
-	"github.com/gbh007/easyjet/pkg/metrics"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -51,7 +51,7 @@ func (cnt Controller) Serve(ctx context.Context) error {
 		mux.Handle("/", http.FileServer(http.Dir(cnt.cfg.StaticFilesPath)))
 	}
 
-	mux.Handle("GET /metrics", promhttp.HandlerFor(metrics.DefaultRegistry, promhttp.HandlerOpts{}))
+	mux.Handle("GET /metrics", promhttp.HandlerFor(internal.DefaultRegistry, promhttp.HandlerOpts{}))
 	mux.Handle("/api/", server)
 
 	srv := &http.Server{

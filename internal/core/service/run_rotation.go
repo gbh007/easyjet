@@ -4,11 +4,24 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (srv Service) rotateProjectRuns(ctx context.Context, project entity.Project) error {
+func (srv Service) rotateProjectRuns(ctx context.Context, project entity.Project, runID uint) (err error) {
+	start := time.Now()
+
+	defer func() {
+		srv.pubsub.PublishEvent(entity.Event{
+			Type:      entity.EventRunRotateFinished,
+			ProjectID: project.ID,
+			RunID:     runID,
+			Err:       err,
+			Duration:  time.Since(start),
+		})
+	}()
+
 	retentionCount := project.RetentionCount
 	if retentionCount <= 0 {
 		return nil

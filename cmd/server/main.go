@@ -15,6 +15,7 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/filesystem/filesystem"
 	"github.com/gbh007/easyjet/internal/adapter/git/shellgit"
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
+	"github.com/gbh007/easyjet/internal/adapter/handler/metrics"
 	schedulerhandler "github.com/gbh007/easyjet/internal/adapter/handler/scheduler"
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
 	"github.com/gbh007/easyjet/internal/adapter/pubsub/eventbus"
@@ -94,6 +95,7 @@ func main() {
 		srv,
 	)
 	workerCnt := worker.New(logger, srv)
+	metricCnt := metrics.New(logger, ps)
 
 	schedulerCnt := schedulerhandler.NewScheduler(logger, ps, srv)
 
@@ -121,6 +123,11 @@ func main() {
 
 	g.Go(func() error {
 		workerCnt.Start(ctx)
+		return nil
+	})
+
+	g.Go(func() error {
+		metricCnt.Start(ctx)
 		return nil
 	})
 

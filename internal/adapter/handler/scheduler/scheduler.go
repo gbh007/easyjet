@@ -101,7 +101,7 @@ func (s *Scheduler) processEvents(ctx context.Context) {
 }
 
 func (s *Scheduler) handleEvent(ctx context.Context, event entity.Event) (err error) {
-	switch event.Type {
+	switch event.Type { //nolint:exhaustive // не требуется поддержка всех вариантов
 	case entity.EventProjectCreated:
 		err = s.registerJob(ctx, event.ProjectID)
 		if err != nil {
@@ -122,8 +122,6 @@ func (s *Scheduler) handleEvent(ctx context.Context, event entity.Event) (err er
 		if err != nil {
 			return fmt.Errorf("remove job: %w", err)
 		}
-	case entity.EventRequireAppRestart:
-		// No action needed in scheduler
 	}
 
 	return nil
