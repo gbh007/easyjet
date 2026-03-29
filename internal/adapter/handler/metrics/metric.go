@@ -25,6 +25,12 @@ var (
 		Help:      "Время выполнения задачи",
 		Buckets:   []float64{0.1, 0.5, 2, 5, 10, 30, 60, 120, 300, 600},
 	}, []string{"project_id", "result"})
+	lastRunTime = promauto.With(internal.DefaultRegistry).NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: metricsNamespace,
+		Subsystem: "core",
+		Name:      "last_run_seconds",
+		Help:      "Время выполнения последней задачи",
+	}, []string{"project_id", "result"})
 	startTime = promauto.With(internal.DefaultRegistry).NewGauge(prometheus.GaugeOpts{
 		Namespace: metricsNamespace,
 		Name:      "start_timestamp",
@@ -53,4 +59,5 @@ func convertOk(ok bool) string {
 
 func observeRun(projectID uint, ok bool, d time.Duration) {
 	runTime.WithLabelValues(strconv.FormatUint(uint64(projectID), 10), convertOk(ok)).Observe(d.Seconds())
+	lastRunTime.WithLabelValues(strconv.FormatUint(uint64(projectID), 10), convertOk(ok)).Set(d.Seconds())
 }

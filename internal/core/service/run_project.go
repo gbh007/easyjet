@@ -31,6 +31,12 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		return fmt.Errorf("get run: %w", err)
 	}
 
+	if run.Processing {
+		return errors.New("run already processing")
+	} else if !run.Pending {
+		return errors.New("run already finished")
+	}
+
 	run.Pending = false
 	run.Processing = true
 

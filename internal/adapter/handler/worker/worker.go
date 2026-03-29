@@ -38,9 +38,7 @@ func (cnt Controller) Start(ctx context.Context) {
 }
 
 func (cnt Controller) run(ctx context.Context) {
-	// TODO: вынести настройку таймаута в конфиг
-	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Minute)
-	defer cancel()
+	ctx = context.WithoutCancel(ctx)
 
 	ids, err := cnt.service.PendingProjectRuns(ctx)
 	if err != nil {
