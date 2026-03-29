@@ -3,6 +3,22 @@
 package ogenapi
 
 // setDefaults set default value of fields.
+func (s *EnvironmentVariableCreate) setDefaults() {
+	{
+		val := bool(false)
+		s.UsesOtherVariables.SetTo(val)
+	}
+}
+
+// setDefaults set default value of fields.
+func (s *EnvironmentVariableUpdate) setDefaults() {
+	{
+		val := bool(false)
+		s.UsesOtherVariables.SetTo(val)
+	}
+}
+
+// setDefaults set default value of fields.
 func (s *Project) setDefaults() {
 	{
 		val := bool(false)

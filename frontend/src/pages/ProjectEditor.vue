@@ -96,6 +96,67 @@
         </v-expansion-panels>
       </v-sheet>
 
+      <v-sheet class="d-flex pa-4 flex-column mt-2" color="grey-lighten-4" variant="outlined">
+        <div class="d-flex flex-row justify-space-between align-center mb-2">
+          <h4 class="text-h6 mb-0">Переменные окружения проекта</h4>
+          <v-btn color="primary" size="small" variant="tonal" @click="addEnvVar">
+            <v-icon icon="mdi-plus" size="small" />
+            Добавить переменную
+          </v-btn>
+        </div>
+
+        <v-alert
+          v-if="form.env_vars.length === 0"
+          class="mb-2"
+          density="compact"
+          text="Нет переменных окружения. Добавьте переменные для использования в скриптах."
+          type="info"
+          variant="tonal"
+        />
+
+        <v-sheet
+          v-for="(envVar, index) in form.env_vars"
+          :key="envVar.id || `new-${index}`"
+          class="d-flex flex-row ga-2 align-center mb-2"
+          variant="flat"
+        >
+          <v-text-field
+            v-model="envVar.name"
+            class="flex-grow-1"
+            density="compact"
+            hide-details
+            label="Имя"
+            placeholder="VAR_NAME"
+            style="max-width: 200px"
+          />
+          <v-text-field
+            v-model="envVar.value"
+            class="flex-grow-1"
+            density="compact"
+            hide-details
+            label="Значение"
+            placeholder="value"
+            type="text"
+          />
+          <v-checkbox
+            v-model="envVar.uses_other_variables"
+            class="flex-grow-0"
+            density="compact"
+            hide-details
+            label="Использует другие переменные"
+            style="max-width: 220px"
+          />
+          <v-btn
+            class="align-self-center"
+            color="error"
+            icon="mdi-delete"
+            size="small"
+            variant="text"
+            @click="removeEnvVar(index)"
+          />
+        </v-sheet>
+      </v-sheet>
+
       <v-sheet
         v-for="(stage, index) in form.stages"
         :key="index"
@@ -138,6 +199,13 @@ interface Stage {
   script: string;
 }
 
+interface EnvVar {
+  id?: number;
+  name: string;
+  value: string;
+  uses_other_variables: boolean;
+}
+
 interface ProjectForm {
   id: number;
   name: string;
@@ -150,6 +218,7 @@ interface ProjectForm {
   with_root_env: boolean;
   retention_count: number;
   stages: Stage[];
+  env_vars: EnvVar[];
 }
 
 const form = ref<ProjectForm | null>(null);
@@ -195,6 +264,11 @@ function saveProject() {
       retention_count: form.value.retention_count,
       with_root_env: form.value.with_root_env,
       stages: form.value.stages,
+      env_vars: form.value.env_vars.map((ev) => ({
+        name: ev.name,
+        value: ev.value,
+        uses_other_variables: ev.uses_other_variables,
+      })),
     };
     api
       .updateProject(form.value.id, payload)
@@ -216,6 +290,11 @@ function saveProject() {
       retention_count: form.value.retention_count,
       with_root_env: form.value.with_root_env,
       stages: form.value.stages,
+      env_vars: form.value.env_vars.map((ev) => ({
+        name: ev.name,
+        value: ev.value,
+        uses_other_variables: ev.uses_other_variables,
+      })),
     };
     api
       .createProject(payload)
@@ -236,6 +315,16 @@ function cancel() {
   }
 }
 
+function addEnvVar() {
+  if (!form.value) return;
+  form.value.env_vars.push({ name: '', value: '', uses_other_variables: false });
+}
+
+function removeEnvVar(index: number) {
+  if (!form.value) return;
+  form.value.env_vars.splice(index, 1);
+}
+
 function load() {
   const id = route.params.id;
   if (!id || id === 'new') {
@@ -251,6 +340,7 @@ function load() {
       with_root_env: false,
       retention_count: 0,
       stages: [],
+      env_vars: [],
     };
     return;
   }
@@ -271,6 +361,13 @@ function load() {
         with_root_env: data.with_root_env || false,
         retention_count: data.retention_count || 0,
         stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
+        env_vars:
+          data.env_vars?.map((ev) => ({
+            id: ev.id,
+            name: ev.name,
+            value: ev.value,
+            uses_other_variables: ev.uses_other_variables ?? false,
+          })) || [],
       };
     })
     .catch((error) => {

@@ -6,6 +6,7 @@
 
 // Composables
 import { createRouter, createWebHashHistory } from 'vue-router';
+import GlobalEnvVars from '@/pages/GlobalEnvVars.vue';
 import Index from '@/pages/index.vue';
 import Project from '@/pages/Project.vue';
 import ProjectEditor from '@/pages/ProjectEditor.vue';
@@ -33,6 +34,10 @@ const router = createRouter({
     {
       path: '/projects/:project_id/runs/:run_id',
       component: ProjectRun,
+    },
+    {
+      path: '/global-env-vars',
+      component: GlobalEnvVars,
     },
   ],
 });

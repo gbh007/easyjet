@@ -97,8 +97,13 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		}
 	}
 
+	env, err := srv.CalculateEffectiveEnvVars(ctx, project, dir)
+	if err != nil {
+		return fmt.Errorf("calculate env vars: %w", err)
+	}
+
 	for _, stage := range project.Stages {
-		err = srv.runStage(ctx, project, runID, dir, stage)
+		err = srv.runStage(ctx, project, runID, dir, stage, env)
 		if err != nil {
 			return err
 		}

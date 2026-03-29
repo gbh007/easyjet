@@ -84,5 +84,33 @@ func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
 		return a.Number - b.Number
 	})
 
+	envVarsQuery, envVarsArgs, err := repo.psql.
+		Select("id", "created_at", "updated_at", "project_id", "name", "value", "uses_other_variables").
+		From("env_vars").
+		Where(squirrel.Eq{"project_id": id}).
+		OrderBy("id ASC").
+		ToSql()
+	if err != nil {
+		return entity.Project{}, fmt.Errorf("build env vars query: %w", err)
+	}
+
+	rows, err = repo.pool.Query(ctx, envVarsQuery, envVarsArgs...)
+	if err != nil {
+		return entity.Project{}, fmt.Errorf("query env vars: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var ev entity.EnvironmentVariable
+		if err := rows.Scan(&ev.ID, &ev.CreatedAt, &ev.UpdatedAt, &ev.ProjectID, &ev.Name, &ev.Value, &ev.UsesOtherVariables); err != nil {
+			return entity.Project{}, fmt.Errorf("scan env var: %w", err)
+		}
+		p.EnvVars = append(p.EnvVars, ev)
+	}
+
+	if err := rows.Err(); err != nil {
+		return entity.Project{}, fmt.Errorf("iterate env vars: %w", err)
+	}
+
 	return p, nil
 }

@@ -27,5 +27,15 @@ func convertProjectUpdate(req *ogenapi.ProjectUpdate, projectID uint) entity.Pro
 		}
 	}
 
+	if envVars, ok := req.EnvVars.Get(); ok {
+		for _, ev := range envVars {
+			p.EnvVars = append(p.EnvVars, entity.EnvironmentVariable{
+				Name:               ev.Name,
+				Value:              ev.Value,
+				UsesOtherVariables: ev.UsesOtherVariables.Value,
+			})
+		}
+	}
+
 	return p
 }

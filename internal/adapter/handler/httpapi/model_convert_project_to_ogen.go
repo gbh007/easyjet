@@ -14,6 +14,16 @@ func convertProjectToOgen(p entity.Project) ogenapi.Project {
 		}
 	}
 
+	envVars := make([]ogenapi.ProjectEnvironmentVariable, 0, len(p.EnvVars))
+	for _, ev := range p.EnvVars {
+		envVars = append(envVars, ogenapi.ProjectEnvironmentVariable{
+			ID:                 ogenapi.NewOptUint(ev.ID),
+			Name:               ev.Name,
+			Value:              ev.Value,
+			UsesOtherVariables: ogenapi.NewOptBool(ev.UsesOtherVariables),
+		})
+	}
+
 	return ogenapi.Project{
 		ID:             ogenapi.NewOptUint(p.ID),
 		CreatedAt:      ogenapi.NewOptDateTime(p.CreatedAt),
@@ -28,5 +38,6 @@ func convertProjectToOgen(p entity.Project) ogenapi.Project {
 		RetentionCount: ogenapi.NewOptInt32(int32(p.RetentionCount)),
 		WithRootEnv:    ogenapi.NewOptBool(p.WithRootEnv),
 		Stages:         stages,
+		EnvVars:        ogenapi.NewOptNilProjectEnvironmentVariableArray(envVars),
 	}
 }

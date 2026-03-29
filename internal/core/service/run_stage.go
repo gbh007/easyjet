@@ -9,7 +9,14 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (srv Service) runStage(ctx context.Context, project entity.Project, runID uint, dir string, stage entity.ProjectStage) (err error) {
+func (srv Service) runStage(
+	ctx context.Context,
+	project entity.Project,
+	runID uint,
+	dir string,
+	stage entity.ProjectStage,
+	env []string,
+) (err error) {
 	start := time.Now()
 
 	defer func() {
@@ -28,7 +35,7 @@ func (srv Service) runStage(ctx context.Context, project entity.Project, runID u
 		return fmt.Errorf("create stage %d script: %w", stage.Number, err)
 	}
 
-	out, err := srv.ex.Exec(ctx, dir, p, project.WithRootEnv)
+	out, err := srv.ex.Exec(ctx, dir, p, env)
 	if err != nil {
 		err = fmt.Errorf("execute stage %d script: %w", stage.Number, err)
 	}

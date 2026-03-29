@@ -114,6 +114,45 @@
       </v-sheet>
     </v-sheet>
 
+    <v-sheet
+      v-if="project.env_vars && project.env_vars.length > 0"
+      class="d-flex pa-4 flex-column"
+      elevation="2"
+    >
+      <h3>Переменные окружения</h3>
+      <v-table>
+        <thead>
+          <tr>
+            <th>Имя</th>
+            <th>Значение</th>
+            <th>Использует другие переменные</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="envVar in project.env_vars" :key="envVar.id">
+            <td>{{ envVar.name }}</td>
+            <td>
+              <code>{{ envVar.value }}</code>
+            </td>
+            <td>
+              <v-chip
+                v-if="envVar.uses_other_variables"
+                class="mr-2"
+                color="success"
+                size="small"
+                variant="tonal"
+              >
+                Да
+              </v-chip>
+              <v-chip v-else class="mr-2" color="secondary" size="small" variant="tonal">
+                Нет
+              </v-chip>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-sheet>
+
     <v-sheet class="d-flex pa-4 flex-column" elevation="2">
       <h3>Этапы</h3>
       <v-expansion-panels>
@@ -180,6 +219,12 @@ interface Project {
   stages?: Array<{
     number: number;
     script: string;
+  }>;
+  env_vars?: Array<{
+    id?: number;
+    name: string;
+    value: string;
+    uses_other_variables?: boolean;
   }>;
 }
 
@@ -278,6 +323,12 @@ function load() {
         stages: data.stages?.map((s) => ({
           number: s.number ?? 0,
           script: s.script ?? '',
+        })),
+        env_vars: data.env_vars?.map((ev) => ({
+          id: ev.id,
+          name: ev.name ?? '',
+          value: ev.value ?? '',
+          uses_other_variables: ev.uses_other_variables ?? false,
         })),
       };
     })

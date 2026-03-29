@@ -105,6 +105,41 @@ func (repo Repo) SetProject(ctx context.Context, p entity.Project) (uint, error)
 		}
 	}
 
+	if p.ID > 0 {
+		deleteEnvVarsQuery, deleteEnvVarsArgs, err := repo.psql.
+			Delete("env_vars").
+			Where(squirrel.Eq{"project_id": projectID}).
+			ToSql()
+		if err != nil {
+			return 0, fmt.Errorf("build delete env vars query: %w", err)
+		}
+
+		_, err = tx.Exec(ctx, deleteEnvVarsQuery, deleteEnvVarsArgs...)
+		if err != nil {
+			return 0, fmt.Errorf("delete env vars: %w", err)
+		}
+	}
+
+	for _, ev := range p.EnvVars {
+		insertEnvVarQuery, insertEnvVarArgs, err := repo.psql.
+			Insert("env_vars").
+			SetMap(map[string]any{
+				"project_id":           projectID,
+				"name":                 ev.Name,
+				"value":                ev.Value,
+				"uses_other_variables": ev.UsesOtherVariables,
+			}).
+			ToSql()
+		if err != nil {
+			return 0, fmt.Errorf("build insert env var query: %w", err)
+		}
+
+		_, err = tx.Exec(ctx, insertEnvVarQuery, insertEnvVarArgs...)
+		if err != nil {
+			return 0, fmt.Errorf("insert env var: %w", err)
+		}
+	}
+
 	if err := tx.Commit(ctx); err != nil {
 		return 0, fmt.Errorf("commit transaction: %w", err)
 	}

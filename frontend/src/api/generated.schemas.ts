@@ -29,6 +29,20 @@ export interface ProjectStage {
 }
 
 /**
+ * Переменная окружения проекта — именованная пара «ключ-значение» для передачи конфигурации в скрипты пайплайна
+ */
+export interface ProjectEnvironmentVariable {
+  /** Уникальный идентификатор переменной */
+  readonly id?: number;
+  /** Имя переменной окружения (например, DATABASE_URL, API_KEY) */
+  name: string;
+  /** Значение переменной окружения */
+  value: string;
+  /** Флаг использования других переменных (формат ${VAR_NAME}) */
+  uses_other_variables?: boolean;
+}
+
+/**
  * Проект — конфигурация автоматизированного пайплайна для репозитория
  */
 export interface Project {
@@ -62,6 +76,11 @@ export interface Project {
    * @nullable
    */
   stages: ProjectStage[] | null;
+  /**
+   * Переменные окружения проекта
+   * @nullable
+   */
+  env_vars?: ProjectEnvironmentVariable[] | null;
 }
 
 /**
@@ -125,6 +144,11 @@ export interface ProjectCreate {
    * @minItems 1
    */
   stages: ProjectStage[];
+  /**
+   * Переменные окружения проекта
+   * @nullable
+   */
+  env_vars?: ProjectEnvironmentVariable[] | null;
 }
 
 /**
@@ -156,6 +180,11 @@ export interface ProjectUpdate {
    * @minItems 1
    */
   stages: ProjectStage[];
+  /**
+   * Переменные окружения проекта
+   * @nullable
+   */
+  env_vars?: ProjectEnvironmentVariable[] | null;
 }
 
 /**
@@ -221,6 +250,53 @@ export interface ProjectRun {
   readonly git_commits?: readonly ProjectRunGitCommit[] | null;
 }
 
+/**
+ * Переменная окружения — именованная пара «ключ-значение» для передачи конфигурации в скрипты пайплайна
+ */
+export interface EnvironmentVariable {
+  /** Уникальный идентификатор переменной */
+  readonly id?: number;
+  /** Дата и время создания переменной */
+  readonly created_at?: string;
+  /** Дата и время последнего изменения значения */
+  readonly updated_at?: string;
+  /**
+   * Ссылка на проект (null для глобальных переменных)
+   * @nullable
+   */
+  project_id?: number | null;
+  /** Имя переменной окружения (например, DATABASE_URL, API_KEY) */
+  name: string;
+  /** Значение переменной окружения */
+  value: string;
+  /** Флаг использования других переменных (формат ${VAR_NAME}) */
+  uses_other_variables?: boolean;
+}
+
+/**
+ * Данные для создания переменной окружения
+ */
+export interface EnvironmentVariableCreate {
+  /** Имя переменной окружения */
+  name: string;
+  /** Значение переменной окружения */
+  value: string;
+  /** Флаг использования других переменных (формат ${VAR_NAME}) */
+  uses_other_variables?: boolean;
+}
+
+/**
+ * Данные для обновления переменной окружения
+ */
+export interface EnvironmentVariableUpdate {
+  /** Имя переменной окружения */
+  name: string;
+  /** Значение переменной окружения */
+  value: string;
+  /** Флаг использования других переменных (формат ${VAR_NAME}) */
+  uses_other_variables?: boolean;
+}
+
 export type ErrorResponse = {
   /** Сообщение об ошибке */
   error?: string;
@@ -245,3 +321,14 @@ export type CreateProjectRun201 = {
   /** Уникальный идентификатор созданного запуска */
   id?: number;
 };
+
+export type GetGlobalEnvVars200 = {
+  /** @nullable */
+  env_vars?: EnvironmentVariable[] | null;
+};
+
+export type CreateGlobalEnvVar201 = {
+  /** Уникальный идентификатор созданной переменной */
+  id?: number;
+};
+

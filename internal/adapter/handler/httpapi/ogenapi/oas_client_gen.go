@@ -27,6 +27,12 @@ func trimTrailingSlashes(u *url.URL) {
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
+	// CreateGlobalEnvVar invokes createGlobalEnvVar operation.
+	//
+	// Создаёт новую глобальную переменную окружения.
+	//
+	// POST /api/v1/env-vars
+	CreateGlobalEnvVar(ctx context.Context, request *EnvironmentVariableCreate) (*CreateGlobalEnvVarCreated, error)
 	// CreateProject invokes createProject operation.
 	//
 	// Создаёт новый проект с конфигурацией пайплайна.
@@ -40,6 +46,27 @@ type Invoker interface {
 	//
 	// POST /api/v1/projects/{project_id}/runs
 	CreateProjectRun(ctx context.Context, params CreateProjectRunParams) (*CreateProjectRunCreated, error)
+	// DeleteGlobalEnvVar invokes deleteGlobalEnvVar operation.
+	//
+	// Удаляет существующую глобальную переменную
+	// окружения.
+	//
+	// DELETE /api/v1/env-vars/{env_var_id}
+	DeleteGlobalEnvVar(ctx context.Context, params DeleteGlobalEnvVarParams) error
+	// GetGlobalEnvVar invokes getGlobalEnvVar operation.
+	//
+	// Возвращает информацию о глобальной переменной по
+	// идентификатору.
+	//
+	// GET /api/v1/env-vars/{env_var_id}
+	GetGlobalEnvVar(ctx context.Context, params GetGlobalEnvVarParams) (*EnvironmentVariable, error)
+	// GetGlobalEnvVars invokes getGlobalEnvVars operation.
+	//
+	// Возвращает список всех глобальных переменных
+	// окружения.
+	//
+	// GET /api/v1/env-vars
+	GetGlobalEnvVars(ctx context.Context) (*GetGlobalEnvVarsOK, error)
 	// GetProject invokes getProject operation.
 	//
 	// Возвращает полную информацию о проекте по его
@@ -67,6 +94,13 @@ type Invoker interface {
 	//
 	// GET /api/v1/projects
 	GetProjects(ctx context.Context) (*GetProjectsOK, error)
+	// UpdateGlobalEnvVar invokes updateGlobalEnvVar operation.
+	//
+	// Обновляет существующую глобальную переменную
+	// окружения.
+	//
+	// PUT /api/v1/env-vars/{env_var_id}
+	UpdateGlobalEnvVar(ctx context.Context, request *EnvironmentVariableUpdate, params UpdateGlobalEnvVarParams) error
 	// UpdateProject invokes updateProject operation.
 	//
 	// Обновляет конфигурацию существующего проекта.
@@ -112,6 +146,83 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 		return c.serverURL
 	}
 	return u
+}
+
+// CreateGlobalEnvVar invokes createGlobalEnvVar operation.
+//
+// Создаёт новую глобальную переменную окружения.
+//
+// POST /api/v1/env-vars
+func (c *Client) CreateGlobalEnvVar(ctx context.Context, request *EnvironmentVariableCreate) (*CreateGlobalEnvVarCreated, error) {
+	res, err := c.sendCreateGlobalEnvVar(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendCreateGlobalEnvVar(ctx context.Context, request *EnvironmentVariableCreate) (res *CreateGlobalEnvVarCreated, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createGlobalEnvVar"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/api/v1/env-vars"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, CreateGlobalEnvVarOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/api/v1/env-vars"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateGlobalEnvVarRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateGlobalEnvVarResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
 }
 
 // CreateProject invokes createProject operation.
@@ -278,6 +389,267 @@ func (c *Client) sendCreateProjectRun(ctx context.Context, params CreateProjectR
 
 	stage = "DecodeResponse"
 	result, err := decodeCreateProjectRunResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// DeleteGlobalEnvVar invokes deleteGlobalEnvVar operation.
+//
+// Удаляет существующую глобальную переменную
+// окружения.
+//
+// DELETE /api/v1/env-vars/{env_var_id}
+func (c *Client) DeleteGlobalEnvVar(ctx context.Context, params DeleteGlobalEnvVarParams) error {
+	_, err := c.sendDeleteGlobalEnvVar(ctx, params)
+	return err
+}
+
+func (c *Client) sendDeleteGlobalEnvVar(ctx context.Context, params DeleteGlobalEnvVarParams) (res *DeleteGlobalEnvVarNoContent, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("deleteGlobalEnvVar"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
+		semconv.URLTemplateKey.String("/api/v1/env-vars/{env_var_id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteGlobalEnvVarOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/v1/env-vars/"
+	{
+		// Encode "env_var_id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "env_var_id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.UintToString(params.EnvVarID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "DELETE", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeDeleteGlobalEnvVarResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetGlobalEnvVar invokes getGlobalEnvVar operation.
+//
+// Возвращает информацию о глобальной переменной по
+// идентификатору.
+//
+// GET /api/v1/env-vars/{env_var_id}
+func (c *Client) GetGlobalEnvVar(ctx context.Context, params GetGlobalEnvVarParams) (*EnvironmentVariable, error) {
+	res, err := c.sendGetGlobalEnvVar(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetGlobalEnvVar(ctx context.Context, params GetGlobalEnvVarParams) (res *EnvironmentVariable, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getGlobalEnvVar"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/env-vars/{env_var_id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetGlobalEnvVarOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/v1/env-vars/"
+	{
+		// Encode "env_var_id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "env_var_id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.UintToString(params.EnvVarID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetGlobalEnvVarResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetGlobalEnvVars invokes getGlobalEnvVars operation.
+//
+// Возвращает список всех глобальных переменных
+// окружения.
+//
+// GET /api/v1/env-vars
+func (c *Client) GetGlobalEnvVars(ctx context.Context) (*GetGlobalEnvVarsOK, error) {
+	res, err := c.sendGetGlobalEnvVars(ctx)
+	return res, err
+}
+
+func (c *Client) sendGetGlobalEnvVars(ctx context.Context) (res *GetGlobalEnvVarsOK, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getGlobalEnvVars"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/env-vars"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetGlobalEnvVarsOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/api/v1/env-vars"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetGlobalEnvVarsResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -651,6 +1023,102 @@ func (c *Client) sendGetProjects(ctx context.Context) (res *GetProjectsOK, err e
 
 	stage = "DecodeResponse"
 	result, err := decodeGetProjectsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// UpdateGlobalEnvVar invokes updateGlobalEnvVar operation.
+//
+// Обновляет существующую глобальную переменную
+// окружения.
+//
+// PUT /api/v1/env-vars/{env_var_id}
+func (c *Client) UpdateGlobalEnvVar(ctx context.Context, request *EnvironmentVariableUpdate, params UpdateGlobalEnvVarParams) error {
+	_, err := c.sendUpdateGlobalEnvVar(ctx, request, params)
+	return err
+}
+
+func (c *Client) sendUpdateGlobalEnvVar(ctx context.Context, request *EnvironmentVariableUpdate, params UpdateGlobalEnvVarParams) (res *UpdateGlobalEnvVarNoContent, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("updateGlobalEnvVar"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
+		semconv.URLTemplateKey.String("/api/v1/env-vars/{env_var_id}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, UpdateGlobalEnvVarOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/v1/env-vars/"
+	{
+		// Encode "env_var_id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "env_var_id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.UintToString(params.EnvVarID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "PUT", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeUpdateGlobalEnvVarRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeUpdateGlobalEnvVarResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

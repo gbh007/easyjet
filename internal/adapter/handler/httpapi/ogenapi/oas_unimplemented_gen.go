@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// CreateGlobalEnvVar implements createGlobalEnvVar operation.
+//
+// Создаёт новую глобальную переменную окружения.
+//
+// POST /api/v1/env-vars
+func (UnimplementedHandler) CreateGlobalEnvVar(ctx context.Context, req *EnvironmentVariableCreate) (r *CreateGlobalEnvVarCreated, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateProject implements createProject operation.
 //
 // Создаёт новый проект с конфигурацией пайплайна.
@@ -29,6 +38,36 @@ func (UnimplementedHandler) CreateProject(ctx context.Context, req *ProjectCreat
 //
 // POST /api/v1/projects/{project_id}/runs
 func (UnimplementedHandler) CreateProjectRun(ctx context.Context, params CreateProjectRunParams) (r *CreateProjectRunCreated, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DeleteGlobalEnvVar implements deleteGlobalEnvVar operation.
+//
+// Удаляет существующую глобальную переменную
+// окружения.
+//
+// DELETE /api/v1/env-vars/{env_var_id}
+func (UnimplementedHandler) DeleteGlobalEnvVar(ctx context.Context, params DeleteGlobalEnvVarParams) error {
+	return ht.ErrNotImplemented
+}
+
+// GetGlobalEnvVar implements getGlobalEnvVar operation.
+//
+// Возвращает информацию о глобальной переменной по
+// идентификатору.
+//
+// GET /api/v1/env-vars/{env_var_id}
+func (UnimplementedHandler) GetGlobalEnvVar(ctx context.Context, params GetGlobalEnvVarParams) (r *EnvironmentVariable, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetGlobalEnvVars implements getGlobalEnvVars operation.
+//
+// Возвращает список всех глобальных переменных
+// окружения.
+//
+// GET /api/v1/env-vars
+func (UnimplementedHandler) GetGlobalEnvVars(ctx context.Context) (r *GetGlobalEnvVarsOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -69,6 +108,16 @@ func (UnimplementedHandler) GetProjectRuns(ctx context.Context, params GetProjec
 // GET /api/v1/projects
 func (UnimplementedHandler) GetProjects(ctx context.Context) (r *GetProjectsOK, _ error) {
 	return r, ht.ErrNotImplemented
+}
+
+// UpdateGlobalEnvVar implements updateGlobalEnvVar operation.
+//
+// Обновляет существующую глобальную переменную
+// окружения.
+//
+// PUT /api/v1/env-vars/{env_var_id}
+func (UnimplementedHandler) UpdateGlobalEnvVar(ctx context.Context, req *EnvironmentVariableUpdate, params UpdateGlobalEnvVarParams) error {
+	return ht.ErrNotImplemented
 }
 
 // UpdateProject implements updateProject operation.

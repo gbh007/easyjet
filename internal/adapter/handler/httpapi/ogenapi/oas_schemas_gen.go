@@ -11,6 +11,21 @@ func (s *ErrorStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+type CreateGlobalEnvVarCreated struct {
+	// Уникальный идентификатор созданной переменной.
+	ID OptUint `json:"id"`
+}
+
+// GetID returns the value of ID.
+func (s *CreateGlobalEnvVarCreated) GetID() OptUint {
+	return s.ID
+}
+
+// SetID sets the value of ID.
+func (s *CreateGlobalEnvVarCreated) SetID(val OptUint) {
+	s.ID = val
+}
+
 type CreateProjectCreated struct {
 	// Уникальный идентификатор созданного проекта.
 	ID OptUint `json:"id"`
@@ -39,6 +54,182 @@ func (s *CreateProjectRunCreated) GetID() OptUint {
 // SetID sets the value of ID.
 func (s *CreateProjectRunCreated) SetID(val OptUint) {
 	s.ID = val
+}
+
+// DeleteGlobalEnvVarNoContent is response for DeleteGlobalEnvVar operation.
+type DeleteGlobalEnvVarNoContent struct{}
+
+// Переменная окружения — именованная пара
+// «ключ-значение» для передачи конфигурации в скрипты
+// пайплайна.
+// Ref: #/components/schemas/EnvironmentVariable
+type EnvironmentVariable struct {
+	// Уникальный идентификатор переменной.
+	ID OptUint `json:"id"`
+	// Дата и время создания переменной.
+	CreatedAt OptDateTime `json:"created_at"`
+	// Дата и время последнего изменения значения.
+	UpdatedAt OptDateTime `json:"updated_at"`
+	// Ссылка на проект (null для глобальных переменных).
+	ProjectID OptNilUint `json:"project_id"`
+	// Имя переменной окружения (например, DATABASE_URL, API_KEY).
+	Name string `json:"name"`
+	// Значение переменной окружения.
+	Value string `json:"value"`
+	// Флаг использования других переменных (формат ${VAR_NAME}).
+	UsesOtherVariables OptBool `json:"uses_other_variables"`
+}
+
+// GetID returns the value of ID.
+func (s *EnvironmentVariable) GetID() OptUint {
+	return s.ID
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *EnvironmentVariable) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *EnvironmentVariable) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// GetProjectID returns the value of ProjectID.
+func (s *EnvironmentVariable) GetProjectID() OptNilUint {
+	return s.ProjectID
+}
+
+// GetName returns the value of Name.
+func (s *EnvironmentVariable) GetName() string {
+	return s.Name
+}
+
+// GetValue returns the value of Value.
+func (s *EnvironmentVariable) GetValue() string {
+	return s.Value
+}
+
+// GetUsesOtherVariables returns the value of UsesOtherVariables.
+func (s *EnvironmentVariable) GetUsesOtherVariables() OptBool {
+	return s.UsesOtherVariables
+}
+
+// SetID sets the value of ID.
+func (s *EnvironmentVariable) SetID(val OptUint) {
+	s.ID = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *EnvironmentVariable) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *EnvironmentVariable) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// SetProjectID sets the value of ProjectID.
+func (s *EnvironmentVariable) SetProjectID(val OptNilUint) {
+	s.ProjectID = val
+}
+
+// SetName sets the value of Name.
+func (s *EnvironmentVariable) SetName(val string) {
+	s.Name = val
+}
+
+// SetValue sets the value of Value.
+func (s *EnvironmentVariable) SetValue(val string) {
+	s.Value = val
+}
+
+// SetUsesOtherVariables sets the value of UsesOtherVariables.
+func (s *EnvironmentVariable) SetUsesOtherVariables(val OptBool) {
+	s.UsesOtherVariables = val
+}
+
+// Данные для создания переменной окружения.
+// Ref: #/components/schemas/EnvironmentVariableCreate
+type EnvironmentVariableCreate struct {
+	// Имя переменной окружения.
+	Name string `json:"name"`
+	// Значение переменной окружения.
+	Value string `json:"value"`
+	// Флаг использования других переменных (формат ${VAR_NAME}).
+	UsesOtherVariables OptBool `json:"uses_other_variables"`
+}
+
+// GetName returns the value of Name.
+func (s *EnvironmentVariableCreate) GetName() string {
+	return s.Name
+}
+
+// GetValue returns the value of Value.
+func (s *EnvironmentVariableCreate) GetValue() string {
+	return s.Value
+}
+
+// GetUsesOtherVariables returns the value of UsesOtherVariables.
+func (s *EnvironmentVariableCreate) GetUsesOtherVariables() OptBool {
+	return s.UsesOtherVariables
+}
+
+// SetName sets the value of Name.
+func (s *EnvironmentVariableCreate) SetName(val string) {
+	s.Name = val
+}
+
+// SetValue sets the value of Value.
+func (s *EnvironmentVariableCreate) SetValue(val string) {
+	s.Value = val
+}
+
+// SetUsesOtherVariables sets the value of UsesOtherVariables.
+func (s *EnvironmentVariableCreate) SetUsesOtherVariables(val OptBool) {
+	s.UsesOtherVariables = val
+}
+
+// Данные для обновления переменной окружения.
+// Ref: #/components/schemas/EnvironmentVariableUpdate
+type EnvironmentVariableUpdate struct {
+	// Имя переменной окружения.
+	Name string `json:"name"`
+	// Значение переменной окружения.
+	Value string `json:"value"`
+	// Флаг использования других переменных (формат ${VAR_NAME}).
+	UsesOtherVariables OptBool `json:"uses_other_variables"`
+}
+
+// GetName returns the value of Name.
+func (s *EnvironmentVariableUpdate) GetName() string {
+	return s.Name
+}
+
+// GetValue returns the value of Value.
+func (s *EnvironmentVariableUpdate) GetValue() string {
+	return s.Value
+}
+
+// GetUsesOtherVariables returns the value of UsesOtherVariables.
+func (s *EnvironmentVariableUpdate) GetUsesOtherVariables() OptBool {
+	return s.UsesOtherVariables
+}
+
+// SetName sets the value of Name.
+func (s *EnvironmentVariableUpdate) SetName(val string) {
+	s.Name = val
+}
+
+// SetValue sets the value of Value.
+func (s *EnvironmentVariableUpdate) SetValue(val string) {
+	s.Value = val
+}
+
+// SetUsesOtherVariables sets the value of UsesOtherVariables.
+func (s *EnvironmentVariableUpdate) SetUsesOtherVariables(val OptBool) {
+	s.UsesOtherVariables = val
 }
 
 type Error struct {
@@ -80,6 +271,20 @@ func (s *ErrorStatusCode) SetStatusCode(val int) {
 // SetResponse sets the value of Response.
 func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
+}
+
+type GetGlobalEnvVarsOK struct {
+	EnvVars OptNilEnvironmentVariableArray `json:"env_vars"`
+}
+
+// GetEnvVars returns the value of EnvVars.
+func (s *GetGlobalEnvVarsOK) GetEnvVars() OptNilEnvironmentVariableArray {
+	return s.EnvVars
+}
+
+// SetEnvVars sets the value of EnvVars.
+func (s *GetGlobalEnvVarsOK) SetEnvVars(val OptNilEnvironmentVariableArray) {
+	s.EnvVars = val
 }
 
 type GetProjectRunsOK struct {
@@ -357,6 +562,132 @@ func (o OptNilDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptNilEnvironmentVariableArray returns new OptNilEnvironmentVariableArray with value set to v.
+func NewOptNilEnvironmentVariableArray(v []EnvironmentVariable) OptNilEnvironmentVariableArray {
+	return OptNilEnvironmentVariableArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilEnvironmentVariableArray is optional nullable []EnvironmentVariable.
+type OptNilEnvironmentVariableArray struct {
+	Value []EnvironmentVariable
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilEnvironmentVariableArray was set.
+func (o OptNilEnvironmentVariableArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilEnvironmentVariableArray) Reset() {
+	var v []EnvironmentVariable
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilEnvironmentVariableArray) SetTo(v []EnvironmentVariable) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilEnvironmentVariableArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilEnvironmentVariableArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []EnvironmentVariable
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilEnvironmentVariableArray) Get() (v []EnvironmentVariable, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilEnvironmentVariableArray) Or(d []EnvironmentVariable) []EnvironmentVariable {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectEnvironmentVariableArray returns new OptNilProjectEnvironmentVariableArray with value set to v.
+func NewOptNilProjectEnvironmentVariableArray(v []ProjectEnvironmentVariable) OptNilProjectEnvironmentVariableArray {
+	return OptNilProjectEnvironmentVariableArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectEnvironmentVariableArray is optional nullable []ProjectEnvironmentVariable.
+type OptNilProjectEnvironmentVariableArray struct {
+	Value []ProjectEnvironmentVariable
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectEnvironmentVariableArray was set.
+func (o OptNilProjectEnvironmentVariableArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectEnvironmentVariableArray) Reset() {
+	var v []ProjectEnvironmentVariable
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectEnvironmentVariableArray) SetTo(v []ProjectEnvironmentVariable) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectEnvironmentVariableArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectEnvironmentVariableArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []ProjectEnvironmentVariable
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectEnvironmentVariableArray) Get() (v []ProjectEnvironmentVariable, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectEnvironmentVariableArray) Or(d []ProjectEnvironmentVariable) []ProjectEnvironmentVariable {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptNilProjectListItemArray returns new OptNilProjectListItemArray with value set to v.
 func NewOptNilProjectListItemArray(v []ProjectListItem) OptNilProjectListItemArray {
 	return OptNilProjectListItemArray{
@@ -609,6 +940,69 @@ func (o OptNilProjectRunStageArray) Or(d []ProjectRunStage) []ProjectRunStage {
 	return d
 }
 
+// NewOptNilUint returns new OptNilUint with value set to v.
+func NewOptNilUint(v uint) OptNilUint {
+	return OptNilUint{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilUint is optional nullable uint.
+type OptNilUint struct {
+	Value uint
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilUint was set.
+func (o OptNilUint) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilUint) Reset() {
+	var v uint
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilUint) SetTo(v uint) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilUint) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilUint) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v uint
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilUint) Get() (v uint, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilUint) Or(d uint) uint {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptProjectLastRun returns new OptProjectLastRun with value set to v.
 func NewOptProjectLastRun(v ProjectLastRun) OptProjectLastRun {
 	return OptProjectLastRun{
@@ -779,6 +1173,8 @@ type Project struct {
 	WithRootEnv OptBool `json:"with_root_env"`
 	// Этапы пайплайна (выполняются последовательно).
 	Stages []ProjectStage `json:"stages"`
+	// Переменные окружения проекта.
+	EnvVars OptNilProjectEnvironmentVariableArray `json:"env_vars"`
 }
 
 // GetID returns the value of ID.
@@ -846,6 +1242,11 @@ func (s *Project) GetStages() []ProjectStage {
 	return s.Stages
 }
 
+// GetEnvVars returns the value of EnvVars.
+func (s *Project) GetEnvVars() OptNilProjectEnvironmentVariableArray {
+	return s.EnvVars
+}
+
 // SetID sets the value of ID.
 func (s *Project) SetID(val OptUint) {
 	s.ID = val
@@ -911,6 +1312,11 @@ func (s *Project) SetStages(val []ProjectStage) {
 	s.Stages = val
 }
 
+// SetEnvVars sets the value of EnvVars.
+func (s *Project) SetEnvVars(val OptNilProjectEnvironmentVariableArray) {
+	s.EnvVars = val
+}
+
 // Данные для создания нового проекта.
 // Ref: #/components/schemas/ProjectCreate
 type ProjectCreate struct {
@@ -935,6 +1341,8 @@ type ProjectCreate struct {
 	WithRootEnv OptBool `json:"with_root_env"`
 	// Этапы пайплайна (выполняются последовательно).
 	Stages []ProjectStage `json:"stages"`
+	// Переменные окружения проекта.
+	EnvVars OptNilProjectEnvironmentVariableArray `json:"env_vars"`
 }
 
 // GetCronEnabled returns the value of CronEnabled.
@@ -987,6 +1395,11 @@ func (s *ProjectCreate) GetStages() []ProjectStage {
 	return s.Stages
 }
 
+// GetEnvVars returns the value of EnvVars.
+func (s *ProjectCreate) GetEnvVars() OptNilProjectEnvironmentVariableArray {
+	return s.EnvVars
+}
+
 // SetCronEnabled sets the value of CronEnabled.
 func (s *ProjectCreate) SetCronEnabled(val OptBool) {
 	s.CronEnabled = val
@@ -1035,6 +1448,66 @@ func (s *ProjectCreate) SetWithRootEnv(val OptBool) {
 // SetStages sets the value of Stages.
 func (s *ProjectCreate) SetStages(val []ProjectStage) {
 	s.Stages = val
+}
+
+// SetEnvVars sets the value of EnvVars.
+func (s *ProjectCreate) SetEnvVars(val OptNilProjectEnvironmentVariableArray) {
+	s.EnvVars = val
+}
+
+// Переменная окружения проекта — именованная пара
+// «ключ-значение» для передачи конфигурации в скрипты
+// пайплайна.
+// Ref: #/components/schemas/ProjectEnvironmentVariable
+type ProjectEnvironmentVariable struct {
+	// Уникальный идентификатор переменной.
+	ID OptUint `json:"id"`
+	// Имя переменной окружения (например, DATABASE_URL, API_KEY).
+	Name string `json:"name"`
+	// Значение переменной окружения.
+	Value string `json:"value"`
+	// Флаг использования других переменных (формат ${VAR_NAME}).
+	UsesOtherVariables OptBool `json:"uses_other_variables"`
+}
+
+// GetID returns the value of ID.
+func (s *ProjectEnvironmentVariable) GetID() OptUint {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *ProjectEnvironmentVariable) GetName() string {
+	return s.Name
+}
+
+// GetValue returns the value of Value.
+func (s *ProjectEnvironmentVariable) GetValue() string {
+	return s.Value
+}
+
+// GetUsesOtherVariables returns the value of UsesOtherVariables.
+func (s *ProjectEnvironmentVariable) GetUsesOtherVariables() OptBool {
+	return s.UsesOtherVariables
+}
+
+// SetID sets the value of ID.
+func (s *ProjectEnvironmentVariable) SetID(val OptUint) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *ProjectEnvironmentVariable) SetName(val string) {
+	s.Name = val
+}
+
+// SetValue sets the value of Value.
+func (s *ProjectEnvironmentVariable) SetValue(val string) {
+	s.Value = val
+}
+
+// SetUsesOtherVariables sets the value of UsesOtherVariables.
+func (s *ProjectEnvironmentVariable) SetUsesOtherVariables(val OptBool) {
+	s.UsesOtherVariables = val
 }
 
 // Информация о последнем запуске проекта.
@@ -1453,6 +1926,8 @@ type ProjectUpdate struct {
 	WithRootEnv OptBool `json:"with_root_env"`
 	// Этапы пайплайна (выполняются последовательно).
 	Stages []ProjectStage `json:"stages"`
+	// Переменные окружения проекта.
+	EnvVars OptNilProjectEnvironmentVariableArray `json:"env_vars"`
 }
 
 // GetID returns the value of ID.
@@ -1510,6 +1985,11 @@ func (s *ProjectUpdate) GetStages() []ProjectStage {
 	return s.Stages
 }
 
+// GetEnvVars returns the value of EnvVars.
+func (s *ProjectUpdate) GetEnvVars() OptNilProjectEnvironmentVariableArray {
+	return s.EnvVars
+}
+
 // SetID sets the value of ID.
 func (s *ProjectUpdate) SetID(val uint) {
 	s.ID = val
@@ -1564,6 +2044,14 @@ func (s *ProjectUpdate) SetWithRootEnv(val OptBool) {
 func (s *ProjectUpdate) SetStages(val []ProjectStage) {
 	s.Stages = val
 }
+
+// SetEnvVars sets the value of EnvVars.
+func (s *ProjectUpdate) SetEnvVars(val OptNilProjectEnvironmentVariableArray) {
+	s.EnvVars = val
+}
+
+// UpdateGlobalEnvVarNoContent is response for UpdateGlobalEnvVar operation.
+type UpdateGlobalEnvVarNoContent struct{}
 
 // UpdateProjectNoContent is response for UpdateProject operation.
 type UpdateProjectNoContent struct{}

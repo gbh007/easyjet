@@ -20,7 +20,8 @@ type Project struct {
 	RetentionCount int
 	WithRootEnv    bool
 
-	Stages []ProjectStage
+	Stages  []ProjectStage
+	EnvVars []EnvironmentVariable
 }
 
 func (p Project) HasGIT() bool {

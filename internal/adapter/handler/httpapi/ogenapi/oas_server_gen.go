@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// CreateGlobalEnvVar implements createGlobalEnvVar operation.
+	//
+	// Создаёт новую глобальную переменную окружения.
+	//
+	// POST /api/v1/env-vars
+	CreateGlobalEnvVar(ctx context.Context, req *EnvironmentVariableCreate) (*CreateGlobalEnvVarCreated, error)
 	// CreateProject implements createProject operation.
 	//
 	// Создаёт новый проект с конфигурацией пайплайна.
@@ -21,6 +27,27 @@ type Handler interface {
 	//
 	// POST /api/v1/projects/{project_id}/runs
 	CreateProjectRun(ctx context.Context, params CreateProjectRunParams) (*CreateProjectRunCreated, error)
+	// DeleteGlobalEnvVar implements deleteGlobalEnvVar operation.
+	//
+	// Удаляет существующую глобальную переменную
+	// окружения.
+	//
+	// DELETE /api/v1/env-vars/{env_var_id}
+	DeleteGlobalEnvVar(ctx context.Context, params DeleteGlobalEnvVarParams) error
+	// GetGlobalEnvVar implements getGlobalEnvVar operation.
+	//
+	// Возвращает информацию о глобальной переменной по
+	// идентификатору.
+	//
+	// GET /api/v1/env-vars/{env_var_id}
+	GetGlobalEnvVar(ctx context.Context, params GetGlobalEnvVarParams) (*EnvironmentVariable, error)
+	// GetGlobalEnvVars implements getGlobalEnvVars operation.
+	//
+	// Возвращает список всех глобальных переменных
+	// окружения.
+	//
+	// GET /api/v1/env-vars
+	GetGlobalEnvVars(ctx context.Context) (*GetGlobalEnvVarsOK, error)
 	// GetProject implements getProject operation.
 	//
 	// Возвращает полную информацию о проекте по его
@@ -48,6 +75,13 @@ type Handler interface {
 	//
 	// GET /api/v1/projects
 	GetProjects(ctx context.Context) (*GetProjectsOK, error)
+	// UpdateGlobalEnvVar implements updateGlobalEnvVar operation.
+	//
+	// Обновляет существующую глобальную переменную
+	// окружения.
+	//
+	// PUT /api/v1/env-vars/{env_var_id}
+	UpdateGlobalEnvVar(ctx context.Context, req *EnvironmentVariableUpdate, params UpdateGlobalEnvVarParams) error
 	// UpdateProject implements updateProject operation.
 	//
 	// Обновляет конфигурацию существующего проекта.

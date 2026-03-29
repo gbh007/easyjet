@@ -27,6 +27,8 @@ tags:
     description: Управление проектами
   - name: Project Runs
     description: Запуски пайплайнов и история выполнений
+  - name: Global Environment Variables
+    description: Глобальные переменные окружения
 
 paths:
   /api/v1/projects:
@@ -232,6 +234,133 @@ paths:
         default:
           $ref: "#/components/responses/Error"
 
+  /api/v1/env-vars:
+    get:
+      tags:
+        - Environment Variables
+      summary: Получить список глобальных переменных
+      description: Возвращает список всех глобальных переменных окружения
+      operationId: getGlobalEnvVars
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  env_vars:
+                    type: array
+                    nullable: true
+                    items:
+                      $ref: "#/components/schemas/EnvironmentVariable"
+        default:
+          $ref: "#/components/responses/Error"
+
+    post:
+      tags:
+        - Environment Variables
+      summary: Создать глобальную переменную
+      description: Создаёт новую глобальную переменную окружения
+      operationId: createGlobalEnvVar
+      requestBody:
+        description: Данные для создания переменной
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnvironmentVariableCreate"
+      responses:
+        "201":
+          description: Переменная успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: uint
+                    description: Уникальный идентификатор созданной переменной
+                    example: 1
+        default:
+          $ref: "#/components/responses/Error"
+
+  /api/v1/env-vars/{env_var_id}:
+    get:
+      tags:
+        - Global Environment Variables
+      summary: Получить глобальную переменную
+      description: Возвращает информацию о глобальной переменной по идентификатору
+      operationId: getGlobalEnvVar
+      parameters:
+        - name: env_var_id
+          in: path
+          required: true
+          description: Уникальный идентификатор переменной
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentVariable"
+        default:
+          $ref: "#/components/responses/Error"
+
+    put:
+      tags:
+        - Global Environment Variables
+      summary: Обновить глобальную переменную
+      description: Обновляет существующую глобальную переменную окружения
+      operationId: updateGlobalEnvVar
+      parameters:
+        - name: env_var_id
+          in: path
+          required: true
+          description: Уникальный идентификатор переменной
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      requestBody:
+        description: Новые данные переменной
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnvironmentVariableUpdate"
+      responses:
+        "204":
+          description: Переменная успешно обновлена
+        default:
+          $ref: "#/components/responses/Error"
+
+    delete:
+      tags:
+        - Global Environment Variables
+      summary: Удалить глобальную переменную
+      description: Удаляет существующую глобальную переменную окружения
+      operationId: deleteGlobalEnvVar
+      parameters:
+        - name: env_var_id
+          in: path
+          required: true
+          description: Уникальный идентификатор переменной
+          schema:
+            type: integer
+            format: uint
+            minimum: 1
+      responses:
+        "204":
+          description: Переменная успешно удалена
+        default:
+          $ref: "#/components/responses/Error"
+
 components:
   schemas:
     Project:
@@ -301,6 +430,12 @@ components:
             $ref: "#/components/schemas/ProjectStage"
           description: Этапы пайплайна (выполняются последовательно)
           minItems: 1
+          nullable: true
+        env_vars:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectEnvironmentVariable"
+          description: Переменные окружения проекта
           nullable: true
       required:
         - name
@@ -415,6 +550,12 @@ components:
             $ref: "#/components/schemas/ProjectStage"
           description: Этапы пайплайна (выполняются последовательно)
           minItems: 1
+        env_vars:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectEnvironmentVariable"
+          description: Переменные окружения проекта
+          nullable: true
       required:
         - name
         - stages
@@ -462,6 +603,12 @@ components:
             $ref: "#/components/schemas/ProjectStage"
           description: Этапы пайплайна (выполняются последовательно)
           minItems: 1
+        env_vars:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectEnvironmentVariable"
+          description: Переменные окружения проекта
+          nullable: true
       required:
         - id
         - name
@@ -598,6 +745,114 @@ components:
           type: string
           description: Сообщение коммита (первая строка)
           example: Fix bug in authentication
+
+    ProjectEnvironmentVariable:
+      type: object
+      description: Переменная окружения проекта — именованная пара «ключ-значение» для передачи конфигурации в скрипты пайплайна
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор переменной
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          description: Имя переменной окружения (например, DATABASE_URL, API_KEY)
+          example: DATABASE_URL
+        value:
+          type: string
+          description: Значение переменной окружения
+          example: postgres://localhost:5432/mydb
+        uses_other_variables:
+          type: boolean
+          description: Флаг использования других переменных (формат ${VAR_NAME})
+          example: false
+      required:
+        - name
+        - value
+
+    EnvironmentVariable:
+      type: object
+      description: Переменная окружения — именованная пара «ключ-значение» для передачи конфигурации в скрипты пайплайна
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор переменной
+          readOnly: true
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          description: Дата и время создания переменной
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата и время последнего изменения значения
+          readOnly: true
+        project_id:
+          type: integer
+          format: uint
+          description: Ссылка на проект (null для глобальных переменных)
+          nullable: true
+          example: 1
+        name:
+          type: string
+          description: Имя переменной окружения (например, DATABASE_URL, API_KEY)
+          example: DATABASE_URL
+        value:
+          type: string
+          description: Значение переменной окружения
+          example: postgres://localhost:5432/mydb
+        uses_other_variables:
+          type: boolean
+          description: Флаг использования других переменных (формат ${VAR_NAME})
+          example: false
+      required:
+        - name
+        - value
+
+    EnvironmentVariableCreate:
+      type: object
+      description: Данные для создания переменной окружения
+      properties:
+        name:
+          type: string
+          description: Имя переменной окружения
+          example: DATABASE_URL
+        value:
+          type: string
+          description: Значение переменной окружения
+          example: postgres://localhost:5432/mydb
+        uses_other_variables:
+          type: boolean
+          description: Флаг использования других переменных (формат ${VAR_NAME})
+          default: false
+      required:
+        - name
+        - value
+
+    EnvironmentVariableUpdate:
+      type: object
+      description: Данные для обновления переменной окружения
+      properties:
+        name:
+          type: string
+          description: Имя переменной окружения
+          example: DATABASE_URL
+        value:
+          type: string
+          description: Значение переменной окружения
+          example: postgres://localhost:5432/mydb
+        uses_other_variables:
+          type: boolean
+          description: Флаг использования других переменных (формат ${VAR_NAME})
+          default: false
+      required:
+        - name
+        - value
 
   responses:
     Error:

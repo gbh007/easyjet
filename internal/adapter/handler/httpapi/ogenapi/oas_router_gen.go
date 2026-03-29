@@ -14,7 +14,13 @@ var (
 	rn1AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
+	rn8AllowedHeaders = map[string]string{
+		"PUT": "Content-Type",
+	}
 	rn3AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
+	rn5AllowedHeaders = map[string]string{
 		"PUT": "Content-Type",
 	}
 )
@@ -58,64 +64,37 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/projects"
+		case '/': // Prefix: "/api/v1/"
 
-			if l := len("/api/v1/projects"); len(elem) >= l && elem[0:l] == "/api/v1/projects" {
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch r.Method {
-				case "GET":
-					s.handleGetProjectsRequest([0]string{}, elemIsEscaped, w, r)
-				case "POST":
-					s.handleCreateProjectRequest([0]string{}, elemIsEscaped, w, r)
-				default:
-					s.notAllowed(w, r, notAllowedParams{
-						allowedMethods: "GET,POST",
-						allowedHeaders: rn1AllowedHeaders,
-						acceptPost:     "application/json",
-						acceptPatch:    "",
-					})
-				}
-
-				return
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'e': // Prefix: "env-vars"
 
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("env-vars"); len(elem) >= l && elem[0:l] == "env-vars" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				// Param: "project_id"
-				// Match until "/"
-				idx := strings.IndexByte(elem, '/')
-				if idx < 0 {
-					idx = len(elem)
-				}
-				args[0] = elem[:idx]
-				elem = elem[idx:]
-
 				if len(elem) == 0 {
 					switch r.Method {
 					case "GET":
-						s.handleGetProjectRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
-					case "PUT":
-						s.handleUpdateProjectRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
+						s.handleGetGlobalEnvVarsRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateGlobalEnvVarRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, notAllowedParams{
-							allowedMethods: "GET,PUT",
-							allowedHeaders: rn3AllowedHeaders,
-							acceptPost:     "",
+							allowedMethods: "GET,POST",
+							allowedHeaders: rn1AllowedHeaders,
+							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
 					}
@@ -123,28 +102,109 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/runs"
+				case '/': // Prefix: "/"
 
-					if l := len("/runs"); len(elem) >= l && elem[0:l] == "/runs" {
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "env_var_id"
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
+					args[0] = elem
+					elem = ""
+
 					if len(elem) == 0 {
+						// Leaf node.
 						switch r.Method {
-						case "GET":
-							s.handleGetProjectRunsRequest([1]string{
+						case "DELETE":
+							s.handleDeleteGlobalEnvVarRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
-						case "POST":
-							s.handleCreateProjectRunRequest([1]string{
+						case "GET":
+							s.handleGetGlobalEnvVarRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PUT":
+							s.handleUpdateGlobalEnvVarRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						default:
 							s.notAllowed(w, r, notAllowedParams{
-								allowedMethods: "GET,POST",
-								allowedHeaders: nil,
+								allowedMethods: "DELETE,GET,PUT",
+								allowedHeaders: rn8AllowedHeaders,
+								acceptPost:     "",
+								acceptPatch:    "",
+							})
+						}
+
+						return
+					}
+
+				}
+
+			case 'p': // Prefix: "projects"
+
+				if l := len("projects"); len(elem) >= l && elem[0:l] == "projects" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleGetProjectsRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateProjectRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, notAllowedParams{
+							allowedMethods: "GET,POST",
+							allowedHeaders: rn3AllowedHeaders,
+							acceptPost:     "application/json",
+							acceptPatch:    "",
+						})
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "project_id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "GET":
+							s.handleGetProjectRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PUT":
+							s.handleUpdateProjectRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, notAllowedParams{
+								allowedMethods: "GET,PUT",
+								allowedHeaders: rn5AllowedHeaders,
 								acceptPost:     "",
 								acceptPatch:    "",
 							})
@@ -153,34 +213,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/"
+					case '/': // Prefix: "/runs"
 
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						if l := len("/runs"); len(elem) >= l && elem[0:l] == "/runs" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "run_id"
-						// Leaf parameter, slashes are prohibited
-						idx := strings.IndexByte(elem, '/')
-						if idx >= 0 {
-							break
-						}
-						args[1] = elem
-						elem = ""
-
 						if len(elem) == 0 {
-							// Leaf node.
 							switch r.Method {
 							case "GET":
-								s.handleGetProjectRunRequest([2]string{
+								s.handleGetProjectRunsRequest([1]string{
 									args[0],
-									args[1],
+								}, elemIsEscaped, w, r)
+							case "POST":
+								s.handleCreateProjectRunRequest([1]string{
+									args[0],
 								}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, notAllowedParams{
-									allowedMethods: "GET",
+									allowedMethods: "GET,POST",
 									allowedHeaders: nil,
 									acceptPost:     "",
 									acceptPatch:    "",
@@ -188,6 +241,45 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							return
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "run_id"
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
+							args[1] = elem
+							elem = ""
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetProjectRunRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, notAllowedParams{
+										allowedMethods: "GET",
+										allowedHeaders: nil,
+										acceptPost:     "",
+										acceptPatch:    "",
+									})
+								}
+
+								return
+							}
+
 						}
 
 					}
@@ -282,106 +374,172 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/projects"
+		case '/': // Prefix: "/api/v1/"
 
-			if l := len("/api/v1/projects"); len(elem) >= l && elem[0:l] == "/api/v1/projects" {
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch method {
-				case "GET":
-					r.name = GetProjectsOperation
-					r.summary = "Получить список всех проектов"
-					r.operationID = "getProjects"
-					r.operationGroup = ""
-					r.pathPattern = "/api/v1/projects"
-					r.args = args
-					r.count = 0
-					return r, true
-				case "POST":
-					r.name = CreateProjectOperation
-					r.summary = "Создать новый проект"
-					r.operationID = "createProject"
-					r.operationGroup = ""
-					r.pathPattern = "/api/v1/projects"
-					r.args = args
-					r.count = 0
-					return r, true
-				default:
-					return
-				}
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'e': // Prefix: "env-vars"
 
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("env-vars"); len(elem) >= l && elem[0:l] == "env-vars" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				// Param: "project_id"
-				// Match until "/"
-				idx := strings.IndexByte(elem, '/')
-				if idx < 0 {
-					idx = len(elem)
-				}
-				args[0] = elem[:idx]
-				elem = elem[idx:]
-
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = GetProjectOperation
-						r.summary = "Получить информацию о проекте"
-						r.operationID = "getProject"
+						r.name = GetGlobalEnvVarsOperation
+						r.summary = "Получить список глобальных переменных"
+						r.operationID = "getGlobalEnvVars"
 						r.operationGroup = ""
-						r.pathPattern = "/api/v1/projects/{project_id}"
+						r.pathPattern = "/api/v1/env-vars"
 						r.args = args
-						r.count = 1
+						r.count = 0
 						return r, true
-					case "PUT":
-						r.name = UpdateProjectOperation
-						r.summary = "Обновить проект"
-						r.operationID = "updateProject"
+					case "POST":
+						r.name = CreateGlobalEnvVarOperation
+						r.summary = "Создать глобальную переменную"
+						r.operationID = "createGlobalEnvVar"
 						r.operationGroup = ""
-						r.pathPattern = "/api/v1/projects/{project_id}"
+						r.pathPattern = "/api/v1/env-vars"
 						r.args = args
-						r.count = 1
+						r.count = 0
 						return r, true
 					default:
 						return
 					}
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/runs"
+				case '/': // Prefix: "/"
 
-					if l := len("/runs"); len(elem) >= l && elem[0:l] == "/runs" {
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "env_var_id"
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
+					args[0] = elem
+					elem = ""
+
 					if len(elem) == 0 {
+						// Leaf node.
 						switch method {
-						case "GET":
-							r.name = GetProjectRunsOperation
-							r.summary = "Получить историю запусков проекта"
-							r.operationID = "getProjectRuns"
+						case "DELETE":
+							r.name = DeleteGlobalEnvVarOperation
+							r.summary = "Удалить глобальную переменную"
+							r.operationID = "deleteGlobalEnvVar"
 							r.operationGroup = ""
-							r.pathPattern = "/api/v1/projects/{project_id}/runs"
+							r.pathPattern = "/api/v1/env-vars/{env_var_id}"
 							r.args = args
 							r.count = 1
 							return r, true
-						case "POST":
-							r.name = CreateProjectRunOperation
-							r.summary = "Запустить пайплайн проекта"
-							r.operationID = "createProjectRun"
+						case "GET":
+							r.name = GetGlobalEnvVarOperation
+							r.summary = "Получить глобальную переменную"
+							r.operationID = "getGlobalEnvVar"
 							r.operationGroup = ""
-							r.pathPattern = "/api/v1/projects/{project_id}/runs"
+							r.pathPattern = "/api/v1/env-vars/{env_var_id}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PUT":
+							r.name = UpdateGlobalEnvVarOperation
+							r.summary = "Обновить глобальную переменную"
+							r.operationID = "updateGlobalEnvVar"
+							r.operationGroup = ""
+							r.pathPattern = "/api/v1/env-vars/{env_var_id}"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+
+				}
+
+			case 'p': // Prefix: "projects"
+
+				if l := len("projects"); len(elem) >= l && elem[0:l] == "projects" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = GetProjectsOperation
+						r.summary = "Получить список всех проектов"
+						r.operationID = "getProjects"
+						r.operationGroup = ""
+						r.pathPattern = "/api/v1/projects"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = CreateProjectOperation
+						r.summary = "Создать новый проект"
+						r.operationID = "createProject"
+						r.operationGroup = ""
+						r.pathPattern = "/api/v1/projects"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "project_id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							r.name = GetProjectOperation
+							r.summary = "Получить информацию о проекте"
+							r.operationID = "getProject"
+							r.operationGroup = ""
+							r.pathPattern = "/api/v1/projects/{project_id}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PUT":
+							r.name = UpdateProjectOperation
+							r.summary = "Обновить проект"
+							r.operationID = "updateProject"
+							r.operationGroup = ""
+							r.pathPattern = "/api/v1/projects/{project_id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -390,38 +548,73 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/"
+					case '/': // Prefix: "/runs"
 
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						if l := len("/runs"); len(elem) >= l && elem[0:l] == "/runs" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "run_id"
-						// Leaf parameter, slashes are prohibited
-						idx := strings.IndexByte(elem, '/')
-						if idx >= 0 {
-							break
-						}
-						args[1] = elem
-						elem = ""
-
 						if len(elem) == 0 {
-							// Leaf node.
 							switch method {
 							case "GET":
-								r.name = GetProjectRunOperation
-								r.summary = "Получить информацию о запуске"
-								r.operationID = "getProjectRun"
+								r.name = GetProjectRunsOperation
+								r.summary = "Получить историю запусков проекта"
+								r.operationID = "getProjectRuns"
 								r.operationGroup = ""
-								r.pathPattern = "/api/v1/projects/{project_id}/runs/{run_id}"
+								r.pathPattern = "/api/v1/projects/{project_id}/runs"
 								r.args = args
-								r.count = 2
+								r.count = 1
+								return r, true
+							case "POST":
+								r.name = CreateProjectRunOperation
+								r.summary = "Запустить пайплайн проекта"
+								r.operationID = "createProjectRun"
+								r.operationGroup = ""
+								r.pathPattern = "/api/v1/projects/{project_id}/runs"
+								r.args = args
+								r.count = 1
 								return r, true
 							default:
 								return
 							}
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "run_id"
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
+							args[1] = elem
+							elem = ""
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetProjectRunOperation
+									r.summary = "Получить информацию о запуске"
+									r.operationID = "getProjectRun"
+									r.operationGroup = ""
+									r.pathPattern = "/api/v1/projects/{project_id}/runs/{run_id}"
+									r.args = args
+									r.count = 2
+									return r, true
+								default:
+									return
+								}
+							}
+
 						}
 
 					}

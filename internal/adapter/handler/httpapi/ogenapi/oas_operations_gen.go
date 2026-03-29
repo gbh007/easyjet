@@ -6,11 +6,16 @@ package ogenapi
 type OperationName = string
 
 const (
-	CreateProjectOperation    OperationName = "CreateProject"
-	CreateProjectRunOperation OperationName = "CreateProjectRun"
-	GetProjectOperation       OperationName = "GetProject"
-	GetProjectRunOperation    OperationName = "GetProjectRun"
-	GetProjectRunsOperation   OperationName = "GetProjectRuns"
-	GetProjectsOperation      OperationName = "GetProjects"
-	UpdateProjectOperation    OperationName = "UpdateProject"
+	CreateGlobalEnvVarOperation OperationName = "CreateGlobalEnvVar"
+	CreateProjectOperation      OperationName = "CreateProject"
+	CreateProjectRunOperation   OperationName = "CreateProjectRun"
+	DeleteGlobalEnvVarOperation OperationName = "DeleteGlobalEnvVar"
+	GetGlobalEnvVarOperation    OperationName = "GetGlobalEnvVar"
+	GetGlobalEnvVarsOperation   OperationName = "GetGlobalEnvVars"
+	GetProjectOperation         OperationName = "GetProject"
+	GetProjectRunOperation      OperationName = "GetProjectRun"
+	GetProjectRunsOperation     OperationName = "GetProjectRuns"
+	GetProjectsOperation        OperationName = "GetProjects"
+	UpdateGlobalEnvVarOperation OperationName = "UpdateGlobalEnvVar"
+	UpdateProjectOperation      OperationName = "UpdateProject"
 )

@@ -7,7 +7,7 @@ import (
 )
 
 type Exec interface {
-	Exec(ctx context.Context, dir, p string, withRootEnv bool) (string, error)
+	Exec(ctx context.Context, dir, p string, env []string) (string, error)
 }
 
 type FileSystem interface {
@@ -38,6 +38,11 @@ type Database interface {
 	SetProjectRunGitCommits(ctx context.Context, commits []entity.ProjectRunGitCommits) error
 	DeleteProjectRuns(ctx context.Context, ids []uint) error
 	PendingProjectRuns(ctx context.Context) ([]uint, error)
+
+	GlobalEnvVars(ctx context.Context) ([]entity.EnvironmentVariable, error)
+	GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentVariable, error)
+	SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (uint, error)
+	DeleteGlobalEnvVar(ctx context.Context, id uint) error
 }
 
 type Service interface {
@@ -54,6 +59,12 @@ type Service interface {
 
 	ProjectRun(ctx context.Context, runID uint) (entity.ProjectRun, error)
 	ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error)
+
+	GlobalEnvVars(ctx context.Context) ([]entity.EnvironmentVariable, error)
+	GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentVariable, error)
+	CreateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (uint, error)
+	UpdateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) error
+	DeleteGlobalEnvVar(ctx context.Context, id uint) error
 }
 
 type PubSub interface {
