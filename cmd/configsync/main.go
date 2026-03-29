@@ -23,7 +23,8 @@ const (
 )
 
 type dumpData struct {
-	Projects []ogenapi.Project `json:"projects"`
+	Projects      []ogenapi.Project             `json:"projects"`
+	GlobalEnvVars []ogenapi.EnvironmentVariable `json:"global_env_vars"`
 }
 
 func main() {
@@ -56,8 +57,8 @@ func printUsage() {
 	fmt.Println("Usage: configsync <command> [options]")
 	fmt.Println()
 	fmt.Println("Commands:")
-	fmt.Println("  export    Export project configurations to dump.json")
-	fmt.Println("  import    Import project configurations from dump.json")
+	fmt.Println("  export    Export project configurations and environment variables to dump.json")
+	fmt.Println("  import    Import project configurations and environment variables from dump.json")
 	fmt.Println()
 	fmt.Println("Use 'configsync <command> -h' for more information about a command.")
 }
@@ -87,7 +88,15 @@ func runExport(args []string) error {
 		return fmt.Errorf("fetch projects: %w", err)
 	}
 
-	data := dumpData{Projects: projects}
+	globalEnvVars, err := fetchGlobalEnvVars(ctx, client)
+	if err != nil {
+		return fmt.Errorf("fetch global env vars: %w", err)
+	}
+
+	data := dumpData{
+		Projects:      projects,
+		GlobalEnvVars: globalEnvVars,
+	}
 
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
@@ -98,7 +107,7 @@ func runExport(args []string) error {
 		return fmt.Errorf("write file: %w", err)
 	}
 
-	fmt.Printf("Successfully exported %d project(s) to %s\n", len(projects), *file)
+	fmt.Printf("Successfully exported %d project(s) and %d global env var(s) to %s\n", len(projects), len(globalEnvVars), *file)
 	return nil
 }
 
@@ -139,9 +148,21 @@ func runImport(args []string) error {
 			RetentionCount: project.RetentionCount,
 			WithRootEnv:    project.WithRootEnv,
 			Stages:         project.Stages,
+			EnvVars:        project.EnvVars,
 		})
 		if err != nil {
 			return fmt.Errorf("create project %s: %w", project.Name, err)
+		}
+	}
+
+	for _, envVar := range data.GlobalEnvVars {
+		_, err = client.CreateGlobalEnvVar(ctx, &ogenapi.EnvironmentVariableCreate{
+			Name:               envVar.Name,
+			Value:              envVar.Value,
+			UsesOtherVariables: envVar.UsesOtherVariables,
+		})
+		if err != nil {
+			return fmt.Errorf("create global env var %s: %w", envVar.Name, err)
 		}
 	}
 
@@ -188,6 +209,15 @@ func fetchProjects(ctx context.Context, client *ogenapi.Client) ([]ogenapi.Proje
 	}
 
 	return projects, nil
+}
+
+func fetchGlobalEnvVars(ctx context.Context, client *ogenapi.Client) ([]ogenapi.EnvironmentVariable, error) {
+	resp, err := client.GetGlobalEnvVars(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get global env vars: %w", err)
+	}
+
+	return resp.EnvVars.Value, nil
 }
 
 func loadDumpFile(path string) (dumpData, error) {
