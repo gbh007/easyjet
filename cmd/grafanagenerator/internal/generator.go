@@ -5,12 +5,14 @@ import (
 )
 
 type Generator struct {
-	uid string
+	uid    string
+	vlExpr string
 }
 
-func New(uid string) *Generator {
+func New(uid, vlExpr string) *Generator {
 	plugins.RegisterDefaultPlugins()
 	return &Generator{
-		uid: uid,
+		uid:    uid,
+		vlExpr: vlExpr,
 	}
 }

@@ -1,0 +1,7 @@
+[grafana]
+addr = "http://localhost:3000/api"
+token = "YOU_TOKEN"
+uid = "gbbfwrp"
+
+[service]
+vl_expr = """_SYSTEMD_UNIT:"easyjet.service""""

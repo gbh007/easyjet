@@ -23,6 +23,9 @@ type Config struct {
 	File struct {
 		To string `toml:"to"`
 	} `toml:"file"`
+	Service struct {
+		VLExpr string `toml:"vl_expr"`
+	} `toml:"service"`
 }
 
 func main() {
@@ -39,7 +42,7 @@ func main() {
 		panic("empty uid")
 	}
 
-	g := internal.New(cfg.Grafana.UID)
+	g := internal.New(cfg.Grafana.UID, cfg.Service.VLExpr)
 
 	dashboardModel, err := g.Build()
 	if err != nil {

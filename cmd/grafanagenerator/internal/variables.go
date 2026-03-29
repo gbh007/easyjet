@@ -10,6 +10,14 @@ func (g *Generator) withVariables(builder *dashboard.DashboardBuilder) *dashboar
 			Type(prometheusDatasourceType),
 	)
 
+	if g.vlExpr != "" {
+		builder.WithVariable(
+			dashboard.
+				NewDatasourceVariableBuilder(logsVariableName).
+				Type(logsVariableTypeVictoriaLogs),
+		)
+	}
+
 	builder.WithVariable(
 		dashboard.NewQueryVariableBuilder(projectIDVariableName).
 			Query(dashboard.StringOrMap{

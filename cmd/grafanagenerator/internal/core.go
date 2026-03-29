@@ -10,9 +10,19 @@ const (
 	instanceVariableName  = "instance"
 
 	prometheusDatasourceType = "prometheus"
+
+	logsVariableTypeVictoriaLogs = "victoriametrics-logs-datasource"
+	logsVariableName             = "logs"
 )
 
-var metricDatasource = dashboard.DataSourceRef{
-	Type: new(prometheusDatasourceType),
-	Uid:  new("${" + metricVariableName + "}"),
-}
+var (
+	metricDatasource = dashboard.DataSourceRef{
+		Type: new(prometheusDatasourceType),
+		Uid:  new("${" + metricVariableName + "}"),
+	}
+
+	logsVictoriaLogsDatasource = dashboard.DataSourceRef{
+		Type: new(logsVariableTypeVictoriaLogs),
+		Uid:  new("${" + logsVariableName + "}"),
+	}
+)
