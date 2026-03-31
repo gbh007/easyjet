@@ -93,7 +93,7 @@ const router = useRouter();
 const api = getEasyJetAPI();
 
 const projects = ref<Array<ProjectListItem>>(new Array<ProjectListItem>());
-const filterType = ref<'all' | 'project' | 'template'>('all');
+const filterType = ref<'all' | 'project' | 'template'>('project');
 
 const filterItems = [
   { title: 'Все', value: 'all' },
