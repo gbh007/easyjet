@@ -18,6 +18,7 @@ func convertProjectListItemToOgen(item entity.ProjectsWithRunInfo) ogenapi.Proje
 		ID:          item.ID,
 		Name:        item.Name,
 		CronEnabled: ogenapi.NewOptBool(item.CronEnabled),
+		IsTemplate:  ogenapi.NewOptBool(item.IsTemplate),
 	}
 
 	if item.LastSuccessfulRunAt != nil {

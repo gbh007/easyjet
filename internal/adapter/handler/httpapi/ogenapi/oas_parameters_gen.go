@@ -590,6 +590,92 @@ func decodeGetProjectRunsParams(args [1]string, argsEscaped bool, r *http.Reques
 	return params, nil
 }
 
+// GetProjectsParams is parameters of getProjects operation.
+type GetProjectsParams struct {
+	// Фильтр по типу (project - обычные проекты, template - шаблоны,
+	// all - все).
+	Type OptGetProjectsType `json:",omitempty,omitzero"`
+}
+
+func unpackGetProjectsParams(packed middleware.Parameters) (params GetProjectsParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "type",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Type = v.(OptGetProjectsType)
+		}
+	}
+	return params
+}
+
+func decodeGetProjectsParams(args [0]string, argsEscaped bool, r *http.Request) (params GetProjectsParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Set default value for query: type.
+	{
+		val := GetProjectsType("all")
+		params.Type.SetTo(val)
+	}
+	// Decode query: type.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "type",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotTypeVal GetProjectsType
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotTypeVal = GetProjectsType(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Type.SetTo(paramsDotTypeVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Type.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "type",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // UpdateGlobalEnvVarParams is parameters of updateGlobalEnvVar operation.
 type UpdateGlobalEnvVarParams struct {
 	// Уникальный идентификатор переменной.

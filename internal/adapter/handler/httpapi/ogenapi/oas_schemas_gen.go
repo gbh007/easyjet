@@ -5,6 +5,8 @@ package ogenapi
 import (
 	"fmt"
 	"time"
+
+	"github.com/go-faster/errors"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -315,6 +317,54 @@ func (s *GetProjectsOK) SetProjects(val OptNilProjectListItemArray) {
 	s.Projects = val
 }
 
+type GetProjectsType string
+
+const (
+	GetProjectsTypeProject  GetProjectsType = "project"
+	GetProjectsTypeTemplate GetProjectsType = "template"
+	GetProjectsTypeAll      GetProjectsType = "all"
+)
+
+// AllValues returns all GetProjectsType values.
+func (GetProjectsType) AllValues() []GetProjectsType {
+	return []GetProjectsType{
+		GetProjectsTypeProject,
+		GetProjectsTypeTemplate,
+		GetProjectsTypeAll,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s GetProjectsType) MarshalText() ([]byte, error) {
+	switch s {
+	case GetProjectsTypeProject:
+		return []byte(s), nil
+	case GetProjectsTypeTemplate:
+		return []byte(s), nil
+	case GetProjectsTypeAll:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *GetProjectsType) UnmarshalText(data []byte) error {
+	switch GetProjectsType(data) {
+	case GetProjectsTypeProject:
+		*s = GetProjectsTypeProject
+		return nil
+	case GetProjectsTypeTemplate:
+		*s = GetProjectsTypeTemplate
+		return nil
+	case GetProjectsTypeAll:
+		*s = GetProjectsTypeAll
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
 	return OptBool{
@@ -401,6 +451,52 @@ func (o OptDateTime) Get() (v time.Time, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptGetProjectsType returns new OptGetProjectsType with value set to v.
+func NewOptGetProjectsType(v GetProjectsType) OptGetProjectsType {
+	return OptGetProjectsType{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptGetProjectsType is optional GetProjectsType.
+type OptGetProjectsType struct {
+	Value GetProjectsType
+	Set   bool
+}
+
+// IsSet returns true if OptGetProjectsType was set.
+func (o OptGetProjectsType) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptGetProjectsType) Reset() {
+	var v GetProjectsType
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptGetProjectsType) SetTo(v GetProjectsType) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptGetProjectsType) Get() (v GetProjectsType, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptGetProjectsType) Or(d GetProjectsType) GetProjectsType {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -1171,6 +1267,8 @@ type Project struct {
 	// Флаг использования переменных окружения root
 	// пользователя.
 	WithRootEnv OptBool `json:"with_root_env"`
+	// Флаг шаблонного проекта (шаблон не может быть запущен).
+	IsTemplate OptBool `json:"is_template"`
 	// Этапы пайплайна (выполняются последовательно).
 	Stages []ProjectStage `json:"stages"`
 	// Переменные окружения проекта.
@@ -1235,6 +1333,11 @@ func (s *Project) GetRetentionCount() OptInt32 {
 // GetWithRootEnv returns the value of WithRootEnv.
 func (s *Project) GetWithRootEnv() OptBool {
 	return s.WithRootEnv
+}
+
+// GetIsTemplate returns the value of IsTemplate.
+func (s *Project) GetIsTemplate() OptBool {
+	return s.IsTemplate
 }
 
 // GetStages returns the value of Stages.
@@ -1307,6 +1410,11 @@ func (s *Project) SetWithRootEnv(val OptBool) {
 	s.WithRootEnv = val
 }
 
+// SetIsTemplate sets the value of IsTemplate.
+func (s *Project) SetIsTemplate(val OptBool) {
+	s.IsTemplate = val
+}
+
 // SetStages sets the value of Stages.
 func (s *Project) SetStages(val []ProjectStage) {
 	s.Stages = val
@@ -1339,6 +1447,8 @@ type ProjectCreate struct {
 	// Флаг использования переменных окружения root
 	// пользователя.
 	WithRootEnv OptBool `json:"with_root_env"`
+	// Флаг шаблонного проекта.
+	IsTemplate OptBool `json:"is_template"`
 	// Этапы пайплайна (выполняются последовательно).
 	Stages []ProjectStage `json:"stages"`
 	// Переменные окружения проекта.
@@ -1388,6 +1498,11 @@ func (s *ProjectCreate) GetRetentionCount() OptInt32 {
 // GetWithRootEnv returns the value of WithRootEnv.
 func (s *ProjectCreate) GetWithRootEnv() OptBool {
 	return s.WithRootEnv
+}
+
+// GetIsTemplate returns the value of IsTemplate.
+func (s *ProjectCreate) GetIsTemplate() OptBool {
+	return s.IsTemplate
 }
 
 // GetStages returns the value of Stages.
@@ -1443,6 +1558,11 @@ func (s *ProjectCreate) SetRetentionCount(val OptInt32) {
 // SetWithRootEnv sets the value of WithRootEnv.
 func (s *ProjectCreate) SetWithRootEnv(val OptBool) {
 	s.WithRootEnv = val
+}
+
+// SetIsTemplate sets the value of IsTemplate.
+func (s *ProjectCreate) SetIsTemplate(val OptBool) {
+	s.IsTemplate = val
 }
 
 // SetStages sets the value of Stages.
@@ -1585,6 +1705,8 @@ type ProjectListItem struct {
 	Name string `json:"name"`
 	// Флаг включения автоматического расписания (cron).
 	CronEnabled OptBool `json:"cron_enabled"`
+	// Флаг шаблонного проекта.
+	IsTemplate OptBool `json:"is_template"`
 	// Время последнего успешного запуска.
 	LastSuccessfulRunAt OptNilDateTime    `json:"last_successful_run_at"`
 	LastRun             OptProjectLastRun `json:"last_run"`
@@ -1603,6 +1725,11 @@ func (s *ProjectListItem) GetName() string {
 // GetCronEnabled returns the value of CronEnabled.
 func (s *ProjectListItem) GetCronEnabled() OptBool {
 	return s.CronEnabled
+}
+
+// GetIsTemplate returns the value of IsTemplate.
+func (s *ProjectListItem) GetIsTemplate() OptBool {
+	return s.IsTemplate
 }
 
 // GetLastSuccessfulRunAt returns the value of LastSuccessfulRunAt.
@@ -1628,6 +1755,11 @@ func (s *ProjectListItem) SetName(val string) {
 // SetCronEnabled sets the value of CronEnabled.
 func (s *ProjectListItem) SetCronEnabled(val OptBool) {
 	s.CronEnabled = val
+}
+
+// SetIsTemplate sets the value of IsTemplate.
+func (s *ProjectListItem) SetIsTemplate(val OptBool) {
+	s.IsTemplate = val
 }
 
 // SetLastSuccessfulRunAt sets the value of LastSuccessfulRunAt.
@@ -1924,6 +2056,8 @@ type ProjectUpdate struct {
 	// Флаг использования переменных окружения root
 	// пользователя.
 	WithRootEnv OptBool `json:"with_root_env"`
+	// Флаг шаблонного проекта.
+	IsTemplate OptBool `json:"is_template"`
 	// Этапы пайплайна (выполняются последовательно).
 	Stages []ProjectStage `json:"stages"`
 	// Переменные окружения проекта.
@@ -1978,6 +2112,11 @@ func (s *ProjectUpdate) GetRetentionCount() OptInt32 {
 // GetWithRootEnv returns the value of WithRootEnv.
 func (s *ProjectUpdate) GetWithRootEnv() OptBool {
 	return s.WithRootEnv
+}
+
+// GetIsTemplate returns the value of IsTemplate.
+func (s *ProjectUpdate) GetIsTemplate() OptBool {
+	return s.IsTemplate
 }
 
 // GetStages returns the value of Stages.
@@ -2038,6 +2177,11 @@ func (s *ProjectUpdate) SetRetentionCount(val OptInt32) {
 // SetWithRootEnv sets the value of WithRootEnv.
 func (s *ProjectUpdate) SetWithRootEnv(val OptBool) {
 	s.WithRootEnv = val
+}
+
+// SetIsTemplate sets the value of IsTemplate.
+func (s *ProjectUpdate) SetIsTemplate(val OptBool) {
+	s.IsTemplate = val
 }
 
 // SetStages sets the value of Stages.

@@ -4,10 +4,35 @@
       <h1>Проекты</h1>
       <v-btn prepend-icon="mdi-plus" @click="createProject"> Создать проект </v-btn>
     </div>
+
+    <div class="d-flex flex-row ga-2 align-center mb-2">
+      <v-select
+        v-model="filterType"
+        density="compact"
+        hide-details
+        :items="filterItems"
+        label="Тип"
+        style="max-width: 200px"
+        variant="outlined"
+      />
+    </div>
+
     <v-card v-for="project in projects" :key="project.id">
       <v-card-text class="d-flex flex-column ga-2">
         <div class="d-flex flex-row justify-space-between align-center">
-          <b>#{{ project.id }} {{ project.name }}</b>
+          <div class="d-flex flex-row align-center ga-2">
+            <b>#{{ project.id }} {{ project.name }}</b>
+            <v-chip
+              v-if="project.is_template"
+              class="ml-2"
+              color="purple"
+              size="small"
+              variant="tonal"
+            >
+              <v-icon icon="mdi-content-save-cog-outline" size="small" />
+              Шаблон
+            </v-chip>
+          </div>
           <span class="d-flex flex-row ga-2">
             <v-btn prepend-icon="mdi-eye" @click="openProject(project.id)"> Посмотреть </v-btn>
             <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)">
@@ -59,7 +84,7 @@
 
 <script setup lang="ts">
 import type { ProjectLastRun, ProjectListItem } from '@/api/generated.schemas';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { getEasyJetAPI } from '@/api/generated';
 import { formatDuration } from '@/utils/formatDuration';
@@ -68,10 +93,17 @@ const router = useRouter();
 const api = getEasyJetAPI();
 
 const projects = ref<Array<ProjectListItem>>(new Array<ProjectListItem>());
+const filterType = ref<'all' | 'project' | 'template'>('all');
+
+const filterItems = [
+  { title: 'Все', value: 'all' },
+  { title: 'Проекты', value: 'project' },
+  { title: 'Шаблоны', value: 'template' },
+];
 
 function load() {
   api
-    .getProjects()
+    .getProjects({ type: filterType.value })
     .then((v) => {
       const projectsData = v.data.projects;
       if (projectsData) {
@@ -82,6 +114,10 @@ function load() {
       console.log(error);
     });
 }
+
+watch(filterType, () => {
+  load();
+});
 
 function openProject(id: number) {
   router.push(`/projects/${id}`);

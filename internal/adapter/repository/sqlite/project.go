@@ -26,6 +26,7 @@ func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
 			"restart_after",
 			"retention_count",
 			"with_root_env",
+			"is_template",
 		).
 		From("projects").
 		Where(squirrel.Eq{"id": id}).
@@ -47,6 +48,7 @@ func (repo Repo) Project(ctx context.Context, id uint) (entity.Project, error) {
 		&p.RestartAfter,
 		&p.RetentionCount,
 		&p.WithRootEnv,
+		&p.IsTemplate,
 	)
 	if err != nil {
 		return entity.Project{}, fmt.Errorf("query project: %w", err)

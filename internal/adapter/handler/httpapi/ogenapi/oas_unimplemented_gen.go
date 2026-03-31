@@ -106,7 +106,7 @@ func (UnimplementedHandler) GetProjectRuns(ctx context.Context, params GetProjec
 // Возвращает список всех проектов в системе.
 //
 // GET /api/v1/projects
-func (UnimplementedHandler) GetProjects(ctx context.Context) (r *GetProjectsOK, _ error) {
+func (UnimplementedHandler) GetProjects(ctx context.Context, params GetProjectsParams) (r *GetProjectsOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

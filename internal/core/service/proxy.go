@@ -22,8 +22,8 @@ func (srv Service) Projects(ctx context.Context) ([]entity.Project, error) {
 	return srv.db.Projects(ctx)
 }
 
-func (srv Service) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWithRunInfo, error) {
-	return srv.db.ProjectsWithRunInfo(ctx)
+func (srv Service) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error) {
+	return srv.db.ProjectsWithRunInfo(ctx, filterType)
 }
 
 func (srv Service) PendingProjectRuns(ctx context.Context) ([]uint, error) {

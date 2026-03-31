@@ -16,11 +16,7 @@ EasyJet — легковесная CI/CD система для домашних 
  * OpenAPI spec version: 1.0.0
  */
 import * as axios from 'axios';
-import type {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import type {
   CreateGlobalEnvVar201,
@@ -32,177 +28,175 @@ import type {
   GetGlobalEnvVars200,
   GetProjectRuns200,
   GetProjects200,
+  GetProjectsParams,
   Project,
   ProjectCreate,
   ProjectRun,
-  ProjectUpdate
+  ProjectUpdate,
 } from './generated.schemas';
 
+export const getEasyJetAPI = (axiosInstance: AxiosInstance = axios.default) => {
+  /**
+   * Возвращает список всех проектов в системе
+   * @summary Получить список всех проектов
+   */
+  const getProjects = (
+    params?: GetProjectsParams,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<GetProjects200>> => {
+    return axiosInstance.get(`/api/v1/projects`, {
+      ...options,
+      params: { ...params, ...options?.params },
+    });
+  };
 
+  /**
+   * Создаёт новый проект с конфигурацией пайплайна
+   * @summary Создать новый проект
+   */
+  const createProject = (
+    projectCreate: ProjectCreate,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<CreateProject201>> => {
+    return axiosInstance.post(`/api/v1/projects`, projectCreate, options);
+  };
 
-
-  export const getEasyJetAPI = (axiosInstance: AxiosInstance = axios.default) => {
-/**
- * Возвращает список всех проектов в системе
- * @summary Получить список всех проектов
- */
-const getProjects = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetProjects200>> => {
-    return axiosInstance.get(
-      `/api/v1/projects`,options
-    );
-  }
-
-/**
- * Создаёт новый проект с конфигурацией пайплайна
- * @summary Создать новый проект
- */
-const createProject = (
-    projectCreate: ProjectCreate, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreateProject201>> => {
-    return axiosInstance.post(
-      `/api/v1/projects`,
-      projectCreate,options
-    );
-  }
-
-/**
- * Возвращает полную информацию о проекте по его идентификатору
- * @summary Получить информацию о проекте
- */
-const getProject = (
-    projectId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Project>> => {
-    return axiosInstance.get(
-      `/api/v1/projects/${projectId}`,options
-    );
-  }
-
-/**
- * Обновляет конфигурацию существующего проекта
- * @summary Обновить проект
- */
-const updateProject = (
+  /**
+   * Возвращает полную информацию о проекте по его идентификатору
+   * @summary Получить информацию о проекте
+   */
+  const getProject = (
     projectId: number,
-    projectUpdate: ProjectUpdate, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axiosInstance.put(
-      `/api/v1/projects/${projectId}`,
-      projectUpdate,options
-    );
-  }
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<Project>> => {
+    return axiosInstance.get(`/api/v1/projects/${projectId}`, options);
+  };
 
-/**
- * Возвращает список всех запусков для указанного проекта
- * @summary Получить историю запусков проекта
- */
-const getProjectRuns = (
-    projectId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetProjectRuns200>> => {
-    return axiosInstance.get(
-      `/api/v1/projects/${projectId}/runs`,options
-    );
-  }
-
-/**
- * Создаёт новый запуск пайплайна для указанного проекта
- * @summary Запустить пайплайн проекта
- */
-const createProjectRun = (
-    projectId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreateProjectRun201>> => {
-    return axiosInstance.post(
-      `/api/v1/projects/${projectId}/runs`,undefined,options
-    );
-  }
-
-/**
- * Возвращает детальную информацию о конкретном запуске проекта
- * @summary Получить информацию о запуске
- */
-const getProjectRun = (
+  /**
+   * Обновляет конфигурацию существующего проекта
+   * @summary Обновить проект
+   */
+  const updateProject = (
     projectId: number,
-    runId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<ProjectRun>> => {
-    return axiosInstance.get(
-      `/api/v1/projects/${projectId}/runs/${runId}`,options
-    );
-  }
+    projectUpdate: ProjectUpdate,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<void>> => {
+    return axiosInstance.put(`/api/v1/projects/${projectId}`, projectUpdate, options);
+  };
 
-/**
- * Возвращает список всех глобальных переменных окружения
- * @summary Получить список глобальных переменных
- */
-const getGlobalEnvVars = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetGlobalEnvVars200>> => {
-    return axiosInstance.get(
-      `/api/v1/env-vars`,options
-    );
-  }
+  /**
+   * Возвращает список всех запусков для указанного проекта
+   * @summary Получить историю запусков проекта
+   */
+  const getProjectRuns = (
+    projectId: number,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<GetProjectRuns200>> => {
+    return axiosInstance.get(`/api/v1/projects/${projectId}/runs`, options);
+  };
 
-/**
- * Создаёт новую глобальную переменную окружения
- * @summary Создать глобальную переменную
- */
-const createGlobalEnvVar = (
-    environmentVariableCreate: EnvironmentVariableCreate, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CreateGlobalEnvVar201>> => {
-    return axiosInstance.post(
-      `/api/v1/env-vars`,
-      environmentVariableCreate,options
-    );
-  }
+  /**
+   * Создаёт новый запуск пайплайна для указанного проекта
+   * @summary Запустить пайплайн проекта
+   */
+  const createProjectRun = (
+    projectId: number,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<CreateProjectRun201>> => {
+    return axiosInstance.post(`/api/v1/projects/${projectId}/runs`, undefined, options);
+  };
 
-/**
- * Возвращает информацию о глобальной переменной по идентификатору
- * @summary Получить глобальную переменную
- */
-const getGlobalEnvVar = (
-    envVarId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<EnvironmentVariable>> => {
-    return axiosInstance.get(
-      `/api/v1/env-vars/${envVarId}`,options
-    );
-  }
+  /**
+   * Возвращает детальную информацию о конкретном запуске проекта
+   * @summary Получить информацию о запуске
+   */
+  const getProjectRun = (
+    projectId: number,
+    runId: number,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<ProjectRun>> => {
+    return axiosInstance.get(`/api/v1/projects/${projectId}/runs/${runId}`, options);
+  };
 
-/**
- * Обновляет существующую глобальную переменную окружения
- * @summary Обновить глобальную переменную
- */
-const updateGlobalEnvVar = (
+  /**
+   * Возвращает список всех глобальных переменных окружения
+   * @summary Получить список глобальных переменных
+   */
+  const getGlobalEnvVars = (
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<GetGlobalEnvVars200>> => {
+    return axiosInstance.get(`/api/v1/env-vars`, options);
+  };
+
+  /**
+   * Создаёт новую глобальную переменную окружения
+   * @summary Создать глобальную переменную
+   */
+  const createGlobalEnvVar = (
+    environmentVariableCreate: EnvironmentVariableCreate,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<CreateGlobalEnvVar201>> => {
+    return axiosInstance.post(`/api/v1/env-vars`, environmentVariableCreate, options);
+  };
+
+  /**
+   * Возвращает информацию о глобальной переменной по идентификатору
+   * @summary Получить глобальную переменную
+   */
+  const getGlobalEnvVar = (
     envVarId: number,
-    environmentVariableUpdate: EnvironmentVariableUpdate, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axiosInstance.put(
-      `/api/v1/env-vars/${envVarId}`,
-      environmentVariableUpdate,options
-    );
-  }
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<EnvironmentVariable>> => {
+    return axiosInstance.get(`/api/v1/env-vars/${envVarId}`, options);
+  };
 
-/**
- * Удаляет существующую глобальную переменную окружения
- * @summary Удалить глобальную переменную
- */
-const deleteGlobalEnvVar = (
-    envVarId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axiosInstance.delete(
-      `/api/v1/env-vars/${envVarId}`,options
-    );
-  }
+  /**
+   * Обновляет существующую глобальную переменную окружения
+   * @summary Обновить глобальную переменную
+   */
+  const updateGlobalEnvVar = (
+    envVarId: number,
+    environmentVariableUpdate: EnvironmentVariableUpdate,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<void>> => {
+    return axiosInstance.put(`/api/v1/env-vars/${envVarId}`, environmentVariableUpdate, options);
+  };
 
-return {getProjects,createProject,getProject,updateProject,getProjectRuns,createProjectRun,getProjectRun,getGlobalEnvVars,createGlobalEnvVar,getGlobalEnvVar,updateGlobalEnvVar,deleteGlobalEnvVar}};
-export type GetProjectsResult = AxiosResponse<GetProjects200>
-export type CreateProjectResult = AxiosResponse<CreateProject201>
-export type GetProjectResult = AxiosResponse<Project>
-export type UpdateProjectResult = AxiosResponse<void>
-export type GetProjectRunsResult = AxiosResponse<GetProjectRuns200>
-export type CreateProjectRunResult = AxiosResponse<CreateProjectRun201>
-export type GetProjectRunResult = AxiosResponse<ProjectRun>
-export type GetGlobalEnvVarsResult = AxiosResponse<GetGlobalEnvVars200>
-export type CreateGlobalEnvVarResult = AxiosResponse<CreateGlobalEnvVar201>
-export type GetGlobalEnvVarResult = AxiosResponse<EnvironmentVariable>
-export type UpdateGlobalEnvVarResult = AxiosResponse<void>
-export type DeleteGlobalEnvVarResult = AxiosResponse<void>
+  /**
+   * Удаляет существующую глобальную переменную окружения
+   * @summary Удалить глобальную переменную
+   */
+  const deleteGlobalEnvVar = (
+    envVarId: number,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<void>> => {
+    return axiosInstance.delete(`/api/v1/env-vars/${envVarId}`, options);
+  };
+
+  return {
+    getProjects,
+    createProject,
+    getProject,
+    updateProject,
+    getProjectRuns,
+    createProjectRun,
+    getProjectRun,
+    getGlobalEnvVars,
+    createGlobalEnvVar,
+    getGlobalEnvVar,
+    updateGlobalEnvVar,
+    deleteGlobalEnvVar,
+  };
+};
+export type GetProjectsResult = AxiosResponse<GetProjects200>;
+export type CreateProjectResult = AxiosResponse<CreateProject201>;
+export type GetProjectResult = AxiosResponse<Project>;
+export type UpdateProjectResult = AxiosResponse<void>;
+export type GetProjectRunsResult = AxiosResponse<GetProjectRuns200>;
+export type CreateProjectRunResult = AxiosResponse<CreateProjectRun201>;
+export type GetProjectRunResult = AxiosResponse<ProjectRun>;
+export type GetGlobalEnvVarsResult = AxiosResponse<GetGlobalEnvVars200>;
+export type CreateGlobalEnvVarResult = AxiosResponse<CreateGlobalEnvVar201>;
+export type GetGlobalEnvVarResult = AxiosResponse<EnvironmentVariable>;
+export type UpdateGlobalEnvVarResult = AxiosResponse<void>;
+export type DeleteGlobalEnvVarResult = AxiosResponse<void>;

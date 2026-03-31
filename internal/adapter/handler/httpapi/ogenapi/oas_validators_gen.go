@@ -116,6 +116,19 @@ func (s *GetProjectsOK) Validate() error {
 	return nil
 }
 
+func (s GetProjectsType) Validate() error {
+	switch s {
+	case "project":
+		return nil
+	case "template":
+		return nil
+	case "all":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *Project) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer

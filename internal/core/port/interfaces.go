@@ -27,7 +27,7 @@ type Git interface {
 type Database interface {
 	Project(ctx context.Context, id uint) (entity.Project, error)
 	Projects(ctx context.Context) ([]entity.Project, error)
-	ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWithRunInfo, error)
+	ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error)
 	SetProject(ctx context.Context, pr entity.Project) (uint, error)
 
 	ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error)
@@ -48,7 +48,7 @@ type Database interface {
 type Service interface {
 	Project(ctx context.Context, id uint) (entity.Project, error)
 	Projects(ctx context.Context) ([]entity.Project, error)
-	ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWithRunInfo, error)
+	ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error)
 
 	CreateProject(ctx context.Context, p entity.Project) (uint, error)
 	UpdateProject(ctx context.Context, p entity.Project) error

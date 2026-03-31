@@ -10,7 +10,14 @@ import (
 )
 
 func (srv Service) RunProject(ctx context.Context, id uint) (uint, error) {
-	// TODO: проверять что проект существует
+	project, err := srv.db.Project(ctx, id)
+	if err != nil {
+		return 0, fmt.Errorf("get project: %w", err)
+	}
+
+	if project.IsTemplate {
+		return 0, errors.New("cannot run a template project")
+	}
 
 	run := entity.ProjectRun{
 		ProjectID: id,

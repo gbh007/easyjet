@@ -16,6 +16,7 @@ func convertProjectCreate(req *ogenapi.ProjectCreate) entity.Project {
 		RestartAfter:   req.RestartAfter.Or(false),
 		RetentionCount: int(req.RetentionCount.Or(10)),
 		WithRootEnv:    req.WithRootEnv.Or(false),
+		IsTemplate:     req.IsTemplate.Or(false),
 		Stages:         make([]entity.ProjectStage, len(req.Stages)),
 	}
 

@@ -147,6 +147,7 @@ func runImport(args []string) error {
 			RestartAfter:   project.RestartAfter,
 			RetentionCount: project.RetentionCount,
 			WithRootEnv:    project.WithRootEnv,
+			IsTemplate:     project.IsTemplate,
 			Stages:         project.Stages,
 			EnvVars:        project.EnvVars,
 		})
@@ -190,7 +191,7 @@ func createClient(serverURL, username, password string) (*ogenapi.Client, error)
 }
 
 func fetchProjects(ctx context.Context, client *ogenapi.Client) ([]ogenapi.Project, error) {
-	resp, err := client.GetProjects(ctx)
+	resp, err := client.GetProjects(ctx, ogenapi.GetProjectsParams{Type: ogenapi.OptGetProjectsType{Value: ogenapi.GetProjectsTypeAll, Set: true}})
 	if err != nil {
 		return nil, fmt.Errorf("get projects: %w", err)
 	}

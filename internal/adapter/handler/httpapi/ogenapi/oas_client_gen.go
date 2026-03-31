@@ -93,7 +93,7 @@ type Invoker interface {
 	// Возвращает список всех проектов в системе.
 	//
 	// GET /api/v1/projects
-	GetProjects(ctx context.Context) (*GetProjectsOK, error)
+	GetProjects(ctx context.Context, params GetProjectsParams) (*GetProjectsOK, error)
 	// UpdateGlobalEnvVar invokes updateGlobalEnvVar operation.
 	//
 	// Обновляет существующую глобальную переменную
@@ -961,12 +961,12 @@ func (c *Client) sendGetProjectRuns(ctx context.Context, params GetProjectRunsPa
 // Возвращает список всех проектов в системе.
 //
 // GET /api/v1/projects
-func (c *Client) GetProjects(ctx context.Context) (*GetProjectsOK, error) {
-	res, err := c.sendGetProjects(ctx)
+func (c *Client) GetProjects(ctx context.Context, params GetProjectsParams) (*GetProjectsOK, error) {
+	res, err := c.sendGetProjects(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetProjects(ctx context.Context) (res *GetProjectsOK, err error) {
+func (c *Client) sendGetProjects(ctx context.Context, params GetProjectsParams) (res *GetProjectsOK, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getProjects"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -1006,6 +1006,27 @@ func (c *Client) sendGetProjects(ctx context.Context) (res *GetProjectsOK, err e
 	var pathParts [1]string
 	pathParts[0] = "/api/v1/projects"
 	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "type" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "type",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Type.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u)

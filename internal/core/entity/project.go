@@ -19,6 +19,7 @@ type Project struct {
 	RestartAfter   bool
 	RetentionCount int
 	WithRootEnv    bool
+	IsTemplate     bool
 
 	Stages  []ProjectStage
 	EnvVars []EnvironmentVariable
@@ -38,6 +39,7 @@ type ProjectsWithRunInfo struct {
 	ID                  uint
 	Name                string
 	CronEnabled         bool
+	IsTemplate          bool
 	LastSuccessfulRunAt *time.Time
 	LastRun             *ProjectLastRun
 }

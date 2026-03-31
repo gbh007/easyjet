@@ -72,7 +72,7 @@ func (s *Scheduler) loadExistingJobs(ctx context.Context) error {
 	}
 
 	for _, project := range projects {
-		if project.CronEnabled && project.CronSchedule != "" {
+		if project.CronEnabled && !project.IsTemplate && project.CronSchedule != "" {
 			err := s.registerJob(ctx, project.ID)
 			if err != nil {
 				return fmt.Errorf("register project %d: %w", project.ID, err)
@@ -133,7 +133,7 @@ func (s *Scheduler) registerJob(ctx context.Context, projectID uint) error {
 		return fmt.Errorf("get project: %w", err)
 	}
 
-	if !project.CronEnabled || project.CronSchedule == "" {
+	if !project.CronEnabled || project.IsTemplate || project.CronSchedule == "" {
 		return nil
 	}
 

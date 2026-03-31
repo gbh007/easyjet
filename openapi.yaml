@@ -38,6 +38,15 @@ paths:
       summary: Получить список всех проектов
       description: Возвращает список всех проектов в системе
       operationId: getProjects
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: Фильтр по типу (project - обычные проекты, template - шаблоны, all - все)
+          schema:
+            type: string
+            enum: [project, template, all]
+            default: all
       responses:
         "200":
           description: Успешный ответ
@@ -424,6 +433,11 @@ components:
           description: Флаг использования переменных окружения root пользователя
           default: false
           example: true
+        is_template:
+          type: boolean
+          description: Флаг шаблонного проекта (шаблон не может быть запущен)
+          default: false
+          example: false
         stages:
           type: array
           items:
@@ -460,6 +474,11 @@ components:
           description: Флаг включения автоматического расписания (cron)
           default: false
           example: true
+        is_template:
+          type: boolean
+          description: Флаг шаблонного проекта
+          default: false
+          example: false
         last_successful_run_at:
           type: string
           format: date-time
@@ -544,6 +563,10 @@ components:
           type: boolean
           description: Флаг использования переменных окружения root пользователя
           default: false
+        is_template:
+          type: boolean
+          description: Флаг шаблонного проекта
+          default: false
         stages:
           type: array
           items:
@@ -597,6 +620,9 @@ components:
         with_root_env:
           type: boolean
           description: Флаг использования переменных окружения root пользователя
+        is_template:
+          type: boolean
+          description: Флаг шаблонного проекта
         stages:
           type: array
           items:

@@ -74,7 +74,7 @@ type Handler interface {
 	// Возвращает список всех проектов в системе.
 	//
 	// GET /api/v1/projects
-	GetProjects(ctx context.Context) (*GetProjectsOK, error)
+	GetProjects(ctx context.Context, params GetProjectsParams) (*GetProjectsOK, error)
 	// UpdateGlobalEnvVar implements updateGlobalEnvVar operation.
 	//
 	// Обновляет существующую глобальную переменную

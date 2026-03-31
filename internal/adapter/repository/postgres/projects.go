@@ -24,6 +24,7 @@ func (repo Repo) Projects(ctx context.Context) ([]entity.Project, error) {
 			"restart_after",
 			"retention_count",
 			"with_root_env",
+			"is_template",
 		).
 		From("projects").
 		OrderBy("id ASC").
@@ -56,6 +57,7 @@ func (repo Repo) Projects(ctx context.Context) ([]entity.Project, error) {
 			&p.RestartAfter,
 			&p.RetentionCount,
 			&p.WithRootEnv,
+			&p.IsTemplate,
 		); err != nil {
 			return nil, fmt.Errorf("scan project: %w", err)
 		}

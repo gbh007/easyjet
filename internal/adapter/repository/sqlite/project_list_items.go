@@ -4,17 +4,26 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWithRunInfo, error) {
+func joinStrings(strs []string, sep string) string {
+	if len(strs) == 0 {
+		return ""
+	}
+	return strings.Join(strs, sep)
+}
+
+func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error) {
 	query := `
 		SELECT
 			p.id,
 			p.name,
 			p.cron_enabled,
+			p.is_template,
 			last_successful_run.last_successful_run_at,
 			last_run.created_at as last_run_created_at,
 			last_run.success as last_run_success,
@@ -45,10 +54,25 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 				GROUP BY project_id
 			) r2 ON r1.project_id = r2.project_id AND r1.id = r2.max_id
 		) last_run ON p.id = last_run.project_id
-		ORDER BY p.id ASC
 	`
 
-	rows, err := repo.db.QueryContext(ctx, query)
+	args := make([]any, 0)
+	whereClauses := make([]string, 0)
+
+	switch filterType {
+	case "project":
+		whereClauses = append(whereClauses, "p.is_template = false")
+	case "template":
+		whereClauses = append(whereClauses, "p.is_template = true")
+	}
+
+	if len(whereClauses) > 0 {
+		query += " WHERE " + joinStrings(whereClauses, " AND ")
+	}
+
+	query += " ORDER BY p.id ASC"
+
+	rows, err := repo.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query project list items: %w", err)
 	}
@@ -68,6 +92,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context) ([]entity.ProjectsWith
 			&item.ID,
 			&item.Name,
 			&item.CronEnabled,
+			&item.IsTemplate,
 			&lastSuccessfulRunAt,
 			&lastRunCreatedAt,
 			&lastRunSuccess,

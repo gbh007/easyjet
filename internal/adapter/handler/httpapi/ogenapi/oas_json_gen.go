@@ -1705,6 +1705,12 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.IsTemplate.Set {
+			e.FieldStart("is_template")
+			s.IsTemplate.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("stages")
 		if s.Stages == nil {
 			e.Null()
@@ -1724,7 +1730,7 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProject = [14]string{
+var jsonFieldsNameOfProject = [15]string{
 	0:  "id",
 	1:  "created_at",
 	2:  "updated_at",
@@ -1737,8 +1743,9 @@ var jsonFieldsNameOfProject = [14]string{
 	9:  "restart_after",
 	10: "retention_count",
 	11: "with_root_env",
-	12: "stages",
-	13: "env_vars",
+	12: "is_template",
+	13: "stages",
+	14: "env_vars",
 }
 
 // Decode decodes Project from json.
@@ -1873,8 +1880,18 @@ func (s *Project) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"with_root_env\"")
 			}
+		case "is_template":
+			if err := func() error {
+				s.IsTemplate.Reset()
+				if err := s.IsTemplate.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_template\"")
+			}
 		case "stages":
-			requiredBitSet[1] |= 1 << 4
+			requiredBitSet[1] |= 1 << 5
 			if err := func() error {
 				switch tt := d.Next(); tt {
 				case jx.Null:
@@ -1919,7 +1936,7 @@ func (s *Project) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b00100000,
-		0b00010000,
+		0b00100000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2027,6 +2044,12 @@ func (s *ProjectCreate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.IsTemplate.Set {
+			e.FieldStart("is_template")
+			s.IsTemplate.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("stages")
 		e.ArrStart()
 		for _, elem := range s.Stages {
@@ -2042,7 +2065,7 @@ func (s *ProjectCreate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectCreate = [11]string{
+var jsonFieldsNameOfProjectCreate = [12]string{
 	0:  "cron_enabled",
 	1:  "cron_schedule",
 	2:  "name",
@@ -2052,8 +2075,9 @@ var jsonFieldsNameOfProjectCreate = [11]string{
 	6:  "restart_after",
 	7:  "retention_count",
 	8:  "with_root_env",
-	9:  "stages",
-	10: "env_vars",
+	9:  "is_template",
+	10: "stages",
+	11: "env_vars",
 }
 
 // Decode decodes ProjectCreate from json.
@@ -2158,8 +2182,18 @@ func (s *ProjectCreate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"with_root_env\"")
 			}
+		case "is_template":
+			if err := func() error {
+				s.IsTemplate.Reset()
+				if err := s.IsTemplate.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_template\"")
+			}
 		case "stages":
-			requiredBitSet[1] |= 1 << 1
+			requiredBitSet[1] |= 1 << 2
 			if err := func() error {
 				s.Stages = make([]ProjectStage, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -2197,7 +2231,7 @@ func (s *ProjectCreate) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b00000100,
-		0b00000010,
+		0b00000100,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2545,6 +2579,12 @@ func (s *ProjectListItem) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.IsTemplate.Set {
+			e.FieldStart("is_template")
+			s.IsTemplate.Encode(e)
+		}
+	}
+	{
 		if s.LastSuccessfulRunAt.Set {
 			e.FieldStart("last_successful_run_at")
 			s.LastSuccessfulRunAt.Encode(e, json.EncodeDateTime)
@@ -2558,12 +2598,13 @@ func (s *ProjectListItem) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectListItem = [5]string{
+var jsonFieldsNameOfProjectListItem = [6]string{
 	0: "id",
 	1: "name",
 	2: "cron_enabled",
-	3: "last_successful_run_at",
-	4: "last_run",
+	3: "is_template",
+	4: "last_successful_run_at",
+	5: "last_run",
 }
 
 // Decode decodes ProjectListItem from json.
@@ -2609,6 +2650,16 @@ func (s *ProjectListItem) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"cron_enabled\"")
+			}
+		case "is_template":
+			if err := func() error {
+				s.IsTemplate.Reset()
+				if err := s.IsTemplate.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_template\"")
 			}
 		case "last_successful_run_at":
 			if err := func() error {
@@ -3309,6 +3360,12 @@ func (s *ProjectUpdate) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.IsTemplate.Set {
+			e.FieldStart("is_template")
+			s.IsTemplate.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("stages")
 		e.ArrStart()
 		for _, elem := range s.Stages {
@@ -3324,7 +3381,7 @@ func (s *ProjectUpdate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectUpdate = [12]string{
+var jsonFieldsNameOfProjectUpdate = [13]string{
 	0:  "id",
 	1:  "cron_enabled",
 	2:  "cron_schedule",
@@ -3335,8 +3392,9 @@ var jsonFieldsNameOfProjectUpdate = [12]string{
 	7:  "restart_after",
 	8:  "retention_count",
 	9:  "with_root_env",
-	10: "stages",
-	11: "env_vars",
+	10: "is_template",
+	11: "stages",
+	12: "env_vars",
 }
 
 // Decode decodes ProjectUpdate from json.
@@ -3452,8 +3510,18 @@ func (s *ProjectUpdate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"with_root_env\"")
 			}
+		case "is_template":
+			if err := func() error {
+				s.IsTemplate.Reset()
+				if err := s.IsTemplate.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_template\"")
+			}
 		case "stages":
-			requiredBitSet[1] |= 1 << 2
+			requiredBitSet[1] |= 1 << 3
 			if err := func() error {
 				s.Stages = make([]ProjectStage, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -3491,7 +3559,7 @@ func (s *ProjectUpdate) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b00001001,
-		0b00000100,
+		0b00001000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

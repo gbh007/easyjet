@@ -70,6 +70,8 @@ export interface Project {
   retention_count?: number;
   /** Флаг использования переменных окружения root пользователя */
   with_root_env?: boolean;
+  /** Флаг шаблонного проекта (шаблон не может быть запущен) */
+  is_template?: boolean;
   /**
    * Этапы пайплайна (выполняются последовательно)
    * @minItems 1
@@ -109,6 +111,8 @@ export interface ProjectListItem {
   name: string;
   /** Флаг включения автоматического расписания (cron) */
   cron_enabled?: boolean;
+  /** Флаг шаблонного проекта */
+  is_template?: boolean;
   /**
    * Время последнего успешного запуска
    * @nullable
@@ -139,6 +143,8 @@ export interface ProjectCreate {
   retention_count?: number;
   /** Флаг использования переменных окружения root пользователя */
   with_root_env?: boolean;
+  /** Флаг шаблонного проекта */
+  is_template?: boolean;
   /**
    * Этапы пайплайна (выполняются последовательно)
    * @minItems 1
@@ -175,6 +181,8 @@ export interface ProjectUpdate {
   retention_count?: number;
   /** Флаг использования переменных окружения root пользователя */
   with_root_env?: boolean;
+  /** Флаг шаблонного проекта */
+  is_template?: boolean;
   /**
    * Этапы пайплайна (выполняются последовательно)
    * @minItems 1
@@ -302,6 +310,21 @@ export type ErrorResponse = {
   error?: string;
 };
 
+export type GetProjectsParams = {
+  /**
+   * Фильтр по типу (project - обычные проекты, template - шаблоны, all - все)
+   */
+  type?: GetProjectsType;
+};
+
+export type GetProjectsType = (typeof GetProjectsType)[keyof typeof GetProjectsType];
+
+export const GetProjectsType = {
+  project: 'project',
+  template: 'template',
+  all: 'all',
+} as const;
+
 export type GetProjects200 = {
   /** @nullable */
   projects?: ProjectListItem[] | null;
@@ -331,4 +354,3 @@ export type CreateGlobalEnvVar201 = {
   /** Уникальный идентификатор созданной переменной */
   id?: number;
 };
-

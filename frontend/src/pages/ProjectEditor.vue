@@ -5,6 +5,38 @@
         {{ isEdit ? 'Редактирование' : 'Создание' }} проекта{{ isEdit ? ' #' + form.id : '' }}
       </h2>
 
+      <v-alert
+        class="mt-4"
+        density="compact"
+        text="Выберите шаблон для быстрого заполнения настроек проекта"
+        type="info"
+        variant="tonal"
+      />
+
+      <div class="d-flex flex-row ga-2 align-center mt-2">
+        <v-select
+          v-model="selectedTemplateId"
+          density="compact"
+          hide-details
+          item-title="name"
+          item-value="id"
+          :items="templates"
+          label="Применить шаблон"
+          style="max-width: 400px"
+          variant="outlined"
+        />
+        <v-btn
+          color="primary"
+          :disabled="!selectedTemplateId"
+          variant="tonal"
+          @click="applyTemplate"
+        >
+          Применить
+        </v-btn>
+      </div>
+
+      <v-divider class="mt-4 mb-2" />
+
       <v-text-field v-model="form.name" class="mt-4" label="Название" required />
 
       <v-text-field v-model="form.dir" class="mt-2" label="Директория" />
@@ -47,6 +79,14 @@
         color="primary"
         hide-details
         label="Использовать переменные окружения хоста (withRootEnv)"
+      />
+
+      <v-switch
+        v-model="form.is_template"
+        class="mt-4"
+        color="purple"
+        hide-details
+        label="Это шаблон (не может быть запущен)"
       />
 
       <v-text-field
@@ -216,12 +256,15 @@ interface ProjectForm {
   cron_schedule: string;
   restart_after: boolean;
   with_root_env: boolean;
+  is_template: boolean;
   retention_count: number;
   stages: Stage[];
   env_vars: EnvVar[];
 }
 
 const form = ref<ProjectForm | null>(null);
+const templates = ref<Array<{ id: number; name: string }>>([]);
+const selectedTemplateId = ref<number | null>(null);
 
 const cronRules = [
   (v: string) => {
@@ -263,6 +306,7 @@ function saveProject() {
       restart_after: form.value.restart_after,
       retention_count: form.value.retention_count,
       with_root_env: form.value.with_root_env,
+      is_template: form.value.is_template,
       stages: form.value.stages,
       env_vars: form.value.env_vars.map((ev) => ({
         name: ev.name,
@@ -289,6 +333,7 @@ function saveProject() {
       restart_after: form.value.restart_after,
       retention_count: form.value.retention_count,
       with_root_env: form.value.with_root_env,
+      is_template: form.value.is_template,
       stages: form.value.stages,
       env_vars: form.value.env_vars.map((ev) => ({
         name: ev.name,
@@ -325,6 +370,36 @@ function removeEnvVar(index: number) {
   form.value.env_vars.splice(index, 1);
 }
 
+function applyTemplate() {
+  if (!form.value || !selectedTemplateId.value) return;
+
+  api
+    .getProject(selectedTemplateId.value)
+    .then((v) => {
+      const template = v.data;
+      form.value!.name = template.name ?? '';
+      form.value!.dir = template.dir ?? '';
+      form.value!.git_url = template.git_url ?? '';
+      form.value!.git_branch = template.git_branch ?? '';
+      form.value!.cron_enabled = template.cron_enabled ?? false;
+      form.value!.cron_schedule = template.cron_schedule ?? '';
+      form.value!.restart_after = template.restart_after ?? false;
+      form.value!.with_root_env = template.with_root_env ?? false;
+      form.value!.retention_count = template.retention_count ?? 0;
+      form.value!.stages = template.stages?.map((s: Stage) => ({ ...s })) || [];
+      form.value!.env_vars =
+        template.env_vars?.map((ev) => ({
+          id: ev.id,
+          name: ev.name,
+          value: ev.value,
+          uses_other_variables: ev.uses_other_variables ?? false,
+        })) || [];
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
 function load() {
   const id = route.params.id;
   if (!id || id === 'new') {
@@ -338,37 +413,50 @@ function load() {
       cron_schedule: '',
       restart_after: false,
       with_root_env: false,
+      is_template: false,
       retention_count: 0,
       stages: [],
       env_vars: [],
     };
-    return;
+  } else {
+    api
+      .getProject(Number(id))
+      .then((v) => {
+        const data = v.data;
+        form.value = {
+          id: data.id ?? 0,
+          name: data.name ?? '',
+          dir: data.dir || '',
+          git_url: data.git_url || '',
+          git_branch: data.git_branch || '',
+          cron_enabled: data.cron_enabled || false,
+          cron_schedule: data.cron_schedule || '',
+          restart_after: data.restart_after || false,
+          with_root_env: data.with_root_env || false,
+          is_template: data.is_template || false,
+          retention_count: data.retention_count || 0,
+          stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
+          env_vars:
+            data.env_vars?.map((ev) => ({
+              id: ev.id,
+              name: ev.name,
+              value: ev.value,
+              uses_other_variables: ev.uses_other_variables ?? false,
+            })) || [],
+        };
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   api
-    .getProject(Number(id))
+    .getProjects({ type: 'template' })
     .then((v) => {
-      const data = v.data;
-      form.value = {
-        id: data.id ?? 0,
-        name: data.name ?? '',
-        dir: data.dir || '',
-        git_url: data.git_url || '',
-        git_branch: data.git_branch || '',
-        cron_enabled: data.cron_enabled || false,
-        cron_schedule: data.cron_schedule || '',
-        restart_after: data.restart_after || false,
-        with_root_env: data.with_root_env || false,
-        retention_count: data.retention_count || 0,
-        stages: data.stages?.map((s: Stage) => ({ ...s })) || [],
-        env_vars:
-          data.env_vars?.map((ev) => ({
-            id: ev.id,
-            name: ev.name,
-            value: ev.value,
-            uses_other_variables: ev.uses_other_variables ?? false,
-          })) || [],
-      };
+      const projectsData = v.data.projects;
+      if (projectsData) {
+        templates.value = projectsData.map((p) => ({ id: p.id, name: p.name }));
+      }
     })
     .catch((error) => {
       console.error(error);

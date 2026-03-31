@@ -37,6 +37,7 @@ func convertProjectToOgen(p entity.Project) ogenapi.Project {
 		RestartAfter:   ogenapi.NewOptBool(p.RestartAfter),
 		RetentionCount: ogenapi.NewOptInt32(int32(p.RetentionCount)),
 		WithRootEnv:    ogenapi.NewOptBool(p.WithRootEnv),
+		IsTemplate:     ogenapi.NewOptBool(p.IsTemplate),
 		Stages:         stages,
 		EnvVars:        ogenapi.NewOptNilProjectEnvironmentVariableArray(envVars),
 	}

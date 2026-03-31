@@ -3,7 +3,13 @@
     <v-sheet class="d-flex pa-4 flex-row justify-space-between align-center" elevation="2">
       <v-sheet class="d-flex pa-4 flex-column">
         <v-sheet class="d-flex flex-row justify-space-between align-center">
-          <h2>#{{ project.id }} {{ project.name }}</h2>
+          <div class="d-flex flex-row align-center ga-2">
+            <h2>#{{ project.id }} {{ project.name }}</h2>
+            <v-chip v-if="project.is_template" color="purple" size="small" variant="tonal">
+              <v-icon icon="mdi-content-save-cog-outline" size="small" />
+              Шаблон
+            </v-chip>
+          </div>
         </v-sheet>
         <v-sheet class="d-flex flex-row ga-2">
           <b>Создан</b>
@@ -104,7 +110,7 @@
       <v-sheet class="d-flex ga-2 flex-column">
         <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)"> Редактировать </v-btn>
         <v-btn
-          :disabled="running"
+          :disabled="running || project.is_template"
           :loading="running"
           prepend-icon="mdi-play"
           @click="runProject(project.id)"
@@ -216,6 +222,7 @@ interface Project {
   restart_after: boolean;
   with_root_env: boolean;
   retention_count: number;
+  is_template: boolean;
   stages?: Array<{
     number: number;
     script: string;
@@ -320,6 +327,7 @@ function load() {
         restart_after: data.restart_after ?? false,
         with_root_env: data.with_root_env ?? false,
         retention_count: data.retention_count ?? 0,
+        is_template: data.is_template ?? false,
         stages: data.stages?.map((s) => ({
           number: s.number ?? 0,
           script: s.script ?? '',

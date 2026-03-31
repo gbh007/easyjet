@@ -36,6 +36,10 @@ func (s *Project) setDefaults() {
 		val := bool(false)
 		s.WithRootEnv.SetTo(val)
 	}
+	{
+		val := bool(false)
+		s.IsTemplate.SetTo(val)
+	}
 }
 
 // setDefaults set default value of fields.
@@ -56,6 +60,10 @@ func (s *ProjectCreate) setDefaults() {
 		val := bool(false)
 		s.WithRootEnv.SetTo(val)
 	}
+	{
+		val := bool(false)
+		s.IsTemplate.SetTo(val)
+	}
 }
 
 // setDefaults set default value of fields.
@@ -63,5 +71,9 @@ func (s *ProjectListItem) setDefaults() {
 	{
 		val := bool(false)
 		s.CronEnabled.SetTo(val)
+	}
+	{
+		val := bool(false)
+		s.IsTemplate.SetTo(val)
 	}
 }

@@ -48,6 +48,7 @@ func (repo Repo) SetProject(ctx context.Context, p entity.Project) (uint, error)
 				"restart_after":   p.RestartAfter,
 				"retention_count": p.RetentionCount,
 				"with_root_env":   p.WithRootEnv,
+				"is_template":     p.IsTemplate,
 			}).
 			Where(squirrel.Eq{"id": p.ID}).
 			ToSql()
@@ -72,6 +73,7 @@ func (repo Repo) SetProject(ctx context.Context, p entity.Project) (uint, error)
 				"restart_after":   p.RestartAfter,
 				"retention_count": p.RetentionCount,
 				"with_root_env":   p.WithRootEnv,
+				"is_template":     p.IsTemplate,
 			}).
 			ToSql()
 		if err != nil {

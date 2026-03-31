@@ -1481,8 +1481,22 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 
 			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
 		}
-		err error
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: GetProjectsOperation,
+			ID:   "getProjects",
+		}
 	)
+	params, err := decodeGetProjectsParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
 
 	var rawBody []byte
 
@@ -1495,13 +1509,18 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 			OperationID:      "getProjects",
 			Body:             nil,
 			RawBody:          rawBody,
-			Params:           middleware.Parameters{},
-			Raw:              r,
+			Params: middleware.Parameters{
+				{
+					Name: "type",
+					In:   "query",
+				}: params.Type,
+			},
+			Raw: r,
 		}
 
 		type (
 			Request  = struct{}
-			Params   = struct{}
+			Params   = GetProjectsParams
 			Response = *GetProjectsOK
 		)
 		response, err = middleware.HookMiddleware[
@@ -1511,14 +1530,14 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 		](
 			m,
 			mreq,
-			nil,
+			unpackGetProjectsParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetProjects(ctx)
+				response, err = s.h.GetProjects(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetProjects(ctx)
+		response, err = s.h.GetProjects(ctx, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
