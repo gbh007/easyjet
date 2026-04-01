@@ -15,7 +15,7 @@ func (srv Service) runStage(
 	runID uint,
 	dir string,
 	stage entity.ProjectStage,
-	env []string,
+	env func(entity.ProjectStage) []string,
 ) (err error) {
 	start := time.Now()
 
@@ -35,7 +35,7 @@ func (srv Service) runStage(
 		return fmt.Errorf("create stage %d script: %w", stage.Number, err)
 	}
 
-	out, err := srv.ex.Exec(ctx, dir, p, env)
+	out, err := srv.ex.Exec(ctx, dir, p, env(stage))
 	if err != nil {
 		err = fmt.Errorf("execute stage %d script: %w", stage.Number, err)
 	}

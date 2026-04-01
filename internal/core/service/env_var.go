@@ -39,32 +39,29 @@ func (s Service) DeleteGlobalEnvVar(ctx context.Context, id uint) error {
 // 2. Static workspace variables (WORKSPACE)
 // 3. Global variables
 // 4. Project variables
-func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.Project, run entity.ProjectRun, dir string) ([]string, error) {
-	var result []string
+func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.Project, run entity.ProjectRun, dir string) (func(stage entity.ProjectStage) []string, error) {
+	globalVars, err := s.db.GlobalEnvVars(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get global env vars: %w", err)
+	}
 
-	envMap := make(map[string]string)
+	osEnv := os.Environ()
 
-	if project.WithRootEnv {
-		for _, raw := range os.Environ() {
-			name, value, ok := strings.Cut(raw, "=")
-			if ok {
-				envMap[name] = value
-			}
+	var (
+		commitHash         string
+		externalAddrWebURL *url.URL
+		runAddrWebURL      *url.URL
+	)
+
+	if project.HasGIT() {
+		commitHash, err = s.git.CurrentHash(ctx, dir)
+		if err != nil {
+			return nil, fmt.Errorf("get git hash: %w", err)
 		}
 	}
 
-	envMap["BUILD_NUMBER"] = strconv.FormatUint(uint64(run.ID), 10)
-	// BUILD_ID - stage number?
-
-	envMap["NODE_NAME"] = "master"
-	envMap["JOB_NAME"] = project.Name
-	envMap["BUILD_TAG"] = strings.ReplaceAll(strings.ToLower(project.Name), " ", "-") + "-" + strconv.FormatUint(uint64(run.ID), 10)
-	envMap["EXECUTOR_NUMBER"] = "0001"
-	// JAVA_HOME - XDD
-	envMap["WORKSPACE"] = dir
-
 	if s.externalWebAddr != "" {
-		u, err := url.Parse(s.externalWebAddr)
+		externalAddrWebURL, err = url.Parse(s.externalWebAddr)
 		if err != nil {
 			s.logger.WarnContext(ctx, "failed parse external web address", "error", err)
 		} else {
@@ -72,55 +69,76 @@ func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.P
 			if err != nil {
 				s.logger.WarnContext(ctx, "failed parse run template web address", "error", err)
 			} else {
-				envMap["BUILD_URL"] = u.ResolveReference(u1).String()
+				runAddrWebURL = externalAddrWebURL.ResolveReference(u1)
+			}
+		}
+	}
+
+	return func(stage entity.ProjectStage) []string {
+		var result []string
+
+		envMap := make(map[string]string)
+
+		if project.WithRootEnv {
+			for _, raw := range osEnv {
+				name, value, ok := strings.Cut(raw, "=")
+				if ok {
+					envMap[name] = value
+				}
+			}
+		}
+
+		envMap["BUILD_NUMBER"] = strconv.FormatUint(uint64(run.ID), 10)
+		envMap["BUILD_ID"] = strconv.FormatUint(uint64(run.ID), 10) + "-" + strconv.Itoa(stage.Number)
+
+		envMap["NODE_NAME"] = "master"
+		envMap["JOB_NAME"] = project.Name
+		envMap["BUILD_TAG"] = strings.ReplaceAll(strings.ToLower(project.Name), " ", "-") + "-" + strconv.FormatUint(uint64(run.ID), 10)
+		envMap["EXECUTOR_NUMBER"] = "0001"
+		// JAVA_HOME - XDD
+		envMap["WORKSPACE"] = dir
+
+		if externalAddrWebURL != nil {
+			if runAddrWebURL != nil {
+				envMap["BUILD_URL"] = runAddrWebURL.String()
 			}
 
-			envMap["EASYJET_URL"] = s.externalWebAddr
-			envMap["JENKINS_URL"] = s.externalWebAddr
-		}
-	}
-
-	if project.HasGIT() {
-		commitHash, err := s.git.CurrentHash(ctx, dir)
-		if err != nil {
-			return nil, fmt.Errorf("get git hash: %w", err)
+			envMap["EASYJET_URL"] = externalAddrWebURL.String()
+			envMap["JENKINS_URL"] = externalAddrWebURL.String()
 		}
 
-		envMap["GIT_COMMIT"] = commitHash
-		envMap["GIT_URL"] = project.GitURL
-		envMap["GIT_BRANCH"] = project.GitBranch
-	}
-
-	globalVars, err := s.db.GlobalEnvVars(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("get global env vars: %w", err)
-	}
-
-	for _, ev := range globalVars {
-		value := ev.Value
-
-		if ev.UsesOtherVariables {
-			value = s.resolveVariables(envMap, value)
+		if project.HasGIT() {
+			envMap["GIT_COMMIT"] = commitHash
+			envMap["GIT_URL"] = project.GitURL
+			envMap["GIT_BRANCH"] = project.GitBranch
 		}
 
-		envMap[ev.Name] = value
-	}
+		for _, ev := range globalVars {
+			value := ev.Value
 
-	for _, ev := range project.EnvVars {
-		value := ev.Value
+			if ev.UsesOtherVariables {
+				value = s.resolveVariables(envMap, value)
+			}
 
-		if ev.UsesOtherVariables {
-			value = s.resolveVariables(envMap, value)
+			envMap[ev.Name] = value
 		}
 
-		envMap[ev.Name] = value
-	}
+		for _, ev := range project.EnvVars {
+			value := ev.Value
 
-	for name, value := range envMap {
-		result = append(result, name+"="+value)
-	}
+			if ev.UsesOtherVariables {
+				value = s.resolveVariables(envMap, value)
+			}
 
-	return result, nil
+			envMap[ev.Name] = value
+		}
+
+		for name, value := range envMap {
+			result = append(result, name+"="+value)
+		}
+
+		return result
+	}, nil
 }
 
 func (s Service) resolveVariables(envMap map[string]string, value string) string {
