@@ -9,33 +9,7 @@
       </p>
 
       <v-sheet class="d-flex pa-4 flex-column">
-        <v-expansion-panels variant="accordion">
-          <v-expansion-panel>
-            <v-expansion-panel-title class="d-flex align-center">
-              <v-icon class="mr-2" color="info" icon="mdi-information-outline" size="small" />
-              <span class="text-subtitle-1 font-weight-bold">Переменные окружения</span>
-            </v-expansion-panel-title>
-            <v-expansion-panel-text>
-              <div class="text-body-2 mt-2">
-                В скриптах этапов доступны следующие переменные окружения:
-              </div>
-              <v-table class="mt-2" density="compact" variant="outlined">
-                <thead>
-                  <tr>
-                    <th class="text-left">Переменная</th>
-                    <th class="text-left">Описание</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code class="text-primary">WORKSPACE</code></td>
-                    <td>Рабочая директория проекта (путь к папке на сервере)</td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
+        <EnvVarsInfo />
       </v-sheet>
 
       <div class="d-flex flex-row ga-2 mt-4 mb-2">
@@ -146,6 +120,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { getEasyJetAPI } from '@/api/generated';
+import EnvVarsInfo from '@/components/EnvVarsInfo.vue';
 
 const api = getEasyJetAPI();
 
