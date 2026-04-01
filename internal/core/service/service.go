@@ -7,12 +7,13 @@ import (
 )
 
 type Service struct {
-	ex     port.Exec
-	fs     port.FileSystem
-	git    port.Git
-	db     port.Database
-	pubsub port.PubSub
-	logger *slog.Logger
+	ex              port.Exec
+	fs              port.FileSystem
+	git             port.Git
+	db              port.Database
+	pubsub          port.PubSub
+	logger          *slog.Logger
+	externalWebAddr string
 }
 
 func New(
@@ -22,13 +23,15 @@ func New(
 	git port.Git,
 	db port.Database,
 	publisher port.PubSub,
+	externalWebAddr string,
 ) Service {
 	return Service{
-		ex:     ex,
-		fs:     fs,
-		git:    git,
-		db:     db,
-		pubsub: publisher,
-		logger: logger,
+		ex:              ex,
+		fs:              fs,
+		git:             git,
+		db:              db,
+		pubsub:          publisher,
+		logger:          logger,
+		externalWebAddr: externalWebAddr,
 	}
 }

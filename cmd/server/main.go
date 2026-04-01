@@ -82,7 +82,7 @@ func main() {
 	fs := filesystem.New(logger, cfg.App.ProjectDir)
 	git := shellgit.New(logger)
 	ps := eventbus.New(logger)
-	srv := service.New(logger, ex, fs, git, db, ps)
+	srv := service.New(logger, ex, fs, git, db, ps, cfg.Server.External.Web)
 
 	apiCnt := httpapi.New(
 		logger,

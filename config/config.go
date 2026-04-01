@@ -22,10 +22,16 @@ type App struct {
 }
 
 type Server struct {
-	Addr            string `toml:"addr"`
-	User            string `toml:"user"`
-	Pass            string `toml:"pass"`
-	StaticFilesPath string `toml:"static_files_path"`
+	Addr            string         `toml:"addr"`
+	User            string         `toml:"user"`
+	Pass            string         `toml:"pass"`
+	StaticFilesPath string         `toml:"static_files_path"`
+	External        ServerExternal `toml:"external"`
+}
+
+type ServerExternal struct {
+	API string `toml:"api"`
+	Web string `toml:"web"`
 }
 
 type Database struct {

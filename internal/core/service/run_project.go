@@ -104,7 +104,7 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		}
 	}
 
-	env, err := srv.CalculateEffectiveEnvVars(ctx, project, dir)
+	env, err := srv.CalculateEffectiveEnvVars(ctx, project, run, dir)
 	if err != nil {
 		return fmt.Errorf("calculate env vars: %w", err)
 	}

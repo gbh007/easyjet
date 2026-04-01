@@ -3,8 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gbh007/easyjet/internal/core/entity"
@@ -37,7 +39,7 @@ func (s Service) DeleteGlobalEnvVar(ctx context.Context, id uint) error {
 // 2. Static workspace variables (WORKSPACE)
 // 3. Global variables
 // 4. Project variables
-func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.Project, dir string) ([]string, error) {
+func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.Project, run entity.ProjectRun, dir string) ([]string, error) {
 	var result []string
 
 	envMap := make(map[string]string)
@@ -51,7 +53,43 @@ func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.P
 		}
 	}
 
+	envMap["BUILD_NUMBER"] = strconv.FormatUint(uint64(run.ID), 10)
+	// BUILD_ID - stage number?
+
+	envMap["NODE_NAME"] = "master"
+	envMap["JOB_NAME"] = project.Name
+	envMap["BUILD_TAG"] = strings.ReplaceAll(strings.ToLower(project.Name), " ", "-") + "-" + strconv.FormatUint(uint64(run.ID), 10)
+	envMap["EXECUTOR_NUMBER"] = "0001"
+	// JAVA_HOME - XDD
 	envMap["WORKSPACE"] = dir
+
+	if s.externalWebAddr != "" {
+		u, err := url.Parse(s.externalWebAddr)
+		if err != nil {
+			s.logger.WarnContext(ctx, "failed parse external web address", "error", err)
+		} else {
+			u1, err := url.Parse(fmt.Sprintf(entity.ProjectRunURLTemplate, project.ID, run.ID))
+			if err != nil {
+				s.logger.WarnContext(ctx, "failed parse run template web address", "error", err)
+			} else {
+				envMap["BUILD_URL"] = u.ResolveReference(u1).String()
+			}
+
+			envMap["EASYJET_URL"] = s.externalWebAddr
+			envMap["JENKINS_URL"] = s.externalWebAddr
+		}
+	}
+
+	if project.HasGIT() {
+		commitHash, err := s.git.CurrentHash(ctx, dir)
+		if err != nil {
+			return nil, fmt.Errorf("get git hash: %w", err)
+		}
+
+		envMap["GIT_COMMIT"] = commitHash
+		envMap["GIT_URL"] = project.GitURL
+		envMap["GIT_BRANCH"] = project.GitBranch
+	}
 
 	globalVars, err := s.db.GlobalEnvVars(ctx)
 	if err != nil {
