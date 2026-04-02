@@ -37,6 +37,25 @@ func (a Adapter) CreateProjectDir(ctx context.Context, id uint) (string, error) 
 	return p, nil
 }
 
+func (a Adapter) ProjectDirExists(ctx context.Context, id uint) (bool, error) {
+	p := a.GetProjectDir(ctx, id)
+
+	info, err := os.Stat(p)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	if info.IsDir() {
+		return true, nil
+	}
+
+	return false, errors.New("is not dir")
+}
+
 func (Adapter) CreateSHScript(ctx context.Context, id uint, stage int, body string) (p string, err error) {
 	d := filepath.Join(os.TempDir(), "easyjet", "scripts")
 

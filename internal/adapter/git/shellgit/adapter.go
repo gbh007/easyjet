@@ -2,8 +2,11 @@ package shellgit
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -134,6 +137,185 @@ func (adp Adapter) Pull(ctx context.Context, dir, branch string) error {
 			branch,
 		},
 		Dir: dir,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (adp Adapter) Fetch(ctx context.Context, dir string) error {
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"fetch",
+			"--force",
+			adp.OriginName(),
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (adp Adapter) HardReset(ctx context.Context, dir, branch string) error {
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"reset",
+			"--hard",
+			branch,
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (adp Adapter) Exists(ctx context.Context, dir string) (bool, error) {
+	info, err := os.Stat(filepath.Join(dir, ".git"))
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	if info.IsDir() {
+		return true, nil
+	}
+
+	return false, errors.New(".git is not dir")
+}
+
+func (adp Adapter) CurrentBranch(ctx context.Context, dir string) (string, error) {
+	name, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"branch",
+			"--show-current",
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(name), nil
+}
+
+func (adp Adapter) CurrentOriginURL(ctx context.Context, dir string) (string, error) {
+	u, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"remote",
+			"get-url",
+			adp.OriginName(),
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(u), nil
+}
+
+func (adp Adapter) SetOriginURL(ctx context.Context, dir, originURL string) error {
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"remote",
+			"set-url",
+			adp.OriginName(),
+			originURL,
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (adp Adapter) Branches(ctx context.Context, dir string) ([]string, error) {
+	name, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"branch",
+			"--no-color",
+			`--format=%(refname:short)`,
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return lo.Map(strings.Split(name, "\n"), func(s string, _ int) string {
+		return strings.TrimSpace(s)
+	}), nil
+}
+
+func (adp Adapter) DeleteBranch(ctx context.Context, dir, branch string) error {
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"branch",
+			"-D",
+			branch,
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (adp Adapter) GC(ctx context.Context, dir string) error {
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd: execPath,
+		Args: []string{
+			"gc",
+		},
+		Dir: dir,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (adp Adapter) SwitchBranch(ctx context.Context, dir, branch string, create bool) error {
+	args := []string{
+		"checkout",
+		branch,
+	}
+
+	if create {
+		args = []string{
+			"checkout",
+			"-b",
+			branch,
+		}
+	}
+
+	_, err := internal.Run(ctx, internal.Config{
+		Cmd:  execPath,
+		Args: args,
+		Dir:  dir,
 	})
 	if err != nil {
 		return err

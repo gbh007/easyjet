@@ -13,6 +13,7 @@ type Exec interface {
 type FileSystem interface {
 	GetProjectDir(ctx context.Context, id uint) string
 	CreateProjectDir(ctx context.Context, id uint) (string, error)
+	ProjectDirExists(ctx context.Context, id uint) (bool, error)
 	CreateSHScript(ctx context.Context, id uint, stage int, body string) (p string, err error)
 }
 
@@ -22,6 +23,16 @@ type Git interface {
 	Diff(ctx context.Context, dir, from, to string) ([]entity.Commit, error)
 	Init(ctx context.Context, dir, branch, originURL string) error
 	Pull(ctx context.Context, dir, branch string) error
+	Exists(ctx context.Context, dir string) (bool, error)
+	CurrentBranch(ctx context.Context, dir string) (string, error)
+	SwitchBranch(ctx context.Context, dir, branch string, create bool) error
+	CurrentOriginURL(ctx context.Context, dir string) (string, error)
+	Branches(ctx context.Context, dir string) ([]string, error)
+	DeleteBranch(ctx context.Context, dir, branch string) error
+	GC(ctx context.Context, dir string) error
+	HardReset(ctx context.Context, dir, branch string) error
+	SetOriginURL(ctx context.Context, dir, originURL string) error
+	Fetch(ctx context.Context, dir string) error
 }
 
 type Database interface {
