@@ -151,7 +151,7 @@ paths:
       tags:
         - Project Runs
       summary: Получить историю запусков проекта
-      description: Возвращает список всех запусков для указанного проекта
+      description: Возвращает список всех запусков для указанного проекта (без информации об этапах и коммитах)
       operationId: getProjectRuns
       parameters:
         - name: project_id
@@ -174,7 +174,7 @@ paths:
                     type: array
                     nullable: true
                     items:
-                      $ref: "#/components/schemas/ProjectRun"
+                      $ref: "#/components/schemas/ProjectRunSummary"
         default:
           $ref: "#/components/responses/Error"
 
@@ -713,6 +713,53 @@ components:
           description: Git-коммиты, связанные с запуском
           readOnly: true
           nullable: true
+
+    ProjectRunSummary:
+      type: object
+      description: Краткая информация о запуске проекта (для списка запусков, без этапов и коммитов)
+      properties:
+        id:
+          type: integer
+          format: uint
+          description: Уникальный идентификатор запуска
+          readOnly: true
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          description: Время начала запуска
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Время последнего обновления статуса
+          readOnly: true
+        project_id:
+          type: integer
+          format: uint
+          description: Ссылка на проект
+          readOnly: true
+          example: 1
+        status:
+          type: string
+          description: Статус выполнения запуска
+          readOnly: true
+          enum:
+            - pending
+            - processing
+            - success
+            - failed
+          example: success
+        duration:
+          type: integer
+          format: int64
+          description: Время выполнения запуска (в миллисекундах)
+          readOnly: true
+          example: 120000
+        fail_log:
+          type: string
+          description: Лог ошибки, если запуск завершился неудачей
+          readOnly: true
 
     ProjectRunStage:
       type: object

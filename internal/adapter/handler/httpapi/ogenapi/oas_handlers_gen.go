@@ -1259,7 +1259,7 @@ func (s *Server) handleGetProjectRunRequest(args [2]string, argsEscaped bool, w 
 // handleGetProjectRunsRequest handles getProjectRuns operation.
 //
 // Возвращает список всех запусков для указанного
-// проекта.
+// проекта (без информации об этапах и коммитах).
 //
 // GET /api/v1/projects/{project_id}/runs
 func (s *Server) handleGetProjectRunsRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {

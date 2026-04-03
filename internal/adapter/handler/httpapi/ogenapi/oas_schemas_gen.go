@@ -290,16 +290,16 @@ func (s *GetGlobalEnvVarsOK) SetEnvVars(val OptNilEnvironmentVariableArray) {
 }
 
 type GetProjectRunsOK struct {
-	Runs OptNilProjectRunArray `json:"runs"`
+	Runs OptNilProjectRunSummaryArray `json:"runs"`
 }
 
 // GetRuns returns the value of Runs.
-func (s *GetProjectRunsOK) GetRuns() OptNilProjectRunArray {
+func (s *GetProjectRunsOK) GetRuns() OptNilProjectRunSummaryArray {
 	return s.Runs
 }
 
 // SetRuns sets the value of Runs.
-func (s *GetProjectRunsOK) SetRuns(val OptNilProjectRunArray) {
+func (s *GetProjectRunsOK) SetRuns(val OptNilProjectRunSummaryArray) {
 	s.Runs = val
 }
 
@@ -847,69 +847,6 @@ func (o OptNilProjectListItemArray) Or(d []ProjectListItem) []ProjectListItem {
 	return d
 }
 
-// NewOptNilProjectRunArray returns new OptNilProjectRunArray with value set to v.
-func NewOptNilProjectRunArray(v []ProjectRun) OptNilProjectRunArray {
-	return OptNilProjectRunArray{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptNilProjectRunArray is optional nullable []ProjectRun.
-type OptNilProjectRunArray struct {
-	Value []ProjectRun
-	Set   bool
-	Null  bool
-}
-
-// IsSet returns true if OptNilProjectRunArray was set.
-func (o OptNilProjectRunArray) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptNilProjectRunArray) Reset() {
-	var v []ProjectRun
-	o.Value = v
-	o.Set = false
-	o.Null = false
-}
-
-// SetTo sets value to v.
-func (o *OptNilProjectRunArray) SetTo(v []ProjectRun) {
-	o.Set = true
-	o.Null = false
-	o.Value = v
-}
-
-// IsNull returns true if value is Null.
-func (o OptNilProjectRunArray) IsNull() bool { return o.Null }
-
-// SetToNull sets value to null.
-func (o *OptNilProjectRunArray) SetToNull() {
-	o.Set = true
-	o.Null = true
-	var v []ProjectRun
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptNilProjectRunArray) Get() (v []ProjectRun, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptNilProjectRunArray) Or(d []ProjectRun) []ProjectRun {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptNilProjectRunGitCommitArray returns new OptNilProjectRunGitCommitArray with value set to v.
 func NewOptNilProjectRunGitCommitArray(v []ProjectRunGitCommit) OptNilProjectRunGitCommitArray {
 	return OptNilProjectRunGitCommitArray{
@@ -1030,6 +967,69 @@ func (o OptNilProjectRunStageArray) Get() (v []ProjectRunStage, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptNilProjectRunStageArray) Or(d []ProjectRunStage) []ProjectRunStage {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilProjectRunSummaryArray returns new OptNilProjectRunSummaryArray with value set to v.
+func NewOptNilProjectRunSummaryArray(v []ProjectRunSummary) OptNilProjectRunSummaryArray {
+	return OptNilProjectRunSummaryArray{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilProjectRunSummaryArray is optional nullable []ProjectRunSummary.
+type OptNilProjectRunSummaryArray struct {
+	Value []ProjectRunSummary
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilProjectRunSummaryArray was set.
+func (o OptNilProjectRunSummaryArray) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilProjectRunSummaryArray) Reset() {
+	var v []ProjectRunSummary
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilProjectRunSummaryArray) SetTo(v []ProjectRunSummary) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilProjectRunSummaryArray) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilProjectRunSummaryArray) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v []ProjectRunSummary
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilProjectRunSummaryArray) Get() (v []ProjectRunSummary, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilProjectRunSummaryArray) Or(d []ProjectRunSummary) []ProjectRunSummary {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -1231,6 +1231,52 @@ func (o OptProjectRunStatus) Get() (v ProjectRunStatus, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptProjectRunStatus) Or(d ProjectRunStatus) ProjectRunStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptProjectRunSummaryStatus returns new OptProjectRunSummaryStatus with value set to v.
+func NewOptProjectRunSummaryStatus(v ProjectRunSummaryStatus) OptProjectRunSummaryStatus {
+	return OptProjectRunSummaryStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptProjectRunSummaryStatus is optional ProjectRunSummaryStatus.
+type OptProjectRunSummaryStatus struct {
+	Value ProjectRunSummaryStatus
+	Set   bool
+}
+
+// IsSet returns true if OptProjectRunSummaryStatus was set.
+func (o OptProjectRunSummaryStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptProjectRunSummaryStatus) Reset() {
+	var v ProjectRunSummaryStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptProjectRunSummaryStatus) SetTo(v ProjectRunSummaryStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptProjectRunSummaryStatus) Get() (v ProjectRunSummaryStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptProjectRunSummaryStatus) Or(d ProjectRunSummaryStatus) ProjectRunSummaryStatus {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -2153,6 +2199,152 @@ func (s *ProjectRunStatus) UnmarshalText(data []byte) error {
 		return nil
 	case ProjectRunStatusFailed:
 		*s = ProjectRunStatusFailed
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Краткая информация о запуске проекта (для списка
+// запусков, без этапов и коммитов).
+// Ref: #/components/schemas/ProjectRunSummary
+type ProjectRunSummary struct {
+	// Уникальный идентификатор запуска.
+	ID OptUint `json:"id"`
+	// Время начала запуска.
+	CreatedAt OptDateTime `json:"created_at"`
+	// Время последнего обновления статуса.
+	UpdatedAt OptDateTime `json:"updated_at"`
+	// Ссылка на проект.
+	ProjectID OptUint `json:"project_id"`
+	// Статус выполнения запуска.
+	Status OptProjectRunSummaryStatus `json:"status"`
+	// Время выполнения запуска (в миллисекундах).
+	Duration OptInt64 `json:"duration"`
+	// Лог ошибки, если запуск завершился неудачей.
+	FailLog OptString `json:"fail_log"`
+}
+
+// GetID returns the value of ID.
+func (s *ProjectRunSummary) GetID() OptUint {
+	return s.ID
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ProjectRunSummary) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ProjectRunSummary) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// GetProjectID returns the value of ProjectID.
+func (s *ProjectRunSummary) GetProjectID() OptUint {
+	return s.ProjectID
+}
+
+// GetStatus returns the value of Status.
+func (s *ProjectRunSummary) GetStatus() OptProjectRunSummaryStatus {
+	return s.Status
+}
+
+// GetDuration returns the value of Duration.
+func (s *ProjectRunSummary) GetDuration() OptInt64 {
+	return s.Duration
+}
+
+// GetFailLog returns the value of FailLog.
+func (s *ProjectRunSummary) GetFailLog() OptString {
+	return s.FailLog
+}
+
+// SetID sets the value of ID.
+func (s *ProjectRunSummary) SetID(val OptUint) {
+	s.ID = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ProjectRunSummary) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ProjectRunSummary) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// SetProjectID sets the value of ProjectID.
+func (s *ProjectRunSummary) SetProjectID(val OptUint) {
+	s.ProjectID = val
+}
+
+// SetStatus sets the value of Status.
+func (s *ProjectRunSummary) SetStatus(val OptProjectRunSummaryStatus) {
+	s.Status = val
+}
+
+// SetDuration sets the value of Duration.
+func (s *ProjectRunSummary) SetDuration(val OptInt64) {
+	s.Duration = val
+}
+
+// SetFailLog sets the value of FailLog.
+func (s *ProjectRunSummary) SetFailLog(val OptString) {
+	s.FailLog = val
+}
+
+// Статус выполнения запуска.
+type ProjectRunSummaryStatus string
+
+const (
+	ProjectRunSummaryStatusPending    ProjectRunSummaryStatus = "pending"
+	ProjectRunSummaryStatusProcessing ProjectRunSummaryStatus = "processing"
+	ProjectRunSummaryStatusSuccess    ProjectRunSummaryStatus = "success"
+	ProjectRunSummaryStatusFailed     ProjectRunSummaryStatus = "failed"
+)
+
+// AllValues returns all ProjectRunSummaryStatus values.
+func (ProjectRunSummaryStatus) AllValues() []ProjectRunSummaryStatus {
+	return []ProjectRunSummaryStatus{
+		ProjectRunSummaryStatusPending,
+		ProjectRunSummaryStatusProcessing,
+		ProjectRunSummaryStatusSuccess,
+		ProjectRunSummaryStatusFailed,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ProjectRunSummaryStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case ProjectRunSummaryStatusPending:
+		return []byte(s), nil
+	case ProjectRunSummaryStatusProcessing:
+		return []byte(s), nil
+	case ProjectRunSummaryStatusSuccess:
+		return []byte(s), nil
+	case ProjectRunSummaryStatusFailed:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ProjectRunSummaryStatus) UnmarshalText(data []byte) error {
+	switch ProjectRunSummaryStatus(data) {
+	case ProjectRunSummaryStatusPending:
+		*s = ProjectRunSummaryStatusPending
+		return nil
+	case ProjectRunSummaryStatusProcessing:
+		*s = ProjectRunSummaryStatusProcessing
+		return nil
+	case ProjectRunSummaryStatusSuccess:
+		*s = ProjectRunSummaryStatusSuccess
+		return nil
+	case ProjectRunSummaryStatusFailed:
+		*s = ProjectRunSummaryStatusFailed
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

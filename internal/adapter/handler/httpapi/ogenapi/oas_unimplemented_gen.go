@@ -94,7 +94,7 @@ func (UnimplementedHandler) GetProjectRun(ctx context.Context, params GetProject
 // GetProjectRuns implements getProjectRuns operation.
 //
 // Возвращает список всех запусков для указанного
-// проекта.
+// проекта (без информации об этапах и коммитах).
 //
 // GET /api/v1/projects/{project_id}/runs
 func (UnimplementedHandler) GetProjectRuns(ctx context.Context, params GetProjectRunsParams) (r *GetProjectRunsOK, _ error) {

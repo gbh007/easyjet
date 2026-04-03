@@ -85,7 +85,7 @@ export const getEasyJetAPI = (axiosInstance: AxiosInstance = axios.default) => {
   };
 
   /**
-   * Возвращает список всех запусков для указанного проекта
+   * Возвращает список всех запусков для указанного проекта (без информации об этапах и коммитах)
    * @summary Получить историю запусков проекта
    */
   const getProjectRuns = (

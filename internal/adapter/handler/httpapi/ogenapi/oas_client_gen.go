@@ -84,7 +84,7 @@ type Invoker interface {
 	// GetProjectRuns invokes getProjectRuns operation.
 	//
 	// Возвращает список всех запусков для указанного
-	// проекта.
+	// проекта (без информации об этапах и коммитах).
 	//
 	// GET /api/v1/projects/{project_id}/runs
 	GetProjectRuns(ctx context.Context, params GetProjectRunsParams) (*GetProjectRunsOK, error)
@@ -865,7 +865,7 @@ func (c *Client) sendGetProjectRun(ctx context.Context, params GetProjectRunPara
 // GetProjectRuns invokes getProjectRuns operation.
 //
 // Возвращает список всех запусков для указанного
-// проекта.
+// проекта (без информации об этапах и коммитах).
 //
 // GET /api/v1/projects/{project_id}/runs
 func (c *Client) GetProjectRuns(ctx context.Context, params GetProjectRunsParams) (*GetProjectRunsOK, error) {

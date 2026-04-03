@@ -275,6 +275,39 @@ export interface ProjectRun {
 }
 
 /**
+ * Статус выполнения запуска
+ */
+export type ProjectRunSummaryStatus =
+  (typeof ProjectRunSummaryStatus)[keyof typeof ProjectRunSummaryStatus];
+
+export const ProjectRunSummaryStatus = {
+  pending: 'pending',
+  processing: 'processing',
+  success: 'success',
+  failed: 'failed',
+} as const;
+
+/**
+ * Краткая информация о запуске проекта (для списка запусков, без этапов и коммитов)
+ */
+export interface ProjectRunSummary {
+  /** Уникальный идентификатор запуска */
+  readonly id?: number;
+  /** Время начала запуска */
+  readonly created_at?: string;
+  /** Время последнего обновления статуса */
+  readonly updated_at?: string;
+  /** Ссылка на проект */
+  readonly project_id?: number;
+  /** Статус выполнения запуска */
+  readonly status?: ProjectRunSummaryStatus;
+  /** Время выполнения запуска (в миллисекундах) */
+  readonly duration?: number;
+  /** Лог ошибки, если запуск завершился неудачей */
+  readonly fail_log?: string;
+}
+
+/**
  * Переменная окружения — именованная пара «ключ-значение» для передачи конфигурации в скрипты пайплайна
  */
 export interface EnvironmentVariable {
@@ -353,7 +386,7 @@ export type CreateProject201 = {
 
 export type GetProjectRuns200 = {
   /** @nullable */
-  runs?: ProjectRun[] | null;
+  runs?: ProjectRunSummary[] | null;
 };
 
 export type CreateProjectRun201 = {
