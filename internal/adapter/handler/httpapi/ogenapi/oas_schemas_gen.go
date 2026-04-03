@@ -1145,6 +1145,98 @@ func (o OptProjectLastRun) Or(d ProjectLastRun) ProjectLastRun {
 	return d
 }
 
+// NewOptProjectLastRunStatus returns new OptProjectLastRunStatus with value set to v.
+func NewOptProjectLastRunStatus(v ProjectLastRunStatus) OptProjectLastRunStatus {
+	return OptProjectLastRunStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptProjectLastRunStatus is optional ProjectLastRunStatus.
+type OptProjectLastRunStatus struct {
+	Value ProjectLastRunStatus
+	Set   bool
+}
+
+// IsSet returns true if OptProjectLastRunStatus was set.
+func (o OptProjectLastRunStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptProjectLastRunStatus) Reset() {
+	var v ProjectLastRunStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptProjectLastRunStatus) SetTo(v ProjectLastRunStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptProjectLastRunStatus) Get() (v ProjectLastRunStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptProjectLastRunStatus) Or(d ProjectLastRunStatus) ProjectLastRunStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptProjectRunStatus returns new OptProjectRunStatus with value set to v.
+func NewOptProjectRunStatus(v ProjectRunStatus) OptProjectRunStatus {
+	return OptProjectRunStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptProjectRunStatus is optional ProjectRunStatus.
+type OptProjectRunStatus struct {
+	Value ProjectRunStatus
+	Set   bool
+}
+
+// IsSet returns true if OptProjectRunStatus was set.
+func (o OptProjectRunStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptProjectRunStatus) Reset() {
+	var v ProjectRunStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptProjectRunStatus) SetTo(v ProjectRunStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptProjectRunStatus) Get() (v ProjectRunStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptProjectRunStatus) Or(d ProjectRunStatus) ProjectRunStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -1635,12 +1727,8 @@ func (s *ProjectEnvironmentVariable) SetUsesOtherVariables(val OptBool) {
 type ProjectLastRun struct {
 	// Время начала запуска.
 	CreatedAt OptDateTime `json:"created_at"`
-	// Флаг успешного завершения всех этапов.
-	Success OptBool `json:"success"`
-	// Флаг ожидания начала выполнения.
-	Pending OptBool `json:"pending"`
-	// Флаг активного выполнения.
-	Processing OptBool `json:"processing"`
+	// Статус выполнения запуска.
+	Status OptProjectLastRunStatus `json:"status"`
 	// Время выполнения последнего запуска (в миллисекундах).
 	Duration OptInt64 `json:"duration"`
 }
@@ -1650,19 +1738,9 @@ func (s *ProjectLastRun) GetCreatedAt() OptDateTime {
 	return s.CreatedAt
 }
 
-// GetSuccess returns the value of Success.
-func (s *ProjectLastRun) GetSuccess() OptBool {
-	return s.Success
-}
-
-// GetPending returns the value of Pending.
-func (s *ProjectLastRun) GetPending() OptBool {
-	return s.Pending
-}
-
-// GetProcessing returns the value of Processing.
-func (s *ProjectLastRun) GetProcessing() OptBool {
-	return s.Processing
+// GetStatus returns the value of Status.
+func (s *ProjectLastRun) GetStatus() OptProjectLastRunStatus {
+	return s.Status
 }
 
 // GetDuration returns the value of Duration.
@@ -1675,24 +1753,70 @@ func (s *ProjectLastRun) SetCreatedAt(val OptDateTime) {
 	s.CreatedAt = val
 }
 
-// SetSuccess sets the value of Success.
-func (s *ProjectLastRun) SetSuccess(val OptBool) {
-	s.Success = val
-}
-
-// SetPending sets the value of Pending.
-func (s *ProjectLastRun) SetPending(val OptBool) {
-	s.Pending = val
-}
-
-// SetProcessing sets the value of Processing.
-func (s *ProjectLastRun) SetProcessing(val OptBool) {
-	s.Processing = val
+// SetStatus sets the value of Status.
+func (s *ProjectLastRun) SetStatus(val OptProjectLastRunStatus) {
+	s.Status = val
 }
 
 // SetDuration sets the value of Duration.
 func (s *ProjectLastRun) SetDuration(val OptInt64) {
 	s.Duration = val
+}
+
+// Статус выполнения запуска.
+type ProjectLastRunStatus string
+
+const (
+	ProjectLastRunStatusPending    ProjectLastRunStatus = "pending"
+	ProjectLastRunStatusProcessing ProjectLastRunStatus = "processing"
+	ProjectLastRunStatusSuccess    ProjectLastRunStatus = "success"
+	ProjectLastRunStatusFailed     ProjectLastRunStatus = "failed"
+)
+
+// AllValues returns all ProjectLastRunStatus values.
+func (ProjectLastRunStatus) AllValues() []ProjectLastRunStatus {
+	return []ProjectLastRunStatus{
+		ProjectLastRunStatusPending,
+		ProjectLastRunStatusProcessing,
+		ProjectLastRunStatusSuccess,
+		ProjectLastRunStatusFailed,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ProjectLastRunStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case ProjectLastRunStatusPending:
+		return []byte(s), nil
+	case ProjectLastRunStatusProcessing:
+		return []byte(s), nil
+	case ProjectLastRunStatusSuccess:
+		return []byte(s), nil
+	case ProjectLastRunStatusFailed:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ProjectLastRunStatus) UnmarshalText(data []byte) error {
+	switch ProjectLastRunStatus(data) {
+	case ProjectLastRunStatusPending:
+		*s = ProjectLastRunStatusPending
+		return nil
+	case ProjectLastRunStatusProcessing:
+		*s = ProjectLastRunStatusProcessing
+		return nil
+	case ProjectLastRunStatusSuccess:
+		*s = ProjectLastRunStatusSuccess
+		return nil
+	case ProjectLastRunStatusFailed:
+		*s = ProjectLastRunStatusFailed
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Элемент списка проектов — краткая информация о
@@ -1783,12 +1907,8 @@ type ProjectRun struct {
 	UpdatedAt OptDateTime `json:"updated_at"`
 	// Ссылка на проект.
 	ProjectID OptUint `json:"project_id"`
-	// Флаг успешного завершения всех этапов.
-	Success OptBool `json:"success"`
-	// Флаг ожидания начала выполнения.
-	Pending OptBool `json:"pending"`
-	// Флаг активного выполнения.
-	Processing OptBool `json:"processing"`
+	// Статус выполнения запуска.
+	Status OptProjectRunStatus `json:"status"`
 	// Время выполнения запуска (в миллисекундах).
 	Duration OptInt64 `json:"duration"`
 	// Лог ошибки, если запуск завершился неудачей.
@@ -1819,19 +1939,9 @@ func (s *ProjectRun) GetProjectID() OptUint {
 	return s.ProjectID
 }
 
-// GetSuccess returns the value of Success.
-func (s *ProjectRun) GetSuccess() OptBool {
-	return s.Success
-}
-
-// GetPending returns the value of Pending.
-func (s *ProjectRun) GetPending() OptBool {
-	return s.Pending
-}
-
-// GetProcessing returns the value of Processing.
-func (s *ProjectRun) GetProcessing() OptBool {
-	return s.Processing
+// GetStatus returns the value of Status.
+func (s *ProjectRun) GetStatus() OptProjectRunStatus {
+	return s.Status
 }
 
 // GetDuration returns the value of Duration.
@@ -1874,19 +1984,9 @@ func (s *ProjectRun) SetProjectID(val OptUint) {
 	s.ProjectID = val
 }
 
-// SetSuccess sets the value of Success.
-func (s *ProjectRun) SetSuccess(val OptBool) {
-	s.Success = val
-}
-
-// SetPending sets the value of Pending.
-func (s *ProjectRun) SetPending(val OptBool) {
-	s.Pending = val
-}
-
-// SetProcessing sets the value of Processing.
-func (s *ProjectRun) SetProcessing(val OptBool) {
-	s.Processing = val
+// SetStatus sets the value of Status.
+func (s *ProjectRun) SetStatus(val OptProjectRunStatus) {
+	s.Status = val
 }
 
 // SetDuration sets the value of Duration.
@@ -2001,6 +2101,62 @@ func (s *ProjectRunStage) SetDuration(val OptInt64) {
 // SetLog sets the value of Log.
 func (s *ProjectRunStage) SetLog(val OptString) {
 	s.Log = val
+}
+
+// Статус выполнения запуска.
+type ProjectRunStatus string
+
+const (
+	ProjectRunStatusPending    ProjectRunStatus = "pending"
+	ProjectRunStatusProcessing ProjectRunStatus = "processing"
+	ProjectRunStatusSuccess    ProjectRunStatus = "success"
+	ProjectRunStatusFailed     ProjectRunStatus = "failed"
+)
+
+// AllValues returns all ProjectRunStatus values.
+func (ProjectRunStatus) AllValues() []ProjectRunStatus {
+	return []ProjectRunStatus{
+		ProjectRunStatusPending,
+		ProjectRunStatusProcessing,
+		ProjectRunStatusSuccess,
+		ProjectRunStatusFailed,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ProjectRunStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case ProjectRunStatusPending:
+		return []byte(s), nil
+	case ProjectRunStatusProcessing:
+		return []byte(s), nil
+	case ProjectRunStatusSuccess:
+		return []byte(s), nil
+	case ProjectRunStatusFailed:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ProjectRunStatus) UnmarshalText(data []byte) error {
+	switch ProjectRunStatus(data) {
+	case ProjectRunStatusPending:
+		*s = ProjectRunStatusPending
+		return nil
+	case ProjectRunStatusProcessing:
+		*s = ProjectRunStatusProcessing
+		return nil
+	case ProjectRunStatusSuccess:
+		*s = ProjectRunStatusSuccess
+		return nil
+	case ProjectRunStatusFailed:
+		*s = ProjectRunStatusFailed
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Этап проекта — один шаг в пайплайне выполнения.

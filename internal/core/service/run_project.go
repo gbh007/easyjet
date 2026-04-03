@@ -21,7 +21,7 @@ func (srv Service) RunProject(ctx context.Context, id uint) (uint, error) {
 
 	run := entity.ProjectRun{
 		ProjectID: id,
-		Pending:   true,
+		Status:    entity.StatusPending,
 	}
 
 	runID, err := srv.db.SetProjectRun(ctx, run)
@@ -38,28 +38,26 @@ func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error
 		return fmt.Errorf("get run: %w", err)
 	}
 
-	if run.Processing {
+	if run.Status == entity.StatusProcessing {
 		return errors.New("run already processing")
-	} else if !run.Pending {
+	} else if run.Status != entity.StatusPending {
 		return errors.New("run already finished")
 	}
 
-	run.Pending = false
-	run.Processing = true
+	run.Status = entity.StatusProcessing
 
 	_, err = srv.db.SetProjectRun(ctx, run)
 	if err != nil {
 		return fmt.Errorf("update run status: %w", err)
 	}
 
-	run.Processing = false
-	run.Success = true
+	run.Status = entity.StatusSuccess
 
 	runStart := time.Now()
 
 	defer func() {
 		if returnedErr != nil {
-			run.Success = false
+			run.Status = entity.StatusFailed
 			run.FailLog = returnedErr.Error()
 		}
 

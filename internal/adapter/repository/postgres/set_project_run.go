@@ -25,9 +25,7 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 			Update("runs").
 			SetMap(map[string]any{
 				"updated_at": run.UpdatedAt,
-				"success":    run.Success,
-				"pending":    run.Pending,
-				"processing": run.Processing,
+				"status":     run.Status,
 				"fail_log":   run.FailLog,
 				"duration":   run.Duration.Milliseconds(),
 			}).
@@ -47,9 +45,7 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 			Insert("runs").
 			SetMap(map[string]any{
 				"project_id": run.ProjectID,
-				"success":    run.Success,
-				"pending":    run.Pending,
-				"processing": run.Processing,
+				"status":     run.Status,
 				"fail_log":   run.FailLog,
 				"duration":   run.Duration.Milliseconds(),
 			}).

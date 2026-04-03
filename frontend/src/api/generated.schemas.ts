@@ -86,17 +86,25 @@ export interface Project {
 }
 
 /**
+ * Статус выполнения запуска
+ */
+export type ProjectLastRunStatus = (typeof ProjectLastRunStatus)[keyof typeof ProjectLastRunStatus];
+
+export const ProjectLastRunStatus = {
+  pending: 'pending',
+  processing: 'processing',
+  success: 'success',
+  failed: 'failed',
+} as const;
+
+/**
  * Информация о последнем запуске проекта
  */
 export interface ProjectLastRun {
   /** Время начала запуска */
   readonly created_at?: string;
-  /** Флаг успешного завершения всех этапов */
-  readonly success?: boolean;
-  /** Флаг ожидания начала выполнения */
-  readonly pending?: boolean;
-  /** Флаг активного выполнения */
-  readonly processing?: boolean;
+  /** Статус выполнения запуска */
+  readonly status?: ProjectLastRunStatus;
   /** Время выполнения последнего запуска (в миллисекундах) */
   readonly duration?: number;
 }
@@ -196,6 +204,18 @@ export interface ProjectUpdate {
 }
 
 /**
+ * Статус выполнения запуска
+ */
+export type ProjectRunStatus = (typeof ProjectRunStatus)[keyof typeof ProjectRunStatus];
+
+export const ProjectRunStatus = {
+  pending: 'pending',
+  processing: 'processing',
+  success: 'success',
+  failed: 'failed',
+} as const;
+
+/**
  * Результат выполнения конкретного этапа запуска
  */
 export interface ProjectRunStage {
@@ -236,12 +256,8 @@ export interface ProjectRun {
   readonly updated_at?: string;
   /** Ссылка на проект */
   readonly project_id?: number;
-  /** Флаг успешного завершения всех этапов */
-  readonly success?: boolean;
-  /** Флаг ожидания начала выполнения */
-  readonly pending?: boolean;
-  /** Флаг активного выполнения */
-  readonly processing?: boolean;
+  /** Статус выполнения запуска */
+  readonly status?: ProjectRunStatus;
   /** Время выполнения запуска (в миллисекундах) */
   readonly duration?: number;
   /** Лог ошибки, если запуск завершился неудачей */

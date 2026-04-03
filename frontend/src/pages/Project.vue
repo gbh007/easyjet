@@ -184,7 +184,7 @@
         :loading="runsLoading"
         @click:row="handleRowClick"
       >
-        <template #item.success="{ item }">
+        <template #item.status="{ item }">
           <v-chip :color="getStatusColor(item)" size="small" variant="tonal">
             {{ getStatusText(item) }}
           </v-chip>
@@ -239,16 +239,14 @@ interface ProjectRun {
   id: number;
   created_at: string;
   project_id: number;
-  success: boolean;
-  pending: boolean;
-  processing: boolean;
+  status: string;
   fail_log: string;
   duration?: number;
 }
 
 const runsHeaders = [
   { title: 'ID', key: 'id', sortable: true },
-  { title: 'Статус', key: 'success', sortable: true },
+  { title: 'Статус', key: 'status', sortable: true },
   { title: 'Длительность', key: 'duration', sortable: true },
   { title: 'Дата', key: 'created_at', sortable: true },
 ];
@@ -289,9 +287,7 @@ function loadRuns() {
           id: r.id ?? 0,
           created_at: r.created_at ?? '',
           project_id: r.project_id ?? 0,
-          success: r.success ?? false,
-          pending: r.pending ?? false,
-          processing: r.processing ?? false,
+          status: r.status ?? 'failed',
           fail_log: r.fail_log ?? '',
           duration: r.duration ?? 0,
         }));
@@ -346,15 +342,17 @@ function load() {
 }
 
 function getStatusColor(item: ProjectRun): string {
-  if (item.pending) return 'warning';
-  if (item.processing) return 'info';
-  return item.success ? 'success' : 'error';
+  if (item.status === 'pending') return 'warning';
+  if (item.status === 'processing') return 'info';
+  if (item.status === 'success') return 'success';
+  return 'error';
 }
 
 function getStatusText(item: ProjectRun): string {
-  if (item.pending) return 'Ожидание';
-  if (item.processing) return 'Выполняется';
-  return item.success ? 'Успешно' : 'Ошибка';
+  if (item.status === 'pending') return 'Ожидание';
+  if (item.status === 'processing') return 'Выполняется';
+  if (item.status === 'success') return 'Успешно';
+  return 'Ошибка';
 }
 
 onMounted(() => {

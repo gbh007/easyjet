@@ -2,6 +2,13 @@ package entity
 
 import "time"
 
+const (
+	StatusPending    = "pending"
+	StatusProcessing = "processing"
+	StatusSuccess    = "success"
+	StatusFailed     = "failed"
+)
+
 type ProjectRun struct {
 	ID        uint
 	CreatedAt time.Time
@@ -11,12 +18,10 @@ type ProjectRun struct {
 	Stages     []ProjectRunStage
 	GitCommits []ProjectRunGitCommits
 
-	ProjectID  uint
-	Success    bool
-	Pending    bool
-	Processing bool
-	FailLog    string
-	Duration   time.Duration
+	ProjectID uint
+	Status    string
+	FailLog   string
+	Duration  time.Duration
 }
 
 type ProjectRunStage struct {

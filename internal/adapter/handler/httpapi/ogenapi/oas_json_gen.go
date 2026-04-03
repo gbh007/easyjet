@@ -1555,6 +1555,72 @@ func (s *OptProjectLastRun) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes ProjectLastRunStatus as json.
+func (o OptProjectLastRunStatus) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes ProjectLastRunStatus from json.
+func (o *OptProjectLastRunStatus) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptProjectLastRunStatus to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptProjectLastRunStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptProjectLastRunStatus) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes ProjectRunStatus as json.
+func (o OptProjectRunStatus) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes ProjectRunStatus from json.
+func (o *OptProjectRunStatus) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptProjectRunStatus to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptProjectRunStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptProjectRunStatus) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes string as json.
 func (o OptString) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -2440,21 +2506,9 @@ func (s *ProjectLastRun) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Success.Set {
-			e.FieldStart("success")
-			s.Success.Encode(e)
-		}
-	}
-	{
-		if s.Pending.Set {
-			e.FieldStart("pending")
-			s.Pending.Encode(e)
-		}
-	}
-	{
-		if s.Processing.Set {
-			e.FieldStart("processing")
-			s.Processing.Encode(e)
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
 		}
 	}
 	{
@@ -2465,12 +2519,10 @@ func (s *ProjectLastRun) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectLastRun = [5]string{
+var jsonFieldsNameOfProjectLastRun = [3]string{
 	0: "created_at",
-	1: "success",
-	2: "pending",
-	3: "processing",
-	4: "duration",
+	1: "status",
+	2: "duration",
 }
 
 // Decode decodes ProjectLastRun from json.
@@ -2491,35 +2543,15 @@ func (s *ProjectLastRun) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
-		case "success":
+		case "status":
 			if err := func() error {
-				s.Success.Reset()
-				if err := s.Success.Decode(d); err != nil {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"success\"")
-			}
-		case "pending":
-			if err := func() error {
-				s.Pending.Reset()
-				if err := s.Pending.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"pending\"")
-			}
-		case "processing":
-			if err := func() error {
-				s.Processing.Reset()
-				if err := s.Processing.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"processing\"")
+				return errors.Wrap(err, "decode field \"status\"")
 			}
 		case "duration":
 			if err := func() error {
@@ -2551,6 +2583,50 @@ func (s *ProjectLastRun) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *ProjectLastRun) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes ProjectLastRunStatus as json.
+func (s ProjectLastRunStatus) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes ProjectLastRunStatus from json.
+func (s *ProjectLastRunStatus) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ProjectLastRunStatus to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch ProjectLastRunStatus(v) {
+	case ProjectLastRunStatusPending:
+		*s = ProjectLastRunStatusPending
+	case ProjectLastRunStatusProcessing:
+		*s = ProjectLastRunStatusProcessing
+	case ProjectLastRunStatusSuccess:
+		*s = ProjectLastRunStatusSuccess
+	case ProjectLastRunStatusFailed:
+		*s = ProjectLastRunStatusFailed
+	default:
+		*s = ProjectLastRunStatus(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s ProjectLastRunStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ProjectLastRunStatus) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -2771,21 +2847,9 @@ func (s *ProjectRun) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Success.Set {
-			e.FieldStart("success")
-			s.Success.Encode(e)
-		}
-	}
-	{
-		if s.Pending.Set {
-			e.FieldStart("pending")
-			s.Pending.Encode(e)
-		}
-	}
-	{
-		if s.Processing.Set {
-			e.FieldStart("processing")
-			s.Processing.Encode(e)
+		if s.Status.Set {
+			e.FieldStart("status")
+			s.Status.Encode(e)
 		}
 	}
 	{
@@ -2814,18 +2878,16 @@ func (s *ProjectRun) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProjectRun = [11]string{
-	0:  "id",
-	1:  "created_at",
-	2:  "updated_at",
-	3:  "project_id",
-	4:  "success",
-	5:  "pending",
-	6:  "processing",
-	7:  "duration",
-	8:  "fail_log",
-	9:  "stages",
-	10: "git_commits",
+var jsonFieldsNameOfProjectRun = [9]string{
+	0: "id",
+	1: "created_at",
+	2: "updated_at",
+	3: "project_id",
+	4: "status",
+	5: "duration",
+	6: "fail_log",
+	7: "stages",
+	8: "git_commits",
 }
 
 // Decode decodes ProjectRun from json.
@@ -2876,35 +2938,15 @@ func (s *ProjectRun) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"project_id\"")
 			}
-		case "success":
+		case "status":
 			if err := func() error {
-				s.Success.Reset()
-				if err := s.Success.Decode(d); err != nil {
+				s.Status.Reset()
+				if err := s.Status.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"success\"")
-			}
-		case "pending":
-			if err := func() error {
-				s.Pending.Reset()
-				if err := s.Pending.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"pending\"")
-			}
-		case "processing":
-			if err := func() error {
-				s.Processing.Reset()
-				if err := s.Processing.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"processing\"")
+				return errors.Wrap(err, "decode field \"status\"")
 			}
 		case "duration":
 			if err := func() error {
@@ -3177,6 +3219,50 @@ func (s *ProjectRunStage) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *ProjectRunStage) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes ProjectRunStatus as json.
+func (s ProjectRunStatus) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes ProjectRunStatus from json.
+func (s *ProjectRunStatus) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ProjectRunStatus to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch ProjectRunStatus(v) {
+	case ProjectRunStatusPending:
+		*s = ProjectRunStatusPending
+	case ProjectRunStatusProcessing:
+		*s = ProjectRunStatusProcessing
+	case ProjectRunStatusSuccess:
+		*s = ProjectRunStatusSuccess
+	case ProjectRunStatusFailed:
+		*s = ProjectRunStatusFailed
+	default:
+		*s = ProjectRunStatus(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s ProjectRunStatus) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ProjectRunStatus) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

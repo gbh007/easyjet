@@ -34,10 +34,8 @@ func convertProjectListItemToOgen(item entity.ProjectsWithRunInfo) ogenapi.Proje
 
 func convertProjectLastRunToOgen(lastRun entity.ProjectLastRun) ogenapi.ProjectLastRun {
 	return ogenapi.ProjectLastRun{
-		CreatedAt:  ogenapi.NewOptDateTime(lastRun.CreatedAt),
-		Success:    ogenapi.NewOptBool(lastRun.Success),
-		Pending:    ogenapi.NewOptBool(lastRun.Pending),
-		Processing: ogenapi.NewOptBool(lastRun.Processing),
-		Duration:   ogenapi.NewOptInt64(lastRun.Duration.Milliseconds()),
+		CreatedAt: ogenapi.NewOptDateTime(lastRun.CreatedAt),
+		Status:    ogenapi.NewOptProjectLastRunStatus(ogenapi.ProjectLastRunStatus(lastRun.Status)),
+		Duration:  ogenapi.NewOptInt64(lastRun.Duration.Milliseconds()),
 	}
 }

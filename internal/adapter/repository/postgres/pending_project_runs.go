@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
+	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
 func (repo Repo) PendingProjectRuns(ctx context.Context) ([]uint, error) {
 	query, args, err := repo.psql.
 		Select("id").
 		From("runs").
-		Where(squirrel.Eq{"pending": true}).
+		Where(squirrel.Eq{"status": entity.StatusPending}).
 		OrderBy("id ASC").
 		ToSql()
 	if err != nil {

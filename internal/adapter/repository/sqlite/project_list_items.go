@@ -19,9 +19,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 			"p.is_template",
 			"last_successful_run.last_successful_run_at",
 			"last_run.created_at",
-			"last_run.success",
-			"last_run.pending",
-			"last_run.processing",
+			"last_run.status",
 			"last_run.duration",
 		).
 		From("projects p").
@@ -33,7 +31,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 				).
 				From("runs").
 				Where(squirrel.Eq{
-					"success": true,
+					"status": entity.StatusSuccess,
 				}).
 				GroupBy("project_id").
 				Prefix("LEFT JOIN (").
@@ -44,9 +42,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 				Select(
 					"r1.project_id",
 					"r1.created_at",
-					"r1.success",
-					"r1.pending",
-					"r1.processing",
+					"r1.status",
 					"r1.duration",
 				).
 				From("runs r1").
@@ -93,9 +89,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 		var item entity.ProjectsWithRunInfo
 		var lastSuccessfulRunAt sql.NullString
 		var lastRunCreatedAt sql.NullString
-		var lastRunSuccess sql.NullBool
-		var lastRunPending sql.NullBool
-		var lastRunProcessing sql.NullBool
+		var lastRunStatus sql.NullString
 		var lastRunDuration sql.NullInt64
 
 		if err := rows.Scan(
@@ -105,9 +99,7 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 			&item.IsTemplate,
 			&lastSuccessfulRunAt,
 			&lastRunCreatedAt,
-			&lastRunSuccess,
-			&lastRunPending,
-			&lastRunProcessing,
+			&lastRunStatus,
 			&lastRunDuration,
 		); err != nil {
 			return nil, fmt.Errorf("scan project list item: %w", err)
@@ -129,11 +121,9 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 			}
 
 			item.LastRun = &entity.ProjectLastRun{
-				CreatedAt:  t,
-				Success:    lastRunSuccess.Bool,
-				Pending:    lastRunPending.Bool,
-				Processing: lastRunProcessing.Bool,
-				Duration:   time.Duration(lastRunDuration.Int64) * time.Millisecond,
+				CreatedAt: t,
+				Status:    lastRunStatus.String,
+				Duration:  time.Duration(lastRunDuration.Int64) * time.Millisecond,
 			}
 		}
 

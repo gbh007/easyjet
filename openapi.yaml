@@ -246,7 +246,7 @@ paths:
   /api/v1/env-vars:
     get:
       tags:
-        - Environment Variables
+        - Global Environment Variables
       summary: Получить список глобальных переменных
       description: Возвращает список всех глобальных переменных окружения
       operationId: getGlobalEnvVars
@@ -268,7 +268,7 @@ paths:
 
     post:
       tags:
-        - Environment Variables
+        - Global Environment Variables
       summary: Создать глобальную переменную
       description: Создаёт новую глобальную переменную окружения
       operationId: createGlobalEnvVar
@@ -500,21 +500,16 @@ components:
           format: date-time
           description: Время начала запуска
           readOnly: true
-        success:
-          type: boolean
-          description: Флаг успешного завершения всех этапов
+        status:
+          type: string
+          description: Статус выполнения запуска
           readOnly: true
-          example: false
-        pending:
-          type: boolean
-          description: Флаг ожидания начала выполнения
-          readOnly: true
-          example: false
-        processing:
-          type: boolean
-          description: Флаг активного выполнения
-          readOnly: true
-          example: true
+          enum:
+            - pending
+            - processing
+            - success
+            - failed
+          example: processing
         duration:
           type: integer
           format: int64
@@ -684,21 +679,16 @@ components:
           description: Ссылка на проект
           readOnly: true
           example: 1
-        success:
-          type: boolean
-          description: Флаг успешного завершения всех этапов
+        status:
+          type: string
+          description: Статус выполнения запуска
           readOnly: true
-          example: true
-        pending:
-          type: boolean
-          description: Флаг ожидания начала выполнения
-          readOnly: true
-          example: false
-        processing:
-          type: boolean
-          description: Флаг активного выполнения
-          readOnly: true
-          example: false
+          enum:
+            - pending
+            - processing
+            - success
+            - failed
+          example: success
         duration:
           type: integer
           format: int64

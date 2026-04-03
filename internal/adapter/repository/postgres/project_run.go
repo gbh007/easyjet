@@ -19,9 +19,7 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 			"created_at",
 			"updated_at",
 			"project_id",
-			"success",
-			"pending",
-			"processing",
+			"status",
 			"fail_log",
 			"duration",
 		).
@@ -39,9 +37,7 @@ func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, er
 		&run.CreatedAt,
 		&run.UpdatedAt,
 		&run.ProjectID,
-		&run.Success,
-		&run.Pending,
-		&run.Processing,
+		&run.Status,
 		&run.FailLog,
 		&durationMs,
 	)

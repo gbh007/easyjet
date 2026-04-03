@@ -59,8 +59,8 @@
             <span
               v-if="
                 project.last_run.duration &&
-                !project.last_run.processing &&
-                !project.last_run.pending
+                project.last_run.status !== 'processing' &&
+                project.last_run.status !== 'pending'
               "
               class="text-medium-emphasis ml-1"
             >
@@ -69,7 +69,8 @@
           </span>
           <span
             v-if="
-              project.last_successful_run_at && (!project.last_run || !project.last_run.success)
+              project.last_successful_run_at &&
+              (!project.last_run || project.last_run.status !== 'success')
             "
             :title="formatDateTimeForTooltip(project.last_successful_run_at)"
           >
@@ -132,39 +133,39 @@ function createProject() {
 }
 
 function getLastRunIcon(lastRun: ProjectLastRun): string {
-  if (lastRun.processing) {
+  if (lastRun.status === 'processing') {
     return 'mdi-loading';
   }
-  if (lastRun.pending) {
+  if (lastRun.status === 'pending') {
     return 'mdi-clock-outline';
   }
-  if (lastRun.success) {
+  if (lastRun.status === 'success') {
     return 'mdi-check-circle-outline';
   }
   return 'mdi-alert-circle-outline';
 }
 
 function getLastRunColor(lastRun: ProjectLastRun): string {
-  if (lastRun.processing) {
+  if (lastRun.status === 'processing') {
     return 'info';
   }
-  if (lastRun.pending) {
+  if (lastRun.status === 'pending') {
     return 'warning';
   }
-  if (lastRun.success) {
+  if (lastRun.status === 'success') {
     return 'success';
   }
   return 'error';
 }
 
 function formatLastRun(lastRun: ProjectLastRun): string {
-  if (lastRun.processing) {
+  if (lastRun.status === 'processing') {
     return 'Выполняется...';
   }
-  if (lastRun.pending) {
+  if (lastRun.status === 'pending') {
     return 'В очереди...';
   }
-  if (lastRun.success) {
+  if (lastRun.status === 'success') {
     return `Успешно ${formatTimeAgo(lastRun.created_at)}`;
   }
   return `Ошибка ${formatTimeAgo(lastRun.created_at)}`;

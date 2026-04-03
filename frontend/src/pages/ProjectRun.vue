@@ -20,7 +20,7 @@
           </v-chip>
         </v-sheet>
         <v-sheet
-          v-if="run.duration && !run.processing && !run.pending"
+          v-if="run.duration && run.status !== 'processing' && run.status !== 'pending'"
           class="d-flex flex-row ga-2"
         >
           <b>Длительность</b>
@@ -32,7 +32,12 @@
       </v-sheet>
     </v-sheet>
 
-    <v-alert v-if="!run.success && run.fail_log" class="mb-2" title="Ошибка" type="error">
+    <v-alert
+      v-if="run.status !== 'success' && run.fail_log"
+      class="mb-2"
+      title="Ошибка"
+      type="error"
+    >
       {{ run.fail_log }}
     </v-alert>
 
@@ -120,9 +125,7 @@ interface ProjectRun {
   id: number;
   created_at: string;
   project_id: number;
-  success: boolean;
-  pending: boolean;
-  processing: boolean;
+  status: string;
   fail_log: string;
   duration?: number;
   stages?: ProjectRunStage[];
@@ -147,9 +150,7 @@ function load() {
         id: data.id ?? 0,
         created_at: data.created_at ?? '',
         project_id: data.project_id ?? 0,
-        success: data.success ?? false,
-        pending: data.pending ?? false,
-        processing: data.processing ?? false,
+        status: data.status ?? 'failed',
         fail_log: data.fail_log ?? '',
         duration: data.duration ?? 0,
         stages: data.stages?.map((s) => ({
@@ -182,15 +183,17 @@ function load() {
 }
 
 function getStatusColor(run: ProjectRun): string {
-  if (run.pending) return 'warning';
-  if (run.processing) return 'info';
-  return run.success ? 'success' : 'error';
+  if (run.status === 'pending') return 'warning';
+  if (run.status === 'processing') return 'info';
+  if (run.status === 'success') return 'success';
+  return 'error';
 }
 
 function getStatusText(run: ProjectRun): string {
-  if (run.pending) return 'Ожидание';
-  if (run.processing) return 'Выполняется';
-  return run.success ? 'Успешно' : 'Ошибка';
+  if (run.status === 'pending') return 'Ожидание';
+  if (run.status === 'processing') return 'Выполняется';
+  if (run.status === 'success') return 'Успешно';
+  return 'Ошибка';
 }
 
 onMounted(() => {

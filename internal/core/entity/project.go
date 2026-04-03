@@ -45,9 +45,7 @@ type ProjectsWithRunInfo struct {
 }
 
 type ProjectLastRun struct {
-	CreatedAt  time.Time
-	Success    bool
-	Pending    bool
-	Processing bool
-	Duration   time.Duration
+	CreatedAt time.Time
+	Status    string
+	Duration  time.Duration
 }
