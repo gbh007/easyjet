@@ -9,6 +9,7 @@ import (
 
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
 	"github.com/gbh007/easyjet/internal/adapter/handler/internal"
+	"github.com/gbh007/easyjet/internal/adapter/handler/mcp"
 	"github.com/gbh007/easyjet/internal/core/port"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -19,6 +20,7 @@ type Config struct {
 	User            string
 	Pass            string
 	StaticFilesPath string
+	MCP             mcp.Config
 }
 
 type Controller struct {
@@ -53,6 +55,11 @@ func (cnt Controller) Serve(ctx context.Context) error {
 
 	mux.Handle("GET /metrics", promhttp.HandlerFor(internal.DefaultRegistry, promhttp.HandlerOpts{}))
 	mux.Handle("/api/", server)
+
+	if cnt.cfg.MCP.Enabled {
+		mcpServer := mcp.New(cnt.logger, cnt.cfg.MCP, cnt.service)
+		mux.Handle("/mcp", mcpServer)
+	}
 
 	srv := &http.Server{
 		Addr:    cnt.cfg.Addr,

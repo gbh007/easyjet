@@ -15,6 +15,7 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/filesystem/filesystem"
 	"github.com/gbh007/easyjet/internal/adapter/git/shellgit"
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
+	"github.com/gbh007/easyjet/internal/adapter/handler/mcp"
 	"github.com/gbh007/easyjet/internal/adapter/handler/metrics"
 	schedulerhandler "github.com/gbh007/easyjet/internal/adapter/handler/scheduler"
 	"github.com/gbh007/easyjet/internal/adapter/handler/worker"
@@ -91,6 +92,11 @@ func main() {
 			User:            cfg.Server.User,
 			Pass:            cfg.Server.Pass,
 			StaticFilesPath: cfg.Server.StaticFilesPath,
+			MCP: mcp.Config{
+				Enabled:        cfg.MCP.Enabled,
+				AllowRuns:      cfg.MCP.AllowRuns,
+				AllowMutations: cfg.MCP.AllowMutations,
+			},
 		},
 		srv,
 	)

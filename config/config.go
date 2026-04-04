@@ -15,6 +15,7 @@ type Config struct {
 	Log      Log      `toml:"log"`
 	Database Database `toml:"database"`
 	Server   Server   `toml:"server"`
+	MCP      MCP      `toml:"mcp"`
 }
 
 type App struct {
@@ -42,6 +43,12 @@ type Database struct {
 type Log struct {
 	Level  string `toml:"level"`
 	Format string `toml:"format"`
+}
+
+type MCP struct {
+	Enabled        bool `toml:"enabled"`
+	AllowRuns      bool `toml:"allow_runs"`
+	AllowMutations bool `toml:"allow_mutations"`
 }
 
 func (l Log) SlogLevel() slog.Level {

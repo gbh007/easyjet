@@ -21,3 +21,11 @@ pass = ""
 api = "http://localhost:8080"
 # Если отличается расположение фронта
 # web = "http://localhost:8080"
+
+[mcp]
+# Включить MCP сервер (Model Context Protocol)
+enabled = false
+# Разрешить запуск задач через MCP
+allow_runs = false
+# Разрешить мутации данных через MCP (создание/обновление/удаление)
+allow_mutations = false
