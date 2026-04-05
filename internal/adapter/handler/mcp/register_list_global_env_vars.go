@@ -18,7 +18,9 @@ func (s *MCPServer) registerListGlobalEnvVars() {
 				return mcp.NewToolResultError(err.Error()), nil
 			}
 
-			return mcp.NewToolResultJSON(internal.ToEnvVarsResponse(envVars))
+			return mcp.NewToolResultJSON(map[string]any{
+				"vars": internal.ToEnvVarsResponse(envVars),
+			})
 		},
 	)
 }

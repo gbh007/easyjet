@@ -29,7 +29,9 @@ func (s *MCPServer) registerGetProjectRuns() {
 				response = append(response, internal.ToProjectRunResponse(run))
 			}
 
-			return mcp.NewToolResultJSON(response)
+			return mcp.NewToolResultJSON(map[string]any{
+				"runs": response,
+			})
 		},
 	)
 }

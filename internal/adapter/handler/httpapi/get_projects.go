@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi/ogenapi"
+	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
 func (h *Handler) GetProjects(ctx context.Context, params ogenapi.GetProjectsParams) (*ogenapi.GetProjectsOK, error) {
-	filterType := "all"
+	filterType := entity.ProjectFilterTypeAll
 	if params.Type.Set {
-		filterType = string(params.Type.Value)
+		filterType = entity.ProjectFilterType(params.Type.Value)
 	}
 
 	items, err := h.service.ProjectsWithRunInfo(ctx, filterType)

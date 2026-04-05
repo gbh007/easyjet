@@ -66,13 +66,13 @@ func (s *Scheduler) Serve(ctx context.Context) error {
 }
 
 func (s *Scheduler) loadExistingJobs(ctx context.Context) error {
-	projects, err := s.service.Projects(ctx)
+	projects, err := s.service.ProjectsWithRunInfo(ctx, entity.ProjectFilterTypeProject)
 	if err != nil {
 		return fmt.Errorf("fetch projects: %w", err)
 	}
 
 	for _, project := range projects {
-		if project.CronEnabled && !project.IsTemplate && project.CronSchedule != "" {
+		if project.CronEnabled {
 			err := s.registerJob(ctx, project.ID)
 			if err != nil {
 				return fmt.Errorf("register project %d: %w", project.ID, err)

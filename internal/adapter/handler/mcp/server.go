@@ -32,6 +32,27 @@ func New(logger *slog.Logger, cfg Config, service port.Service) *MCPServer {
 	s.server = server.NewMCPServer(
 		"easyjet",
 		"1.0.0",
+		server.WithInstructions(`EasyJet is a lightweight CI/CD system designed for home servers and pet projects.
+It serves as a minimal alternative to Jenkins, optimized for low resource consumption.
+
+Key capabilities:
+- Project management: Create, view, and update CI/CD pipeline configurations
+- Pipeline execution: Run multi-stage build/deploy scripts with git integration
+- Environment variables: Manage global environment variables and secrets for scripts
+- Run history: Track execution results with logs for each pipeline stage
+- Docker integration: Build Docker images and run Docker Compose configurations via shell scripts
+- Git integration: Track commit changes and display git logs
+- Scheduling: Support cron-based automated pipeline execution
+- Self-updating: System can update itself via daemon restart
+
+MCP tools available:
+- List/get projects: View all configured CI/CD projects and their details
+- List/get environment variables: Manage shared variables and secrets
+- Get project runs: View execution history for a specific project
+- Get run details: View detailed results of a specific pipeline execution
+- Run project: Trigger manual pipeline execution (when enabled)
+- Create/update/delete projects and variables: Full CRUD operations (when mutations enabled)
+`),
 	)
 
 	s.registerTools()

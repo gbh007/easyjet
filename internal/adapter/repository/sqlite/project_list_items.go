@@ -10,7 +10,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error) {
+func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType entity.ProjectFilterType) ([]entity.ProjectsWithRunInfo, error) {
 	builder := repo.psql.
 		Select(
 			"p.id",
@@ -63,11 +63,13 @@ func (repo Repo) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]
 		OrderBy("p.id ASC")
 
 	switch filterType {
-	case "project":
+	case entity.ProjectFilterTypeAll:
+		// No filter, return all projects
+	case entity.ProjectFilterTypeProject:
 		builder = builder.Where(squirrel.Eq{
 			"p.is_template": false,
 		})
-	case "template":
+	case entity.ProjectFilterTypeTemplate:
 		builder = builder.Where(squirrel.Eq{
 			"p.is_template": true,
 		})

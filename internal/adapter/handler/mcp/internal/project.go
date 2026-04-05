@@ -44,6 +44,43 @@ func ToProjectResponse(p entity.Project) ProjectResponse {
 	}
 }
 
+func ToProjectResponseFromInfo(p entity.ProjectsWithRunInfo) ProjectWithRunInfoResponse {
+	return ProjectWithRunInfoResponse{
+		ID:                  p.ID,
+		Name:                p.Name,
+		CronEnabled:         p.CronEnabled,
+		IsTemplate:          p.IsTemplate,
+		LastSuccessfulRunAt: p.LastSuccessfulRunAt,
+		LastRun:             ToProjectLastRunResponse(p.LastRun),
+	}
+}
+
+type ProjectWithRunInfoResponse struct {
+	ID                  int                     `json:"id"`
+	Name                string                  `json:"name"`
+	CronEnabled         bool                    `json:"cron_enabled"`
+	IsTemplate          bool                    `json:"is_template"`
+	LastSuccessfulRunAt *time.Time              `json:"last_successful_run_at,omitempty"`
+	LastRun             *ProjectLastRunResponse `json:"last_run,omitempty"`
+}
+
+type ProjectLastRunResponse struct {
+	CreatedAt time.Time `json:"created_at"`
+	Status    string    `json:"status"`
+	Duration  string    `json:"duration"`
+}
+
+func ToProjectLastRunResponse(run *entity.ProjectLastRun) *ProjectLastRunResponse {
+	if run == nil {
+		return nil
+	}
+	return &ProjectLastRunResponse{
+		CreatedAt: run.CreatedAt,
+		Status:    run.Status,
+		Duration:  run.Duration.String(),
+	}
+}
+
 type StageResponse struct {
 	Number int    `json:"number"`
 	Script string `json:"script"`

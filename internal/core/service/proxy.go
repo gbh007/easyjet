@@ -18,11 +18,7 @@ func (srv Service) ProjectRuns(ctx context.Context, id int) ([]entity.ProjectRun
 	return srv.db.ProjectRuns(ctx, id)
 }
 
-func (srv Service) Projects(ctx context.Context) ([]entity.Project, error) {
-	return srv.db.Projects(ctx)
-}
-
-func (srv Service) ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error) {
+func (srv Service) ProjectsWithRunInfo(ctx context.Context, filterType entity.ProjectFilterType) ([]entity.ProjectsWithRunInfo, error) {
 	return srv.db.ProjectsWithRunInfo(ctx, filterType)
 }
 
