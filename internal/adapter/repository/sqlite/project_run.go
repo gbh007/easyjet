@@ -10,7 +10,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (repo Repo) ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error) {
+func (repo Repo) ProjectRun(ctx context.Context, id int) (entity.ProjectRun, error) {
 	var run entity.ProjectRun
 
 	runQuery, runArgs, err := repo.psql.

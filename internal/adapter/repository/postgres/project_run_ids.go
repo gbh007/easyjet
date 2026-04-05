@@ -7,7 +7,7 @@ import (
 	"github.com/Masterminds/squirrel"
 )
 
-func (repo Repo) ProjectRunIDs(ctx context.Context, id uint) ([]uint, error) {
+func (repo Repo) ProjectRunIDs(ctx context.Context, id int) ([]int, error) {
 	query, args, err := repo.psql.
 		Select("id").
 		From("runs").
@@ -24,9 +24,9 @@ func (repo Repo) ProjectRunIDs(ctx context.Context, id uint) ([]uint, error) {
 	}
 	defer rows.Close()
 
-	var ids []uint
+	var ids []int
 	for rows.Next() {
-		var runID uint
+		var runID int
 		if err := rows.Scan(&runID); err != nil {
 			return nil, fmt.Errorf("scan run id: %w", err)
 		}

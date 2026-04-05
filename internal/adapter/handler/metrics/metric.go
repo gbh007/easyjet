@@ -57,7 +57,7 @@ func convertOk(ok bool) string {
 	return resultError
 }
 
-func observeRun(projectID uint, ok bool, d time.Duration) {
-	runTime.WithLabelValues(strconv.FormatUint(uint64(projectID), 10), convertOk(ok)).Observe(d.Seconds())
-	lastRunTime.WithLabelValues(strconv.FormatUint(uint64(projectID), 10), convertOk(ok)).Set(d.Seconds())
+func observeRun(projectID int, ok bool, d time.Duration) {
+	runTime.WithLabelValues(strconv.Itoa(projectID), convertOk(ok)).Observe(d.Seconds())
+	lastRunTime.WithLabelValues(strconv.Itoa(projectID), convertOk(ok)).Set(d.Seconds())
 }

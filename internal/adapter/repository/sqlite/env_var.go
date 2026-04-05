@@ -43,7 +43,7 @@ func (repo Repo) GlobalEnvVars(ctx context.Context) ([]entity.EnvironmentVariabl
 	return envVars, nil
 }
 
-func (repo Repo) GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentVariable, error) {
+func (repo Repo) GlobalEnvVar(ctx context.Context, id int) (entity.EnvironmentVariable, error) {
 	var ev entity.EnvironmentVariable
 
 	query, args, err := repo.psql.
@@ -70,7 +70,7 @@ func (repo Repo) GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentV
 	return ev, nil
 }
 
-func (repo Repo) SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (uint, error) {
+func (repo Repo) SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (int, error) {
 	ev.UpdatedAt = time.Now()
 
 	if ev.ID == 0 {
@@ -121,7 +121,7 @@ func (repo Repo) SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVaria
 	return ev.ID, nil
 }
 
-func (repo Repo) DeleteGlobalEnvVar(ctx context.Context, id uint) error {
+func (repo Repo) DeleteGlobalEnvVar(ctx context.Context, id int) error {
 	query, args, err := repo.psql.
 		Delete("env_vars").
 		Where(squirrel.Eq{"id": id, "project_id": nil}).

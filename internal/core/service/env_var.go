@@ -16,11 +16,11 @@ func (s Service) GlobalEnvVars(ctx context.Context) ([]entity.EnvironmentVariabl
 	return s.db.GlobalEnvVars(ctx)
 }
 
-func (s Service) GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentVariable, error) {
+func (s Service) GlobalEnvVar(ctx context.Context, id int) (entity.EnvironmentVariable, error) {
 	return s.db.GlobalEnvVar(ctx, id)
 }
 
-func (s Service) CreateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (uint, error) {
+func (s Service) CreateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (int, error) {
 	return s.db.SetGlobalEnvVar(ctx, ev)
 }
 
@@ -29,7 +29,7 @@ func (s Service) UpdateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVa
 	return err
 }
 
-func (s Service) DeleteGlobalEnvVar(ctx context.Context, id uint) error {
+func (s Service) DeleteGlobalEnvVar(ctx context.Context, id int) error {
 	return s.db.DeleteGlobalEnvVar(ctx, id)
 }
 
@@ -88,12 +88,12 @@ func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.P
 			}
 		}
 
-		envMap["BUILD_NUMBER"] = strconv.FormatUint(uint64(run.ID), 10)
-		envMap["BUILD_ID"] = strconv.FormatUint(uint64(run.ID), 10) + "-" + strconv.Itoa(stage.Number)
+		envMap["BUILD_NUMBER"] = strconv.Itoa(run.ID)
+		envMap["BUILD_ID"] = strconv.Itoa(run.ID) + "-" + strconv.Itoa(stage.Number)
 
 		envMap["NODE_NAME"] = "master"
 		envMap["JOB_NAME"] = project.Name
-		envMap["BUILD_TAG"] = strings.ReplaceAll(strings.ToLower(project.Name), " ", "-") + "-" + strconv.FormatUint(uint64(run.ID), 10)
+		envMap["BUILD_TAG"] = strings.ReplaceAll(strings.ToLower(project.Name), " ", "-") + "-" + strconv.Itoa(run.ID)
 		envMap["EXECUTOR_NUMBER"] = "0001"
 		// JAVA_HOME - XDD
 		envMap["WORKSPACE"] = dir

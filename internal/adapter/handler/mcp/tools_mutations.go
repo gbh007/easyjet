@@ -179,7 +179,7 @@ func parseEnvVars(args map[string]any) []entity.EnvironmentVariable {
 
 type CreateProjectResponse struct {
 	Success bool   `json:"success"`
-	ID      uint   `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }
 
@@ -224,14 +224,14 @@ func (s *MCPServer) handleCreateProject(ctx context.Context, request mcp.CallToo
 
 type UpdateProjectResponse struct {
 	Success bool   `json:"success"`
-	ID      uint   `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }
 
 func (s *MCPServer) handleUpdateProject(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
 
-	id := uint(request.GetFloat("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing project ID"), nil
 	}
@@ -281,7 +281,7 @@ func (s *MCPServer) handleUpdateProject(ctx context.Context, request mcp.CallToo
 
 type CreateEnvVarResponse struct {
 	Success bool   `json:"success"`
-	ID      uint   `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }
 
@@ -308,12 +308,12 @@ func (s *MCPServer) handleCreateGlobalEnvVar(ctx context.Context, request mcp.Ca
 
 type UpdateEnvVarResponse struct {
 	Success bool   `json:"success"`
-	ID      uint   `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }
 
 func (s *MCPServer) handleUpdateGlobalEnvVar(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetFloat("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing env var ID"), nil
 	}
@@ -349,12 +349,12 @@ func (s *MCPServer) handleUpdateGlobalEnvVar(ctx context.Context, request mcp.Ca
 
 type DeleteEnvVarResponse struct {
 	Success bool   `json:"success"`
-	ID      uint   `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }
 
 func (s *MCPServer) handleDeleteGlobalEnvVar(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetFloat("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing env var ID"), nil
 	}

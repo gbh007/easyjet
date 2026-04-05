@@ -9,7 +9,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (srv Service) rotateProjectRuns(ctx context.Context, project entity.Project, runID uint) (err error) {
+func (srv Service) rotateProjectRuns(ctx context.Context, project entity.Project, runID int) (err error) {
 	start := time.Now()
 
 	defer func() {

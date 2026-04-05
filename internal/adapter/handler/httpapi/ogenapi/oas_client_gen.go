@@ -360,7 +360,7 @@ func (c *Client) sendCreateProjectRun(ctx context.Context, params CreateProjectR
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.ProjectID))
+			return e.EncodeValue(conv.IntToString(params.ProjectID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -454,7 +454,7 @@ func (c *Client) sendDeleteGlobalEnvVar(ctx context.Context, params DeleteGlobal
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.EnvVarID))
+			return e.EncodeValue(conv.IntToString(params.EnvVarID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -547,7 +547,7 @@ func (c *Client) sendGetGlobalEnvVar(ctx context.Context, params GetGlobalEnvVar
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.EnvVarID))
+			return e.EncodeValue(conv.IntToString(params.EnvVarID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -715,7 +715,7 @@ func (c *Client) sendGetProject(ctx context.Context, params GetProjectParams) (r
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.ProjectID))
+			return e.EncodeValue(conv.IntToString(params.ProjectID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -808,7 +808,7 @@ func (c *Client) sendGetProjectRun(ctx context.Context, params GetProjectRunPara
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.ProjectID))
+			return e.EncodeValue(conv.IntToString(params.ProjectID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -827,7 +827,7 @@ func (c *Client) sendGetProjectRun(ctx context.Context, params GetProjectRunPara
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.RunID))
+			return e.EncodeValue(conv.IntToString(params.RunID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -920,7 +920,7 @@ func (c *Client) sendGetProjectRuns(ctx context.Context, params GetProjectRunsPa
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.ProjectID))
+			return e.EncodeValue(conv.IntToString(params.ProjectID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -1109,7 +1109,7 @@ func (c *Client) sendUpdateGlobalEnvVar(ctx context.Context, request *Environmen
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.EnvVarID))
+			return e.EncodeValue(conv.IntToString(params.EnvVarID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -1204,7 +1204,7 @@ func (c *Client) sendUpdateProject(ctx context.Context, request *ProjectUpdate, 
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UintToString(params.ProjectID))
+			return e.EncodeValue(conv.IntToString(params.ProjectID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}

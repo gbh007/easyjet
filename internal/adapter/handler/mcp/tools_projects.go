@@ -56,7 +56,7 @@ type GetProjectResponse struct {
 }
 
 func (s *MCPServer) handleGetProject(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetFloat("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing project ID"), nil
 	}
@@ -67,7 +67,7 @@ func (s *MCPServer) handleGetProject(ctx context.Context, request mcp.CallToolRe
 	}
 
 	slices.SortFunc(project.EnvVars, func(a, b entity.EnvironmentVariable) int {
-		return int(a.ID) - int(b.ID)
+		return a.ID - b.ID
 	})
 
 	resp := GetProjectResponse{

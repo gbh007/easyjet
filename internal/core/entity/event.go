@@ -17,8 +17,8 @@ const (
 
 type Event struct {
 	Type      EventType
-	ProjectID uint
-	RunID     uint
+	ProjectID int
+	RunID     int
 	Stage     int
 	Err       error
 	Duration  time.Duration

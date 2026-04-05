@@ -5,7 +5,7 @@ import (
 )
 
 type Project struct {
-	ID        uint
+	ID        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -30,13 +30,13 @@ func (p Project) HasGIT() bool {
 }
 
 type ProjectStage struct {
-	ProjectID uint
+	ProjectID int
 	Number    int
 	Script    string
 }
 
 type ProjectsWithRunInfo struct {
-	ID                  uint
+	ID                  int
 	Name                string
 	CronEnabled         bool
 	IsTemplate          bool

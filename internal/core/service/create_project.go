@@ -8,7 +8,7 @@ import (
 	"github.com/samber/lo"
 )
 
-func (srv Service) CreateProject(ctx context.Context, p entity.Project) (uint, error) {
+func (srv Service) CreateProject(ctx context.Context, p entity.Project) (int, error) {
 	p.Stages = lo.FilterMap(p.Stages, func(s entity.ProjectStage, i int) (entity.ProjectStage, bool) {
 		s.Number = i + 1
 

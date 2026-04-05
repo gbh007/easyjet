@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint, error) {
+func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (int, error) {
 	tx, err := repo.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return 0, fmt.Errorf("begin transaction: %w", err)

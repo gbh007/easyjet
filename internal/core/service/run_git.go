@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 )
 
-func (srv Service) runGitPull(ctx context.Context, project entity.Project, runID uint, dir string) (err error) {
+func (srv Service) runGitPull(ctx context.Context, project entity.Project, runID int, dir string) (err error) {
 	start := time.Now()
 
 	defer func() {

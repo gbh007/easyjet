@@ -16,7 +16,7 @@ type Scheduler struct {
 	eventQueue <-chan entity.Event
 	service    port.Service
 	logger     *slog.Logger
-	jobs       map[uint]gocron.Job
+	jobs       map[int]gocron.Job
 	jobsMu     *sync.Mutex
 }
 
@@ -25,7 +25,7 @@ func NewScheduler(logger *slog.Logger, ps port.PubSub, service port.Service) *Sc
 		eventQueue: ps.SubscribeEvent("scheduler", 100),
 		service:    service,
 		logger:     logger,
-		jobs:       make(map[uint]gocron.Job),
+		jobs:       make(map[int]gocron.Job),
 		jobsMu:     &sync.Mutex{},
 	}
 }
@@ -127,7 +127,7 @@ func (s *Scheduler) handleEvent(ctx context.Context, event entity.Event) (err er
 	return nil
 }
 
-func (s *Scheduler) registerJob(ctx context.Context, projectID uint) error {
+func (s *Scheduler) registerJob(ctx context.Context, projectID int) error {
 	project, err := s.service.Project(ctx, projectID)
 	if err != nil {
 		return fmt.Errorf("get project: %w", err)
@@ -157,7 +157,7 @@ func (s *Scheduler) registerJob(ctx context.Context, projectID uint) error {
 	return nil
 }
 
-func (s *Scheduler) removeJob(projectID uint) error {
+func (s *Scheduler) removeJob(projectID int) error {
 	s.jobsMu.Lock()
 	defer s.jobsMu.Unlock()
 

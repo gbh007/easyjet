@@ -5,7 +5,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func convertProjectUpdate(req *ogenapi.ProjectUpdate, projectID uint) entity.Project {
+func convertProjectUpdate(req *ogenapi.ProjectUpdate, projectID int) entity.Project {
 	p := entity.Project{
 		ID:             projectID,
 		Name:           req.Name,

@@ -26,10 +26,10 @@ func convertProjectRunToOgen(run entity.ProjectRun) ogenapi.ProjectRun {
 	}
 
 	return ogenapi.ProjectRun{
-		ID:         ogenapi.NewOptUint(run.ID),
+		ID:         ogenapi.NewOptInt(run.ID),
 		CreatedAt:  ogenapi.NewOptDateTime(run.CreatedAt),
 		UpdatedAt:  ogenapi.NewOptDateTime(run.UpdatedAt),
-		ProjectID:  ogenapi.NewOptUint(run.ProjectID),
+		ProjectID:  ogenapi.NewOptInt(run.ProjectID),
 		Status:     ogenapi.NewOptProjectRunStatus(ogenapi.ProjectRunStatus(run.Status)),
 		FailLog:    ogenapi.NewOptString(run.FailLog),
 		Duration:   ogenapi.NewOptInt64(run.Duration.Milliseconds()),

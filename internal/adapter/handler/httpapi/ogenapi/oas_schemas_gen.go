@@ -15,46 +15,46 @@ func (s *ErrorStatusCode) Error() string {
 
 type CreateGlobalEnvVarCreated struct {
 	// Уникальный идентификатор созданной переменной.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 }
 
 // GetID returns the value of ID.
-func (s *CreateGlobalEnvVarCreated) GetID() OptUint {
+func (s *CreateGlobalEnvVarCreated) GetID() OptInt {
 	return s.ID
 }
 
 // SetID sets the value of ID.
-func (s *CreateGlobalEnvVarCreated) SetID(val OptUint) {
+func (s *CreateGlobalEnvVarCreated) SetID(val OptInt) {
 	s.ID = val
 }
 
 type CreateProjectCreated struct {
 	// Уникальный идентификатор созданного проекта.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 }
 
 // GetID returns the value of ID.
-func (s *CreateProjectCreated) GetID() OptUint {
+func (s *CreateProjectCreated) GetID() OptInt {
 	return s.ID
 }
 
 // SetID sets the value of ID.
-func (s *CreateProjectCreated) SetID(val OptUint) {
+func (s *CreateProjectCreated) SetID(val OptInt) {
 	s.ID = val
 }
 
 type CreateProjectRunCreated struct {
 	// Уникальный идентификатор созданного запуска.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 }
 
 // GetID returns the value of ID.
-func (s *CreateProjectRunCreated) GetID() OptUint {
+func (s *CreateProjectRunCreated) GetID() OptInt {
 	return s.ID
 }
 
 // SetID sets the value of ID.
-func (s *CreateProjectRunCreated) SetID(val OptUint) {
+func (s *CreateProjectRunCreated) SetID(val OptInt) {
 	s.ID = val
 }
 
@@ -67,13 +67,13 @@ type DeleteGlobalEnvVarNoContent struct{}
 // Ref: #/components/schemas/EnvironmentVariable
 type EnvironmentVariable struct {
 	// Уникальный идентификатор переменной.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 	// Дата и время создания переменной.
 	CreatedAt OptDateTime `json:"created_at"`
 	// Дата и время последнего изменения значения.
 	UpdatedAt OptDateTime `json:"updated_at"`
 	// Ссылка на проект (null для глобальных переменных).
-	ProjectID OptNilUint `json:"project_id"`
+	ProjectID OptNilInt `json:"project_id"`
 	// Имя переменной окружения (например, DATABASE_URL, API_KEY).
 	Name string `json:"name"`
 	// Значение переменной окружения.
@@ -83,7 +83,7 @@ type EnvironmentVariable struct {
 }
 
 // GetID returns the value of ID.
-func (s *EnvironmentVariable) GetID() OptUint {
+func (s *EnvironmentVariable) GetID() OptInt {
 	return s.ID
 }
 
@@ -98,7 +98,7 @@ func (s *EnvironmentVariable) GetUpdatedAt() OptDateTime {
 }
 
 // GetProjectID returns the value of ProjectID.
-func (s *EnvironmentVariable) GetProjectID() OptNilUint {
+func (s *EnvironmentVariable) GetProjectID() OptNilInt {
 	return s.ProjectID
 }
 
@@ -118,7 +118,7 @@ func (s *EnvironmentVariable) GetUsesOtherVariables() OptBool {
 }
 
 // SetID sets the value of ID.
-func (s *EnvironmentVariable) SetID(val OptUint) {
+func (s *EnvironmentVariable) SetID(val OptInt) {
 	s.ID = val
 }
 
@@ -133,7 +133,7 @@ func (s *EnvironmentVariable) SetUpdatedAt(val OptDateTime) {
 }
 
 // SetProjectID sets the value of ProjectID.
-func (s *EnvironmentVariable) SetProjectID(val OptNilUint) {
+func (s *EnvironmentVariable) SetProjectID(val OptNilInt) {
 	s.ProjectID = val
 }
 
@@ -503,6 +503,52 @@ func (o OptGetProjectsType) Or(d GetProjectsType) GetProjectsType {
 	return d
 }
 
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt is optional int.
+type OptInt struct {
+	Value int
+	Set   bool
+}
+
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt) SetTo(v int) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt) Get() (v int, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptInt32 returns new OptInt32 with value set to v.
 func NewOptInt32(v int32) OptInt32 {
 	return OptInt32{
@@ -715,6 +761,69 @@ func (o OptNilEnvironmentVariableArray) Get() (v []EnvironmentVariable, ok bool)
 
 // Or returns value if set, or given parameter if does not.
 func (o OptNilEnvironmentVariableArray) Or(d []EnvironmentVariable) []EnvironmentVariable {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptNilInt returns new OptNilInt with value set to v.
+func NewOptNilInt(v int) OptNilInt {
+	return OptNilInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilInt is optional nullable int.
+type OptNilInt struct {
+	Value int
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilInt was set.
+func (o OptNilInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilInt) SetTo(v int) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilInt) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilInt) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v int
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilInt) Get() (v int, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilInt) Or(d int) int {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -1036,69 +1145,6 @@ func (o OptNilProjectRunSummaryArray) Or(d []ProjectRunSummary) []ProjectRunSumm
 	return d
 }
 
-// NewOptNilUint returns new OptNilUint with value set to v.
-func NewOptNilUint(v uint) OptNilUint {
-	return OptNilUint{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptNilUint is optional nullable uint.
-type OptNilUint struct {
-	Value uint
-	Set   bool
-	Null  bool
-}
-
-// IsSet returns true if OptNilUint was set.
-func (o OptNilUint) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptNilUint) Reset() {
-	var v uint
-	o.Value = v
-	o.Set = false
-	o.Null = false
-}
-
-// SetTo sets value to v.
-func (o *OptNilUint) SetTo(v uint) {
-	o.Set = true
-	o.Null = false
-	o.Value = v
-}
-
-// IsNull returns true if value is Null.
-func (o OptNilUint) IsNull() bool { return o.Null }
-
-// SetToNull sets value to null.
-func (o *OptNilUint) SetToNull() {
-	o.Set = true
-	o.Null = true
-	var v uint
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptNilUint) Get() (v uint, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptNilUint) Or(d uint) uint {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptProjectLastRun returns new OptProjectLastRun with value set to v.
 func NewOptProjectLastRun(v ProjectLastRun) OptProjectLastRun {
 	return OptProjectLastRun{
@@ -1329,58 +1375,12 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// NewOptUint returns new OptUint with value set to v.
-func NewOptUint(v uint) OptUint {
-	return OptUint{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptUint is optional uint.
-type OptUint struct {
-	Value uint
-	Set   bool
-}
-
-// IsSet returns true if OptUint was set.
-func (o OptUint) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptUint) Reset() {
-	var v uint
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptUint) SetTo(v uint) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptUint) Get() (v uint, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptUint) Or(d uint) uint {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // Проект — конфигурация автоматизированного
 // пайплайна для репозитория.
 // Ref: #/components/schemas/Project
 type Project struct {
 	// Уникальный идентификатор проекта.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 	// Дата и время создания проекта.
 	CreatedAt OptDateTime `json:"created_at"`
 	// Дата и время последнего изменения конфигурации.
@@ -1414,7 +1414,7 @@ type Project struct {
 }
 
 // GetID returns the value of ID.
-func (s *Project) GetID() OptUint {
+func (s *Project) GetID() OptInt {
 	return s.ID
 }
 
@@ -1489,7 +1489,7 @@ func (s *Project) GetEnvVars() OptNilProjectEnvironmentVariableArray {
 }
 
 // SetID sets the value of ID.
-func (s *Project) SetID(val OptUint) {
+func (s *Project) SetID(val OptInt) {
 	s.ID = val
 }
 
@@ -1719,7 +1719,7 @@ func (s *ProjectCreate) SetEnvVars(val OptNilProjectEnvironmentVariableArray) {
 // Ref: #/components/schemas/ProjectEnvironmentVariable
 type ProjectEnvironmentVariable struct {
 	// Уникальный идентификатор переменной.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 	// Имя переменной окружения (например, DATABASE_URL, API_KEY).
 	Name string `json:"name"`
 	// Значение переменной окружения.
@@ -1729,7 +1729,7 @@ type ProjectEnvironmentVariable struct {
 }
 
 // GetID returns the value of ID.
-func (s *ProjectEnvironmentVariable) GetID() OptUint {
+func (s *ProjectEnvironmentVariable) GetID() OptInt {
 	return s.ID
 }
 
@@ -1749,7 +1749,7 @@ func (s *ProjectEnvironmentVariable) GetUsesOtherVariables() OptBool {
 }
 
 // SetID sets the value of ID.
-func (s *ProjectEnvironmentVariable) SetID(val OptUint) {
+func (s *ProjectEnvironmentVariable) SetID(val OptInt) {
 	s.ID = val
 }
 
@@ -1870,7 +1870,7 @@ func (s *ProjectLastRunStatus) UnmarshalText(data []byte) error {
 // Ref: #/components/schemas/ProjectListItem
 type ProjectListItem struct {
 	// Уникальный идентификатор проекта.
-	ID uint `json:"id"`
+	ID int `json:"id"`
 	// Человеко-читаемое имя проекта.
 	Name string `json:"name"`
 	// Флаг включения автоматического расписания (cron).
@@ -1883,7 +1883,7 @@ type ProjectListItem struct {
 }
 
 // GetID returns the value of ID.
-func (s *ProjectListItem) GetID() uint {
+func (s *ProjectListItem) GetID() int {
 	return s.ID
 }
 
@@ -1913,7 +1913,7 @@ func (s *ProjectListItem) GetLastRun() OptProjectLastRun {
 }
 
 // SetID sets the value of ID.
-func (s *ProjectListItem) SetID(val uint) {
+func (s *ProjectListItem) SetID(val int) {
 	s.ID = val
 }
 
@@ -1946,13 +1946,13 @@ func (s *ProjectListItem) SetLastRun(val OptProjectLastRun) {
 // Ref: #/components/schemas/ProjectRun
 type ProjectRun struct {
 	// Уникальный идентификатор запуска.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 	// Время начала запуска.
 	CreatedAt OptDateTime `json:"created_at"`
 	// Время последнего обновления статуса.
 	UpdatedAt OptDateTime `json:"updated_at"`
 	// Ссылка на проект.
-	ProjectID OptUint `json:"project_id"`
+	ProjectID OptInt `json:"project_id"`
 	// Статус выполнения запуска.
 	Status OptProjectRunStatus `json:"status"`
 	// Время выполнения запуска (в миллисекундах).
@@ -1966,7 +1966,7 @@ type ProjectRun struct {
 }
 
 // GetID returns the value of ID.
-func (s *ProjectRun) GetID() OptUint {
+func (s *ProjectRun) GetID() OptInt {
 	return s.ID
 }
 
@@ -1981,7 +1981,7 @@ func (s *ProjectRun) GetUpdatedAt() OptDateTime {
 }
 
 // GetProjectID returns the value of ProjectID.
-func (s *ProjectRun) GetProjectID() OptUint {
+func (s *ProjectRun) GetProjectID() OptInt {
 	return s.ProjectID
 }
 
@@ -2011,7 +2011,7 @@ func (s *ProjectRun) GetGitCommits() OptNilProjectRunGitCommitArray {
 }
 
 // SetID sets the value of ID.
-func (s *ProjectRun) SetID(val OptUint) {
+func (s *ProjectRun) SetID(val OptInt) {
 	s.ID = val
 }
 
@@ -2026,7 +2026,7 @@ func (s *ProjectRun) SetUpdatedAt(val OptDateTime) {
 }
 
 // SetProjectID sets the value of ProjectID.
-func (s *ProjectRun) SetProjectID(val OptUint) {
+func (s *ProjectRun) SetProjectID(val OptInt) {
 	s.ProjectID = val
 }
 
@@ -2210,13 +2210,13 @@ func (s *ProjectRunStatus) UnmarshalText(data []byte) error {
 // Ref: #/components/schemas/ProjectRunSummary
 type ProjectRunSummary struct {
 	// Уникальный идентификатор запуска.
-	ID OptUint `json:"id"`
+	ID OptInt `json:"id"`
 	// Время начала запуска.
 	CreatedAt OptDateTime `json:"created_at"`
 	// Время последнего обновления статуса.
 	UpdatedAt OptDateTime `json:"updated_at"`
 	// Ссылка на проект.
-	ProjectID OptUint `json:"project_id"`
+	ProjectID OptInt `json:"project_id"`
 	// Статус выполнения запуска.
 	Status OptProjectRunSummaryStatus `json:"status"`
 	// Время выполнения запуска (в миллисекундах).
@@ -2226,7 +2226,7 @@ type ProjectRunSummary struct {
 }
 
 // GetID returns the value of ID.
-func (s *ProjectRunSummary) GetID() OptUint {
+func (s *ProjectRunSummary) GetID() OptInt {
 	return s.ID
 }
 
@@ -2241,7 +2241,7 @@ func (s *ProjectRunSummary) GetUpdatedAt() OptDateTime {
 }
 
 // GetProjectID returns the value of ProjectID.
-func (s *ProjectRunSummary) GetProjectID() OptUint {
+func (s *ProjectRunSummary) GetProjectID() OptInt {
 	return s.ProjectID
 }
 
@@ -2261,7 +2261,7 @@ func (s *ProjectRunSummary) GetFailLog() OptString {
 }
 
 // SetID sets the value of ID.
-func (s *ProjectRunSummary) SetID(val OptUint) {
+func (s *ProjectRunSummary) SetID(val OptInt) {
 	s.ID = val
 }
 
@@ -2276,7 +2276,7 @@ func (s *ProjectRunSummary) SetUpdatedAt(val OptDateTime) {
 }
 
 // SetProjectID sets the value of ProjectID.
-func (s *ProjectRunSummary) SetProjectID(val OptUint) {
+func (s *ProjectRunSummary) SetProjectID(val OptInt) {
 	s.ProjectID = val
 }
 
@@ -2384,7 +2384,7 @@ func (s *ProjectStage) SetScript(val string) {
 // Ref: #/components/schemas/ProjectUpdate
 type ProjectUpdate struct {
 	// Уникальный идентификатор проекта.
-	ID uint `json:"id"`
+	ID int `json:"id"`
 	// Флаг включения автоматического расписания (cron).
 	CronEnabled OptBool `json:"cron_enabled"`
 	// Cron-выражение для автоматического запуска.
@@ -2413,7 +2413,7 @@ type ProjectUpdate struct {
 }
 
 // GetID returns the value of ID.
-func (s *ProjectUpdate) GetID() uint {
+func (s *ProjectUpdate) GetID() int {
 	return s.ID
 }
 
@@ -2478,7 +2478,7 @@ func (s *ProjectUpdate) GetEnvVars() OptNilProjectEnvironmentVariableArray {
 }
 
 // SetID sets the value of ID.
-func (s *ProjectUpdate) SetID(val uint) {
+func (s *ProjectUpdate) SetID(val int) {
 	s.ID = val
 }
 

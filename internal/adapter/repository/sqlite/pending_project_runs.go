@@ -8,7 +8,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (repo Repo) PendingProjectRuns(ctx context.Context) ([]uint, error) {
+func (repo Repo) PendingProjectRuns(ctx context.Context) ([]int, error) {
 	query, args, err := repo.psql.
 		Select("id").
 		From("runs").
@@ -25,9 +25,9 @@ func (repo Repo) PendingProjectRuns(ctx context.Context) ([]uint, error) {
 	}
 	defer func() { _ = rows.Close() }()
 
-	var ids []uint
+	var ids []int
 	for rows.Next() {
-		var runID uint
+		var runID int
 		if err := rows.Scan(&runID); err != nil {
 			return nil, fmt.Errorf("scan run id: %w", err)
 		}

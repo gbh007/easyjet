@@ -40,7 +40,7 @@ func (repo Repo) Projects(ctx context.Context) ([]entity.Project, error) {
 	defer rows.Close()
 
 	var projects []entity.Project
-	projectIDs := make([]uint, 0)
+	projectIDs := make([]int, 0)
 
 	for rows.Next() {
 		var p entity.Project
@@ -88,7 +88,7 @@ func (repo Repo) Projects(ctx context.Context) ([]entity.Project, error) {
 	}
 	defer rows.Close()
 
-	stagesMap := make(map[uint][]entity.ProjectStage)
+	stagesMap := make(map[int][]entity.ProjectStage)
 	for rows.Next() {
 		var stage entity.ProjectStage
 		if err := rows.Scan(&stage.ProjectID, &stage.Number, &stage.Script); err != nil {

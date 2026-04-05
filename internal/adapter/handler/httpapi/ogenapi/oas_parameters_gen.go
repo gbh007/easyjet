@@ -17,7 +17,7 @@ import (
 // CreateProjectRunParams is parameters of createProjectRun operation.
 type CreateProjectRunParams struct {
 	// Уникальный идентификатор проекта.
-	ProjectID uint
+	ProjectID int
 }
 
 func unpackCreateProjectRunParams(packed middleware.Parameters) (params CreateProjectRunParams) {
@@ -26,7 +26,7 @@ func unpackCreateProjectRunParams(packed middleware.Parameters) (params CreatePr
 			Name: "project_id",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(uint)
+		params.ProjectID = packed[key].(int)
 	}
 	return params
 }
@@ -56,7 +56,7 @@ func decodeCreateProjectRunParams(args [1]string, argsEscaped bool, r *http.Requ
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -101,7 +101,7 @@ func decodeCreateProjectRunParams(args [1]string, argsEscaped bool, r *http.Requ
 // DeleteGlobalEnvVarParams is parameters of deleteGlobalEnvVar operation.
 type DeleteGlobalEnvVarParams struct {
 	// Уникальный идентификатор переменной.
-	EnvVarID uint
+	EnvVarID int
 }
 
 func unpackDeleteGlobalEnvVarParams(packed middleware.Parameters) (params DeleteGlobalEnvVarParams) {
@@ -110,7 +110,7 @@ func unpackDeleteGlobalEnvVarParams(packed middleware.Parameters) (params Delete
 			Name: "env_var_id",
 			In:   "path",
 		}
-		params.EnvVarID = packed[key].(uint)
+		params.EnvVarID = packed[key].(int)
 	}
 	return params
 }
@@ -140,7 +140,7 @@ func decodeDeleteGlobalEnvVarParams(args [1]string, argsEscaped bool, r *http.Re
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -185,7 +185,7 @@ func decodeDeleteGlobalEnvVarParams(args [1]string, argsEscaped bool, r *http.Re
 // GetGlobalEnvVarParams is parameters of getGlobalEnvVar operation.
 type GetGlobalEnvVarParams struct {
 	// Уникальный идентификатор переменной.
-	EnvVarID uint
+	EnvVarID int
 }
 
 func unpackGetGlobalEnvVarParams(packed middleware.Parameters) (params GetGlobalEnvVarParams) {
@@ -194,7 +194,7 @@ func unpackGetGlobalEnvVarParams(packed middleware.Parameters) (params GetGlobal
 			Name: "env_var_id",
 			In:   "path",
 		}
-		params.EnvVarID = packed[key].(uint)
+		params.EnvVarID = packed[key].(int)
 	}
 	return params
 }
@@ -224,7 +224,7 @@ func decodeGetGlobalEnvVarParams(args [1]string, argsEscaped bool, r *http.Reque
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -269,7 +269,7 @@ func decodeGetGlobalEnvVarParams(args [1]string, argsEscaped bool, r *http.Reque
 // GetProjectParams is parameters of getProject operation.
 type GetProjectParams struct {
 	// Уникальный идентификатор проекта.
-	ProjectID uint
+	ProjectID int
 }
 
 func unpackGetProjectParams(packed middleware.Parameters) (params GetProjectParams) {
@@ -278,7 +278,7 @@ func unpackGetProjectParams(packed middleware.Parameters) (params GetProjectPara
 			Name: "project_id",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(uint)
+		params.ProjectID = packed[key].(int)
 	}
 	return params
 }
@@ -308,7 +308,7 @@ func decodeGetProjectParams(args [1]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -353,9 +353,9 @@ func decodeGetProjectParams(args [1]string, argsEscaped bool, r *http.Request) (
 // GetProjectRunParams is parameters of getProjectRun operation.
 type GetProjectRunParams struct {
 	// Уникальный идентификатор проекта.
-	ProjectID uint
+	ProjectID int
 	// Уникальный идентификатор запуска.
-	RunID uint
+	RunID int
 }
 
 func unpackGetProjectRunParams(packed middleware.Parameters) (params GetProjectRunParams) {
@@ -364,14 +364,14 @@ func unpackGetProjectRunParams(packed middleware.Parameters) (params GetProjectR
 			Name: "project_id",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(uint)
+		params.ProjectID = packed[key].(int)
 	}
 	{
 		key := middleware.ParameterKey{
 			Name: "run_id",
 			In:   "path",
 		}
-		params.RunID = packed[key].(uint)
+		params.RunID = packed[key].(int)
 	}
 	return params
 }
@@ -401,7 +401,7 @@ func decodeGetProjectRunParams(args [2]string, argsEscaped bool, r *http.Request
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -464,7 +464,7 @@ func decodeGetProjectRunParams(args [2]string, argsEscaped bool, r *http.Request
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -509,7 +509,7 @@ func decodeGetProjectRunParams(args [2]string, argsEscaped bool, r *http.Request
 // GetProjectRunsParams is parameters of getProjectRuns operation.
 type GetProjectRunsParams struct {
 	// Уникальный идентификатор проекта.
-	ProjectID uint
+	ProjectID int
 }
 
 func unpackGetProjectRunsParams(packed middleware.Parameters) (params GetProjectRunsParams) {
@@ -518,7 +518,7 @@ func unpackGetProjectRunsParams(packed middleware.Parameters) (params GetProject
 			Name: "project_id",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(uint)
+		params.ProjectID = packed[key].(int)
 	}
 	return params
 }
@@ -548,7 +548,7 @@ func decodeGetProjectRunsParams(args [1]string, argsEscaped bool, r *http.Reques
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -679,7 +679,7 @@ func decodeGetProjectsParams(args [0]string, argsEscaped bool, r *http.Request) 
 // UpdateGlobalEnvVarParams is parameters of updateGlobalEnvVar operation.
 type UpdateGlobalEnvVarParams struct {
 	// Уникальный идентификатор переменной.
-	EnvVarID uint
+	EnvVarID int
 }
 
 func unpackUpdateGlobalEnvVarParams(packed middleware.Parameters) (params UpdateGlobalEnvVarParams) {
@@ -688,7 +688,7 @@ func unpackUpdateGlobalEnvVarParams(packed middleware.Parameters) (params Update
 			Name: "env_var_id",
 			In:   "path",
 		}
-		params.EnvVarID = packed[key].(uint)
+		params.EnvVarID = packed[key].(int)
 	}
 	return params
 }
@@ -718,7 +718,7 @@ func decodeUpdateGlobalEnvVarParams(args [1]string, argsEscaped bool, r *http.Re
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}
@@ -763,7 +763,7 @@ func decodeUpdateGlobalEnvVarParams(args [1]string, argsEscaped bool, r *http.Re
 // UpdateProjectParams is parameters of updateProject operation.
 type UpdateProjectParams struct {
 	// Уникальный идентификатор проекта.
-	ProjectID uint
+	ProjectID int
 }
 
 func unpackUpdateProjectParams(packed middleware.Parameters) (params UpdateProjectParams) {
@@ -772,7 +772,7 @@ func unpackUpdateProjectParams(packed middleware.Parameters) (params UpdateProje
 			Name: "project_id",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(uint)
+		params.ProjectID = packed[key].(int)
 	}
 	return params
 }
@@ -802,7 +802,7 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 					return err
 				}
 
-				c, err := conv.ToUint(val)
+				c, err := conv.ToInt(val)
 				if err != nil {
 					return err
 				}

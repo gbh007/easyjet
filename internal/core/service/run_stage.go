@@ -12,7 +12,7 @@ import (
 func (srv Service) runStage(
 	ctx context.Context,
 	project entity.Project,
-	runID uint,
+	runID int,
 	dir string,
 	stage entity.ProjectStage,
 	env func(entity.ProjectStage) []string,

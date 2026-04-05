@@ -72,7 +72,7 @@ type GetEnvVarResponse struct {
 }
 
 func (s *MCPServer) handleGetGlobalEnvVar(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetInt("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing env var ID"), nil
 	}
@@ -97,7 +97,7 @@ type ListRunsResponse struct {
 }
 
 func (s *MCPServer) handleGetProjectRuns(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetInt("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing project ID"), nil
 	}
@@ -127,7 +127,7 @@ type GetRunResponse struct {
 }
 
 func (s *MCPServer) handleGetRun(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetInt("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing run ID"), nil
 	}

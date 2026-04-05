@@ -9,7 +9,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (srv Service) RunProject(ctx context.Context, id uint) (uint, error) {
+func (srv Service) RunProject(ctx context.Context, id int) (int, error) {
 	project, err := srv.db.Project(ctx, id)
 	if err != nil {
 		return 0, fmt.Errorf("get project: %w", err)
@@ -32,7 +32,7 @@ func (srv Service) RunProject(ctx context.Context, id uint) (uint, error) {
 	return runID, nil
 }
 
-func (srv Service) HandleRun(ctx context.Context, runID uint) (returnedErr error) {
+func (srv Service) HandleRun(ctx context.Context, runID int) (returnedErr error) {
 	run, err := srv.db.ProjectRun(ctx, runID)
 	if err != nil {
 		return fmt.Errorf("get run: %w", err)

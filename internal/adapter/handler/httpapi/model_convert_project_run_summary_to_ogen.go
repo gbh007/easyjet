@@ -15,10 +15,10 @@ func convertProjectRunsSummaryToOgen(runs []entity.ProjectRun) []ogenapi.Project
 
 func convertProjectRunSummaryToOgen(run entity.ProjectRun) ogenapi.ProjectRunSummary {
 	return ogenapi.ProjectRunSummary{
-		ID:        ogenapi.NewOptUint(run.ID),
+		ID:        ogenapi.NewOptInt(run.ID),
 		CreatedAt: ogenapi.NewOptDateTime(run.CreatedAt),
 		UpdatedAt: ogenapi.NewOptDateTime(run.UpdatedAt),
-		ProjectID: ogenapi.NewOptUint(run.ProjectID),
+		ProjectID: ogenapi.NewOptInt(run.ProjectID),
 		Status:    ogenapi.NewOptProjectRunSummaryStatus(ogenapi.ProjectRunSummaryStatus(run.Status)),
 		FailLog:   ogenapi.NewOptString(run.FailLog),
 		Duration:  ogenapi.NewOptInt64(run.Duration.Milliseconds()),

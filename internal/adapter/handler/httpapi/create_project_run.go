@@ -14,6 +14,6 @@ func (h *Handler) CreateProjectRun(ctx context.Context, params ogenapi.CreatePro
 	}
 
 	return &ogenapi.CreateProjectRunCreated{
-		ID: ogenapi.NewOptUint(runID),
+		ID: ogenapi.NewOptInt(runID),
 	}, nil
 }

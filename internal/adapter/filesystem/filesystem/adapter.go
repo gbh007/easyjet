@@ -22,11 +22,11 @@ func New(logger *slog.Logger, basePath string) Adapter {
 	}
 }
 
-func (a Adapter) GetProjectDir(ctx context.Context, id uint) string {
-	return filepath.Join(a.basePath, strconv.Itoa(int(id)))
+func (a Adapter) GetProjectDir(ctx context.Context, id int) string {
+	return filepath.Join(a.basePath, strconv.Itoa(id))
 }
 
-func (a Adapter) CreateProjectDir(ctx context.Context, id uint) (string, error) {
+func (a Adapter) CreateProjectDir(ctx context.Context, id int) (string, error) {
 	p := a.GetProjectDir(ctx, id)
 
 	err := os.MkdirAll(p, os.ModeDir|os.ModePerm)
@@ -37,7 +37,7 @@ func (a Adapter) CreateProjectDir(ctx context.Context, id uint) (string, error) 
 	return p, nil
 }
 
-func (a Adapter) ProjectDirExists(ctx context.Context, id uint) (bool, error) {
+func (a Adapter) ProjectDirExists(ctx context.Context, id int) (bool, error) {
 	p := a.GetProjectDir(ctx, id)
 
 	info, err := os.Stat(p)
@@ -56,7 +56,7 @@ func (a Adapter) ProjectDirExists(ctx context.Context, id uint) (bool, error) {
 	return false, errors.New("is not dir")
 }
 
-func (Adapter) CreateSHScript(ctx context.Context, id uint, stage int, body string) (p string, err error) {
+func (Adapter) CreateSHScript(ctx context.Context, id, stage int, body string) (p string, err error) {
 	d := filepath.Join(os.TempDir(), "easyjet", "scripts")
 
 	err = os.MkdirAll(d, os.ModeDir|os.ModePerm)

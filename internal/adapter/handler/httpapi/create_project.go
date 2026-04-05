@@ -16,6 +16,6 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogenapi.ProjectCreate)
 	}
 
 	return &ogenapi.CreateProjectCreated{
-		ID: ogenapi.NewOptUint(id),
+		ID: ogenapi.NewOptInt(id),
 	}, nil
 }

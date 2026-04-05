@@ -5,11 +5,11 @@ import (
 )
 
 type EnvironmentVariable struct {
-	ID        uint
+	ID        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	ProjectID          *uint
+	ProjectID          *int
 	Name               string
 	Value              string
 	UsesOtherVariables bool

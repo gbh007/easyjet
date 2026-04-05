@@ -984,6 +984,41 @@ func (s *OptDateTime) UnmarshalJSON(data []byte) error {
 	return s.Decode(d, json.DecodeDateTime)
 }
 
+// Encode encodes int as json.
+func (o OptInt) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Int(int(o.Value))
+}
+
+// Decode decodes int from json.
+func (o *OptInt) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptInt to nil")
+	}
+	o.Set = true
+	v, err := d.Int()
+	if err != nil {
+		return err
+	}
+	o.Value = int(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptInt) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptInt) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes int32 as json.
 func (o OptInt32) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -1162,6 +1197,57 @@ func (s OptNilEnvironmentVariableArray) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptNilEnvironmentVariableArray) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes int as json.
+func (o OptNilInt) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	if o.Null {
+		e.Null()
+		return
+	}
+	e.Int(int(o.Value))
+}
+
+// Decode decodes int from json.
+func (o *OptNilInt) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptNilInt to nil")
+	}
+	if d.Next() == jx.Null {
+		if err := d.Null(); err != nil {
+			return err
+		}
+
+		var v int
+		o.Value = v
+		o.Set = true
+		o.Null = true
+		return nil
+	}
+	o.Set = true
+	o.Null = false
+	v, err := d.Int()
+	if err != nil {
+		return err
+	}
+	o.Value = int(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptNilInt) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptNilInt) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1471,57 +1557,6 @@ func (s *OptNilProjectRunSummaryArray) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes uint as json.
-func (o OptNilUint) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	if o.Null {
-		e.Null()
-		return
-	}
-	e.UInt(uint(o.Value))
-}
-
-// Decode decodes uint from json.
-func (o *OptNilUint) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptNilUint to nil")
-	}
-	if d.Next() == jx.Null {
-		if err := d.Null(); err != nil {
-			return err
-		}
-
-		var v uint
-		o.Value = v
-		o.Set = true
-		o.Null = true
-		return nil
-	}
-	o.Set = true
-	o.Null = false
-	v, err := d.UInt()
-	if err != nil {
-		return err
-	}
-	o.Value = uint(v)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptNilUint) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptNilUint) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes ProjectLastRun as json.
 func (o OptProjectLastRun) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -1685,41 +1720,6 @@ func (s OptString) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptString) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes uint as json.
-func (o OptUint) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	e.UInt(uint(o.Value))
-}
-
-// Decode decodes uint from json.
-func (o *OptUint) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptUint to nil")
-	}
-	o.Set = true
-	v, err := d.UInt()
-	if err != nil {
-		return err
-	}
-	o.Value = uint(v)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptUint) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptUint) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -2675,7 +2675,7 @@ func (s *ProjectListItem) Encode(e *jx.Encoder) {
 func (s *ProjectListItem) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("id")
-		e.UInt(s.ID)
+		e.Int(s.ID)
 	}
 	{
 		e.FieldStart("name")
@@ -2729,8 +2729,8 @@ func (s *ProjectListItem) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.UInt()
-				s.ID = uint(v)
+				v, err := d.Int()
+				s.ID = int(v)
 				if err != nil {
 					return err
 				}
@@ -3633,7 +3633,7 @@ func (s *ProjectUpdate) Encode(e *jx.Encoder) {
 func (s *ProjectUpdate) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("id")
-		e.UInt(s.ID)
+		e.Int(s.ID)
 	}
 	{
 		if s.CronEnabled.Set {
@@ -3737,8 +3737,8 @@ func (s *ProjectUpdate) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.UInt()
-				s.ID = uint(v)
+				v, err := d.Int()
+				s.ID = int(v)
 				if err != nil {
 					return err
 				}

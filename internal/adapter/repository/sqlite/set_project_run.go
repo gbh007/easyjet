@@ -8,7 +8,7 @@ import (
 	"github.com/gbh007/easyjet/internal/core/entity"
 )
 
-func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint, error) {
+func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (int, error) {
 	tx, err := repo.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, fmt.Errorf("begin transaction: %w", err)
@@ -61,7 +61,7 @@ func (repo Repo) SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint
 		if err != nil {
 			return 0, fmt.Errorf("get last insert id: %w", err)
 		}
-		runID = uint(id)
+		runID = int(id)
 	}
 
 	for _, stage := range run.Stages {

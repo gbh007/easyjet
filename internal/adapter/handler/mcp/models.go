@@ -7,7 +7,7 @@ import (
 )
 
 type ProjectResponse struct {
-	ID             uint             `json:"id"`
+	ID             int              `json:"id"`
 	Name           string           `json:"name"`
 	Dir            string           `json:"dir"`
 	GitURL         string           `json:"git_url"`
@@ -61,11 +61,11 @@ func toStagesResponse(stages []entity.ProjectStage) []StageResponse {
 }
 
 type EnvVarResponse struct {
-	ID                 uint      `json:"id"`
+	ID                 int       `json:"id"`
 	Name               string    `json:"name"`
 	Value              string    `json:"value"`
 	UsesOtherVariables bool      `json:"uses_other_variables"`
-	ProjectID          *uint     `json:"project_id,omitempty"`
+	ProjectID          *int      `json:"project_id,omitempty"`
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 }
@@ -91,8 +91,8 @@ func toEnvVarsResponse(envVars []entity.EnvironmentVariable) []EnvVarResponse {
 }
 
 type ProjectRunResponse struct {
-	ID         uint                   `json:"id"`
-	ProjectID  uint                   `json:"project_id"`
+	ID         int                    `json:"id"`
+	ProjectID  int                    `json:"project_id"`
 	Project    ProjectResponse        `json:"project"`
 	Status     string                 `json:"status"`
 	FailLog    string                 `json:"fail_log,omitempty"`
@@ -157,7 +157,7 @@ func toRunGitCommitsResponse(commits []entity.ProjectRunGitCommits) []RunGitComm
 }
 
 type RunResponse struct {
-	RunID uint `json:"run_id"`
+	RunID int `json:"run_id"`
 }
 
 type SuccessMessageResponse struct {
@@ -166,5 +166,5 @@ type SuccessMessageResponse struct {
 }
 
 type IDResponse struct {
-	ID uint `json:"id"`
+	ID int `json:"id"`
 }

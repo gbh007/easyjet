@@ -11,10 +11,10 @@ type Exec interface {
 }
 
 type FileSystem interface {
-	GetProjectDir(ctx context.Context, id uint) string
-	CreateProjectDir(ctx context.Context, id uint) (string, error)
-	ProjectDirExists(ctx context.Context, id uint) (bool, error)
-	CreateSHScript(ctx context.Context, id uint, stage int, body string) (p string, err error)
+	GetProjectDir(ctx context.Context, id int) string
+	CreateProjectDir(ctx context.Context, id int) (string, error)
+	ProjectDirExists(ctx context.Context, id int) (bool, error)
+	CreateSHScript(ctx context.Context, id, stage int, body string) (p string, err error)
 }
 
 type Git interface {
@@ -36,46 +36,46 @@ type Git interface {
 }
 
 type Database interface {
-	Project(ctx context.Context, id uint) (entity.Project, error)
+	Project(ctx context.Context, id int) (entity.Project, error)
 	Projects(ctx context.Context) ([]entity.Project, error)
 	ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error)
-	SetProject(ctx context.Context, pr entity.Project) (uint, error)
+	SetProject(ctx context.Context, pr entity.Project) (int, error)
 
-	ProjectRun(ctx context.Context, id uint) (entity.ProjectRun, error)
-	ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error)
-	ProjectRunIDs(ctx context.Context, id uint) ([]uint, error)
-	SetProjectRun(ctx context.Context, run entity.ProjectRun) (uint, error)
+	ProjectRun(ctx context.Context, id int) (entity.ProjectRun, error)
+	ProjectRuns(ctx context.Context, id int) ([]entity.ProjectRun, error)
+	ProjectRunIDs(ctx context.Context, id int) ([]int, error)
+	SetProjectRun(ctx context.Context, run entity.ProjectRun) (int, error)
 	SetProjectRunStage(ctx context.Context, rs entity.ProjectRunStage) error
 	SetProjectRunGitCommits(ctx context.Context, commits []entity.ProjectRunGitCommits) error
-	DeleteProjectRuns(ctx context.Context, ids []uint) error
-	PendingProjectRuns(ctx context.Context) ([]uint, error)
+	DeleteProjectRuns(ctx context.Context, ids []int) error
+	PendingProjectRuns(ctx context.Context) ([]int, error)
 
 	GlobalEnvVars(ctx context.Context) ([]entity.EnvironmentVariable, error)
-	GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentVariable, error)
-	SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (uint, error)
-	DeleteGlobalEnvVar(ctx context.Context, id uint) error
+	GlobalEnvVar(ctx context.Context, id int) (entity.EnvironmentVariable, error)
+	SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (int, error)
+	DeleteGlobalEnvVar(ctx context.Context, id int) error
 }
 
 type Service interface {
-	Project(ctx context.Context, id uint) (entity.Project, error)
+	Project(ctx context.Context, id int) (entity.Project, error)
 	Projects(ctx context.Context) ([]entity.Project, error)
 	ProjectsWithRunInfo(ctx context.Context, filterType string) ([]entity.ProjectsWithRunInfo, error)
 
-	CreateProject(ctx context.Context, p entity.Project) (uint, error)
+	CreateProject(ctx context.Context, p entity.Project) (int, error)
 	UpdateProject(ctx context.Context, p entity.Project) error
 
-	RunProject(ctx context.Context, id uint) (uint, error)
-	HandleRun(ctx context.Context, runID uint) error
-	PendingProjectRuns(ctx context.Context) ([]uint, error)
+	RunProject(ctx context.Context, id int) (int, error)
+	HandleRun(ctx context.Context, runID int) error
+	PendingProjectRuns(ctx context.Context) ([]int, error)
 
-	ProjectRun(ctx context.Context, runID uint) (entity.ProjectRun, error)
-	ProjectRuns(ctx context.Context, id uint) ([]entity.ProjectRun, error)
+	ProjectRun(ctx context.Context, runID int) (entity.ProjectRun, error)
+	ProjectRuns(ctx context.Context, id int) ([]entity.ProjectRun, error)
 
 	GlobalEnvVars(ctx context.Context) ([]entity.EnvironmentVariable, error)
-	GlobalEnvVar(ctx context.Context, id uint) (entity.EnvironmentVariable, error)
-	CreateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (uint, error)
+	GlobalEnvVar(ctx context.Context, id int) (entity.EnvironmentVariable, error)
+	CreateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (int, error)
 	UpdateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) error
-	DeleteGlobalEnvVar(ctx context.Context, id uint) error
+	DeleteGlobalEnvVar(ctx context.Context, id int) error
 }
 
 type PubSub interface {

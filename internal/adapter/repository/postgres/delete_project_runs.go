@@ -7,7 +7,7 @@ import (
 	"github.com/Masterminds/squirrel"
 )
 
-func (repo Repo) DeleteProjectRuns(ctx context.Context, ids []uint) error {
+func (repo Repo) DeleteProjectRuns(ctx context.Context, ids []int) error {
 	if len(ids) == 0 {
 		return nil
 	}

@@ -86,7 +86,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                    format: uint
+                    format: int
                     description: Уникальный идентификатор созданного проекта
                     example: 1
         default:
@@ -106,7 +106,7 @@ paths:
           description: Уникальный идентификатор проекта
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       responses:
         "200":
@@ -131,7 +131,7 @@ paths:
           description: Уникальный идентификатор проекта
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       requestBody:
         description: Новая конфигурация проекта
@@ -160,7 +160,7 @@ paths:
           description: Уникальный идентификатор проекта
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       responses:
         "200":
@@ -191,7 +191,7 @@ paths:
           description: Уникальный идентификатор проекта
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       responses:
         "201":
@@ -203,7 +203,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                    format: uint
+                    format: int
                     description: Уникальный идентификатор созданного запуска
                     example: 1
         default:
@@ -223,7 +223,7 @@ paths:
           description: Уникальный идентификатор проекта
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
         - name: run_id
           in: path
@@ -231,7 +231,7 @@ paths:
           description: Уникальный идентификатор запуска
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       responses:
         "200":
@@ -289,7 +289,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                    format: uint
+                    format: int
                     description: Уникальный идентификатор созданной переменной
                     example: 1
         default:
@@ -309,7 +309,7 @@ paths:
           description: Уникальный идентификатор переменной
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       responses:
         "200":
@@ -334,7 +334,7 @@ paths:
           description: Уникальный идентификатор переменной
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       requestBody:
         description: Новые данные переменной
@@ -362,7 +362,7 @@ paths:
           description: Уникальный идентификатор переменной
           schema:
             type: integer
-            format: uint
+            format: int
             minimum: 1
       responses:
         "204":
@@ -378,7 +378,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор проекта
           readOnly: true
           example: 1
@@ -461,7 +461,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор проекта
           readOnly: true
           example: 1
@@ -584,7 +584,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор проекта
           example: 1
         cron_enabled:
@@ -659,7 +659,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор запуска
           readOnly: true
           example: 1
@@ -675,7 +675,7 @@ components:
           readOnly: true
         project_id:
           type: integer
-          format: uint
+          format: int
           description: Ссылка на проект
           readOnly: true
           example: 1
@@ -720,7 +720,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор запуска
           readOnly: true
           example: 1
@@ -736,7 +736,7 @@ components:
           readOnly: true
         project_id:
           type: integer
-          format: uint
+          format: int
           description: Ссылка на проект
           readOnly: true
           example: 1
@@ -815,7 +815,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор переменной
           readOnly: true
           example: 1
@@ -841,7 +841,7 @@ components:
       properties:
         id:
           type: integer
-          format: uint
+          format: int
           description: Уникальный идентификатор переменной
           readOnly: true
           example: 1
@@ -857,7 +857,7 @@ components:
           readOnly: true
         project_id:
           type: integer
-          format: uint
+          format: int
           description: Ссылка на проект (null для глобальных переменных)
           nullable: true
           example: 1

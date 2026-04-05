@@ -10,7 +10,7 @@ const (
 )
 
 type ProjectRun struct {
-	ID        uint
+	ID        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -18,14 +18,14 @@ type ProjectRun struct {
 	Stages     []ProjectRunStage
 	GitCommits []ProjectRunGitCommits
 
-	ProjectID uint
+	ProjectID int
 	Status    string
 	FailLog   string
 	Duration  time.Duration
 }
 
 type ProjectRunStage struct {
-	RunID       uint
+	RunID       int
 	StageNumber int
 	Success     bool
 	Log         string
@@ -33,7 +33,7 @@ type ProjectRunStage struct {
 }
 
 type ProjectRunGitCommits struct {
-	RunID   uint
+	RunID   int
 	Number  int
 	Hash    string
 	Subject string

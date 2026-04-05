@@ -46,7 +46,7 @@ func (h *Handler) CreateGlobalEnvVar(ctx context.Context, req *ogenapi.Environme
 	}
 
 	return &ogenapi.CreateGlobalEnvVarCreated{
-		ID: ogenapi.NewOptUint(id),
+		ID: ogenapi.NewOptInt(id),
 	}, nil
 }
 
@@ -67,7 +67,7 @@ func (h *Handler) DeleteGlobalEnvVar(ctx context.Context, params ogenapi.DeleteG
 
 func convertEnvVarToOgen(ev entity.EnvironmentVariable) ogenapi.EnvironmentVariable {
 	result := ogenapi.EnvironmentVariable{
-		ID:                 ogenapi.NewOptUint(ev.ID),
+		ID:                 ogenapi.NewOptInt(ev.ID),
 		CreatedAt:          ogenapi.NewOptDateTime(ev.CreatedAt),
 		UpdatedAt:          ogenapi.NewOptDateTime(ev.UpdatedAt),
 		Name:               ev.Name,
@@ -76,7 +76,7 @@ func convertEnvVarToOgen(ev entity.EnvironmentVariable) ogenapi.EnvironmentVaria
 	}
 
 	if ev.ProjectID != nil {
-		result.ProjectID = ogenapi.NewOptNilUint(*ev.ProjectID)
+		result.ProjectID = ogenapi.NewOptNilInt(*ev.ProjectID)
 	}
 
 	return result

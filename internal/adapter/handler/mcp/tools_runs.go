@@ -18,12 +18,12 @@ func (s *MCPServer) registerRunTools() {
 
 type RunProjectResponse struct {
 	Success bool   `json:"success"`
-	RunID   uint   `json:"run_id"`
+	RunID   int    `json:"run_id"`
 	Message string `json:"message"`
 }
 
 func (s *MCPServer) handleRunProject(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := uint(request.GetInt("id", 0))
+	id := request.GetInt("id", 0)
 	if id == 0 {
 		return mcp.NewToolResultError("Invalid or missing project ID"), nil
 	}
