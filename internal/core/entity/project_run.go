@@ -14,7 +14,6 @@ type ProjectRun struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	Project    Project
 	Stages     []ProjectRunStage
 	GitCommits []ProjectRunGitCommits
 

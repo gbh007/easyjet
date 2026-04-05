@@ -42,15 +42,26 @@ func New(logger *slog.Logger, cfg Config, service port.Service) *MCPServer {
 }
 
 func (s *MCPServer) registerTools() {
-	s.registerProjectTools()
-	s.registerEnvVarTools()
+	s.registerListProjects()
+	s.registerGetProject()
+
+	s.registerListGlobalEnvVars()
+	s.registerGetGlobalEnvVar()
+
+	s.registerGetProjectRuns()
+	s.registerGetRun()
 
 	if s.cfg.AllowRuns {
-		s.registerRunTools()
+		s.registerRunProject()
 	}
 
 	if s.cfg.AllowMutations {
-		s.registerMutationTools()
+		s.registerCreateProject()
+		s.registerUpdateProject()
+
+		s.registerCreateGlobalEnvVar()
+		s.registerUpdateGlobalEnvVar()
+		s.registerDeleteGlobalEnvVar()
 	}
 }
 
