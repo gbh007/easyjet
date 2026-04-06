@@ -117,6 +117,14 @@
         >
           Запустить
         </v-btn>
+        <v-btn
+          color="error"
+          :disabled="project.is_template"
+          prepend-icon="mdi-delete"
+          @click="showDeleteDialog = true"
+        >
+          Удалить
+        </v-btn>
       </v-sheet>
     </v-sheet>
 
@@ -197,6 +205,21 @@
         </template>
       </v-data-table>
     </v-sheet>
+
+    <v-dialog v-model="showDeleteDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5"> Подтверждение удаления </v-card-title>
+        <v-card-text>
+          Вы действительно хотите удалить проект "{{ project?.name }}"? Все связанные запуски будут
+          удалены без возможности восстановления.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="secondary" variant="text" @click="showDeleteDialog = false"> Отмена </v-btn>
+          <v-btn color="error" variant="text" @click="deleteProject"> Удалить </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -262,6 +285,7 @@ function handleRowClick(_event: Event, { item }: { item: ProjectRun }) {
 const running = ref(false);
 const runs = ref<ProjectRun[]>([]);
 const runsLoading = ref(false);
+const showDeleteDialog = ref(false);
 
 function runProject(id: number) {
   running.value = true;
@@ -353,6 +377,22 @@ function getStatusText(item: ProjectRun): string {
   if (item.status === 'processing') return 'Выполняется';
   if (item.status === 'success') return 'Успешно';
   return 'Ошибка';
+}
+
+function deleteProject() {
+  if (!project.value?.id) return;
+
+  api
+    .deleteProject(project.value.id)
+    .then(() => {
+      router.push('/');
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => {
+      showDeleteDialog.value = false;
+    });
 }
 
 onMounted(() => {

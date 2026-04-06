@@ -10,6 +10,7 @@ const (
 	CreateProjectOperation      OperationName = "CreateProject"
 	CreateProjectRunOperation   OperationName = "CreateProjectRun"
 	DeleteGlobalEnvVarOperation OperationName = "DeleteGlobalEnvVar"
+	DeleteProjectOperation      OperationName = "DeleteProject"
 	GetGlobalEnvVarOperation    OperationName = "GetGlobalEnvVar"
 	GetGlobalEnvVarsOperation   OperationName = "GetGlobalEnvVars"
 	GetProjectOperation         OperationName = "GetProject"

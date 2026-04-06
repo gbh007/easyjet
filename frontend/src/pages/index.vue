@@ -38,6 +38,13 @@
             <v-btn prepend-icon="mdi-pencil" @click="editProject(project.id)">
               Редактировать
             </v-btn>
+            <v-btn
+              color="error"
+              icon="mdi-delete"
+              size="small"
+              variant="text"
+              @click="confirmDelete(project)"
+            />
           </span>
         </div>
         <div class="d-flex flex-row ga-4 text-caption text-medium-emphasis">
@@ -80,6 +87,21 @@
         </div>
       </v-card-text>
     </v-card>
+
+    <v-dialog v-model="showDeleteDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5"> Подтверждение удаления </v-card-title>
+        <v-card-text>
+          Вы действительно хотите удалить проект "{{ deleteProjectName }}"? Все связанные запуски
+          будут удалены без возможности восстановления.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="secondary" variant="text" @click="showDeleteDialog = false"> Отмена </v-btn>
+          <v-btn color="error" variant="text" @click="deleteProject"> Удалить </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -95,6 +117,9 @@ const api = getEasyJetAPI();
 
 const projects = ref<Array<ProjectListItem>>(new Array<ProjectListItem>());
 const filterType = ref<'all' | 'project' | 'template'>('project');
+const showDeleteDialog = ref(false);
+const deleteProjectId = ref<number | null>(null);
+const deleteProjectName = ref('');
 
 const filterItems = [
   { title: 'Все', value: 'all' },
@@ -130,6 +155,30 @@ function editProject(id: number) {
 
 function createProject() {
   router.push('/projects/new');
+}
+
+function confirmDelete(project: ProjectListItem) {
+  deleteProjectId.value = project.id ?? null;
+  deleteProjectName.value = project.name ?? '';
+  showDeleteDialog.value = true;
+}
+
+function deleteProject() {
+  if (!deleteProjectId.value) return;
+
+  api
+    .deleteProject(deleteProjectId.value)
+    .then(() => {
+      load();
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => {
+      showDeleteDialog.value = false;
+      deleteProjectId.value = null;
+      deleteProjectName.value = '';
+    });
 }
 
 function getLastRunIcon(lastRun: ProjectLastRun): string {

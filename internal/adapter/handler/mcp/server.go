@@ -79,6 +79,7 @@ func (s *MCPServer) registerTools() {
 	if s.cfg.AllowMutations {
 		s.registerCreateProject()
 		s.registerUpdateProject()
+		s.registerDeleteProject()
 
 		s.registerCreateGlobalEnvVar()
 		s.registerUpdateGlobalEnvVar()

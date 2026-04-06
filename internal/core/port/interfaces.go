@@ -13,6 +13,7 @@ type Exec interface {
 type FileSystem interface {
 	GetProjectDir(ctx context.Context, id int) string
 	CreateProjectDir(ctx context.Context, id int) (string, error)
+	RemoveProjectDir(ctx context.Context, id int) error
 	ProjectDirExists(ctx context.Context, id int) (bool, error)
 	CreateSHScript(ctx context.Context, id, stage int, body string) (p string, err error)
 }
@@ -53,6 +54,8 @@ type Database interface {
 	GlobalEnvVar(ctx context.Context, id int) (entity.EnvironmentVariable, error)
 	SetGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (int, error)
 	DeleteGlobalEnvVar(ctx context.Context, id int) error
+
+	DeleteProject(ctx context.Context, id int) error
 }
 
 type Service interface {
@@ -74,6 +77,8 @@ type Service interface {
 	CreateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) (int, error)
 	UpdateGlobalEnvVar(ctx context.Context, ev entity.EnvironmentVariable) error
 	DeleteGlobalEnvVar(ctx context.Context, id int) error
+
+	DeleteProject(ctx context.Context, id int) error
 }
 
 type PubSub interface {

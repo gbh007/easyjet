@@ -61,6 +61,9 @@ func (s *CreateProjectRunCreated) SetID(val OptInt) {
 // DeleteGlobalEnvVarNoContent is response for DeleteGlobalEnvVar operation.
 type DeleteGlobalEnvVarNoContent struct{}
 
+// DeleteProjectNoContent is response for DeleteProject operation.
+type DeleteProjectNoContent struct{}
+
 // Переменная окружения — именованная пара
 // «ключ-значение» для передачи конфигурации в скрипты
 // пайплайна.

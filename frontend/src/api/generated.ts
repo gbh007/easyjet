@@ -85,6 +85,17 @@ export const getEasyJetAPI = (axiosInstance: AxiosInstance = axios.default) => {
   };
 
   /**
+   * Удаляет существующий проект и все связанные запуски
+   * @summary Удалить проект
+   */
+  const deleteProject = (
+    projectId: number,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<void>> => {
+    return axiosInstance.delete(`/api/v1/projects/${projectId}`, options);
+  };
+
+  /**
    * Возвращает список всех запусков для указанного проекта (без информации об этапах и коммитах)
    * @summary Получить историю запусков проекта
    */
@@ -178,6 +189,7 @@ export const getEasyJetAPI = (axiosInstance: AxiosInstance = axios.default) => {
     createProject,
     getProject,
     updateProject,
+    deleteProject,
     getProjectRuns,
     createProjectRun,
     getProjectRun,
@@ -192,6 +204,7 @@ export type GetProjectsResult = AxiosResponse<GetProjects200>;
 export type CreateProjectResult = AxiosResponse<CreateProject201>;
 export type GetProjectResult = AxiosResponse<Project>;
 export type UpdateProjectResult = AxiosResponse<void>;
+export type DeleteProjectResult = AxiosResponse<void>;
 export type GetProjectRunsResult = AxiosResponse<GetProjectRuns200>;
 export type CreateProjectRunResult = AxiosResponse<CreateProjectRun201>;
 export type GetProjectRunResult = AxiosResponse<ProjectRun>;

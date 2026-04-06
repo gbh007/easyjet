@@ -34,6 +34,12 @@ type Handler interface {
 	//
 	// DELETE /api/v1/env-vars/{env_var_id}
 	DeleteGlobalEnvVar(ctx context.Context, params DeleteGlobalEnvVarParams) error
+	// DeleteProject implements deleteProject operation.
+	//
+	// Удаляет существующий проект и все связанные запуски.
+	//
+	// DELETE /api/v1/projects/{project_id}
+	DeleteProject(ctx context.Context, params DeleteProjectParams) error
 	// GetGlobalEnvVar implements getGlobalEnvVar operation.
 	//
 	// Возвращает информацию о глобальной переменной по

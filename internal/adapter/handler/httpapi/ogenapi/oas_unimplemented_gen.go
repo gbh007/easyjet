@@ -51,6 +51,15 @@ func (UnimplementedHandler) DeleteGlobalEnvVar(ctx context.Context, params Delet
 	return ht.ErrNotImplemented
 }
 
+// DeleteProject implements deleteProject operation.
+//
+// Удаляет существующий проект и все связанные запуски.
+//
+// DELETE /api/v1/projects/{project_id}
+func (UnimplementedHandler) DeleteProject(ctx context.Context, params DeleteProjectParams) error {
+	return ht.ErrNotImplemented
+}
+
 // GetGlobalEnvVar implements getGlobalEnvVar operation.
 //
 // Возвращает информацию о глобальной переменной по

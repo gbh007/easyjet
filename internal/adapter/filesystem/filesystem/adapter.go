@@ -82,3 +82,14 @@ func (Adapter) CreateSHScript(ctx context.Context, id, stage int, body string) (
 
 	return p, nil
 }
+
+func (a Adapter) RemoveProjectDir(ctx context.Context, id int) error {
+	p := a.GetProjectDir(ctx, id)
+
+	err := os.RemoveAll(p)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+
+	return nil
+}

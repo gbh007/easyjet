@@ -61,6 +61,13 @@ func encodeDeleteGlobalEnvVarResponse(response *DeleteGlobalEnvVarNoContent, w h
 	return nil
 }
 
+func encodeDeleteProjectResponse(response *DeleteProjectNoContent, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(204)
+	span.SetStatus(codes.Ok, http.StatusText(204))
+
+	return nil
+}
+
 func encodeGetGlobalEnvVarResponse(response *EnvironmentVariable, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)

@@ -146,6 +146,27 @@ paths:
         default:
           $ref: "#/components/responses/Error"
 
+    delete:
+      tags:
+        - Projects
+      summary: Удалить проект
+      description: Удаляет существующий проект и все связанные запуски
+      operationId: deleteProject
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: Уникальный идентификатор проекта
+          schema:
+            type: integer
+            format: int
+            minimum: 1
+      responses:
+        "204":
+          description: Проект успешно удалён
+        default:
+          $ref: "#/components/responses/Error"
+
   /api/v1/projects/{project_id}/runs:
     get:
       tags:
