@@ -11,11 +11,12 @@ import (
 )
 
 type Config struct {
-	App      App      `toml:"app"`
-	Log      Log      `toml:"log"`
-	Database Database `toml:"database"`
-	Server   Server   `toml:"server"`
-	MCP      MCP      `toml:"mcp"`
+	App          App          `toml:"app"`
+	Log          Log          `toml:"log"`
+	Database     Database     `toml:"database"`
+	Server       Server       `toml:"server"`
+	MCP          MCP          `toml:"mcp"`
+	Experimental Experimental `toml:"experimental"`
 }
 
 type App struct {
@@ -49,6 +50,23 @@ type MCP struct {
 	Enabled        bool `toml:"enabled"`
 	AllowRuns      bool `toml:"allow_runs"`
 	AllowMutations bool `toml:"allow_mutations"`
+}
+
+type Experimental struct {
+	Hooks []Hook `toml:"hooks"`
+}
+
+type Hook struct {
+	URL     string              `toml:"url"`
+	Filter  HookFilter          `toml:"filter"`
+	Headers map[string][]string `toml:"headers"`
+	Method  string              `toml:"method"`
+	Body    string              `toml:"body"`
+}
+
+type HookFilter struct {
+	Status     []string `toml:"status"`
+	ProjectIDs []int    `toml:"project_ids"`
 }
 
 func (l Log) SlogLevel() slog.Level {

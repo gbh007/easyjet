@@ -14,6 +14,7 @@ import (
 	"github.com/gbh007/easyjet/internal/adapter/exec/shellexec"
 	"github.com/gbh007/easyjet/internal/adapter/filesystem/filesystem"
 	"github.com/gbh007/easyjet/internal/adapter/git/shellgit"
+	"github.com/gbh007/easyjet/internal/adapter/handler/hook"
 	"github.com/gbh007/easyjet/internal/adapter/handler/httpapi"
 	"github.com/gbh007/easyjet/internal/adapter/handler/mcp"
 	"github.com/gbh007/easyjet/internal/adapter/handler/metrics"
@@ -102,6 +103,7 @@ func main() {
 	)
 	workerCnt := worker.New(logger, srv)
 	metricCnt := metrics.New(logger, ps)
+	hookCnt := hook.New(logger, ps, cfg.Experimental.Hooks, db)
 
 	schedulerCnt := schedulerhandler.NewScheduler(logger, ps, srv)
 
@@ -134,6 +136,11 @@ func main() {
 
 	g.Go(func() error {
 		metricCnt.Start(ctx)
+		return nil
+	})
+
+	g.Go(func() error {
+		hookCnt.Start(ctx)
 		return nil
 	})
 

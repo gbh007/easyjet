@@ -29,3 +29,27 @@ enabled = false
 allow_runs = false
 # Разрешить мутации данных через MCP (создание/обновление/удаление)
 allow_mutations = false
+
+# Пример хуков для https://github.com/gbh007/hookproxy
+[[experimental.hooks]]
+headers.Authorization = ["Bearer <your-token>"]
+headers.X-Telegram-Chat-ID = ["<chat-id>"]
+headers.X-Telegram-Parse-Mode = ["HTML"]
+url = "http://localhost:3000/api/v1/telegram"
+filter.status = [
+    "all",
+    "job_all",
+    "job_success",
+    "job_fail",
+    "stage_all",
+    "stage_success",
+    "stage_fail",
+]
+filter.project_ids = [1, 2, 3]
+method = "POST"
+body = """
+{{- if .err }}❌ <b>failed</b>:{{ else }}✅ <b>success</b>:{{ end }} {{ .project.name }} {{ .duration }}
+{{- if .err }}
+{{ .err }}
+{{- end -}}
+"""
