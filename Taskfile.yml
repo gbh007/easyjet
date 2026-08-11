@@ -33,6 +33,9 @@ tasks:
     dir: frontend
     cmd: npm run dev
 
+  run:docker:
+    cmd: docker compose -f demo/docker-compose.yaml up --build
+
   build:server:
     cmds:
       - go build -o server cmd/server/main.go
@@ -42,6 +45,10 @@ tasks:
   build:front:
     dir: frontend
     cmd: npm run build
+
+  build:image:
+    cmds:
+      - docker build -f Dockerfile -t easyjet:latest .
 
   ts:lint:
     dir: frontend

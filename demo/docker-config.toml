@@ -1,0 +1,19 @@
+[app]
+project_dir = "/app/data/projects"
+
+[log]
+level = "info"
+format = "tint"
+
+[database]
+type = "sqlite"
+dns = "/app/data/main.db"
+
+[server]
+addr = ":8080"
+static_files_path = "/app/static"
+
+[mcp]
+enabled = true
+allow_runs = true
+allow_mutations = true

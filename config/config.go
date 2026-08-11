@@ -32,7 +32,7 @@ type Server struct {
 }
 
 type ServerExternal struct {
-	API string `toml:"api"`
+	API string `toml:"api"` // TODO: нейрослоп, почистить
 	Web string `toml:"web"`
 }
 

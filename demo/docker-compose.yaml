@@ -1,0 +1,22 @@
+name: easyjet-demo
+
+services:
+  easyjet:
+    restart: none
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    volumes:
+      - easyjet-data:/app/data
+      - ./docker-config.toml:/app/config.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: 2
+
+volumes:
+  easyjet-data:
