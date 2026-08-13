@@ -10,6 +10,8 @@ services:
       - easyjet-data:/app/data
       - ./docker-config.toml:/app/config.toml
       - /var/run/docker.sock:/var/run/docker.sock
+      # Если нужно работать с корневой системой
+      # - /:/host:ro
     ports:
       - 8080:8080
     logging:

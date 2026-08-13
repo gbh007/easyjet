@@ -90,9 +90,11 @@ func (srv Service) HandleRun(ctx context.Context, runID int) (returnedErr error)
 	}()
 
 	dir := project.Dir
+	extDir := project.Dir
 
 	if dir == "" {
 		dir = srv.fs.GetProjectDir(ctx, project.ID)
+		extDir = srv.fs.GetExternalProjectDir(ctx, project.ID)
 	}
 
 	if project.HasGIT() {
@@ -102,7 +104,7 @@ func (srv Service) HandleRun(ctx context.Context, runID int) (returnedErr error)
 		}
 	}
 
-	env, err := srv.CalculateEffectiveEnvVars(ctx, project, run, dir)
+	env, err := srv.CalculateEffectiveEnvVars(ctx, project, run, dir, extDir)
 	if err != nil {
 		return fmt.Errorf("calculate env vars: %w", err)
 	}

@@ -89,7 +89,7 @@
                 icon="mdi-close"
                 size="small"
                 variant="text"
-                @click="cancelEdit(index)"
+                @click="cancelEdit()"
               />
               <v-btn
                 v-if="envVar.id && editingIndex !== index"
@@ -180,7 +180,7 @@ function saveEdit(index: number) {
     });
 }
 
-function cancelEdit(index: number) {
+function cancelEdit() {
   // Reload to restore original values
   load();
 }

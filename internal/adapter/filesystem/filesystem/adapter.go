@@ -11,19 +11,29 @@ import (
 )
 
 type Adapter struct {
-	basePath string
-	logger   *slog.Logger
+	basePath         string
+	externalBasePath string
+	logger           *slog.Logger
 }
 
-func New(logger *slog.Logger, basePath string) Adapter {
+func New(logger *slog.Logger, basePath, externalBasePath string) Adapter {
+	if externalBasePath == "" {
+		externalBasePath = basePath
+	}
+
 	return Adapter{
-		basePath: basePath,
-		logger:   logger,
+		basePath:         basePath,
+		externalBasePath: externalBasePath,
+		logger:           logger,
 	}
 }
 
 func (a Adapter) GetProjectDir(ctx context.Context, id int) string {
 	return filepath.Join(a.basePath, strconv.Itoa(id))
+}
+
+func (a Adapter) GetExternalProjectDir(ctx context.Context, id int) string {
+	return filepath.Join(a.externalBasePath, strconv.Itoa(id))
 }
 
 func (a Adapter) CreateProjectDir(ctx context.Context, id int) (string, error) {

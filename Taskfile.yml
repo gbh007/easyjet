@@ -33,22 +33,26 @@ tasks:
     dir: frontend
     cmd: npm run dev
 
-  run:docker:
-    cmd: docker compose -f demo/docker-compose.yaml up --build
+  run:demo:
+    cmds:
+      # Запускаемся в блокирующем режиме
+      - docker compose -f demo/docker-compose.yml up --build
+      - docker compose -f demo/docker-compose.yml down --remove-orphans
 
   build:server:
     cmds:
-      - go build -o server cmd/server/main.go
-      - go build -o configsync cmd/configsync/main.go
-      - go build -o grafanagenerator cmd/grafanagenerator/main.go
+      - go build -o build/server cmd/server/main.go
+      - go build -o build/configsync cmd/configsync/main.go
+      - go build -o build/grafanagenerator cmd/grafanagenerator/main.go
 
   build:front:
     dir: frontend
     cmd: npm run build
 
-  build:image:
+  build:docker:
     cmds:
       - docker build -f Dockerfile -t easyjet:latest .
+      - docker image save -o build/easyjet.tar easyjet:latest
 
   ts:lint:
     dir: frontend

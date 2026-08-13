@@ -81,7 +81,7 @@ func main() {
 	}
 
 	ex := shellexec.New(logger)
-	fs := filesystem.New(logger, cfg.App.ProjectDir)
+	fs := filesystem.New(logger, cfg.App.ProjectDir, cfg.App.ExternalProjectDir)
 	git := shellgit.New(logger)
 	ps := eventbus.New(logger)
 	srv := service.New(logger, ex, fs, git, db, ps, cfg.Server.External.Web)

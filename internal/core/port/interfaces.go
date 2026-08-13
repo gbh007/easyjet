@@ -12,6 +12,7 @@ type Exec interface {
 
 type FileSystem interface {
 	GetProjectDir(ctx context.Context, id int) string
+	GetExternalProjectDir(ctx context.Context, id int) string
 	CreateProjectDir(ctx context.Context, id int) (string, error)
 	RemoveProjectDir(ctx context.Context, id int) error
 	ProjectDirExists(ctx context.Context, id int) (bool, error)

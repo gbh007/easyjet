@@ -114,3 +114,21 @@
     sudo systemctl status easyjet.service
     sudo journalctl -u easyjet.service
     ```
+
+## Настройка само-обновления
+
+Для самообновления можно использовать подобный скрипт (при настройке по инструкции), при этом **обязательно** включить опции - использования окружения хоста и перезапуска после задачи
+
+```sh
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+
+CGO_ENABLED=0 go build -o build/easyjet cmd/server/main.go
+
+npm install -C frontend
+npm run build -C frontend
+
+rm -r /home/easyjet/easyjet /home/easyjet/web
+
+mv $WORKSPACE/build/easyjet /home/easyjet/easyjet
+mv $WORKSPACE/frontend/dist /home/easyjet/web
+```

@@ -49,27 +49,12 @@
   - [ ] Работа с git, docker напрямую
   - [ ] Опция шифрования файлов
   - [ ] Поддержка агентного режима
-  - [ ] Возможность разворачивания приложения в docker контейнере
+  - [x] Возможность разворачивания приложения в docker контейнере
 
 ## Как запустить
 
-Настройка и запуск как [linux daemon](docs/how-to-install.md)
-
-Для самообновления можно использовать подобный скрипт (при настройке по инструкции), при этом обязательно включить опции - использования окружения хоста и перезапуска после задачи
-
-```sh
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-
-CGO_ENABLED=0 go build -o build/easyjet cmd/server/main.go
-
-npm install -C frontend
-npm run build -C frontend
-
-rm -r /home/easyjet/easyjet /home/easyjet/web
-
-mv $WORKSPACE/build/easyjet /home/easyjet/easyjet
-mv $WORKSPACE/frontend/dist /home/easyjet/web
-```
+Настройка и запуск как [linux daemon](docs/how-to-install.md)  
+Настройка и запуск как [docker container](docs/how-to-install-docker.md)
 
 ## Экспорт и импорт проектов
 

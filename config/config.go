@@ -20,7 +20,8 @@ type Config struct {
 }
 
 type App struct {
-	ProjectDir string `toml:"project_dir"`
+	ProjectDir         string `toml:"project_dir"`
+	ExternalProjectDir string `toml:"external_project_dir"`
 }
 
 type Server struct {

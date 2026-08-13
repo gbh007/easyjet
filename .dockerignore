@@ -1,0 +1,13 @@
+.dockerignore
+.git
+
+*.toml
+*.env
+*.db
+dump.json
+.hidden
+/projects
+
+/build
+frontend/dist
+frontend/node_modules

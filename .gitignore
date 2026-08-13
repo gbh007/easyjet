@@ -1,11 +1,8 @@
+/build
+.hidden
+
 *.db
 /projects
 config.toml
-/server
-/build
-/easyjet
-/configsync
-.hidden
 dump.json
-/grafanagenerator
 gg-config.toml

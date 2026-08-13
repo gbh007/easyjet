@@ -39,7 +39,7 @@ func (s Service) DeleteGlobalEnvVar(ctx context.Context, id int) error {
 // 2. Static workspace variables (WORKSPACE)
 // 3. Global variables
 // 4. Project variables
-func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.Project, run entity.ProjectRun, dir string) (func(stage entity.ProjectStage) []string, error) {
+func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.Project, run entity.ProjectRun, dir, extDir string) (func(stage entity.ProjectStage) []string, error) {
 	globalVars, err := s.db.GlobalEnvVars(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get global env vars: %w", err)
@@ -97,6 +97,7 @@ func (s Service) CalculateEffectiveEnvVars(ctx context.Context, project entity.P
 		envMap["EXECUTOR_NUMBER"] = "0001"
 		// JAVA_HOME - XDD
 		envMap["WORKSPACE"] = dir
+		envMap["EXTERNAL_WORKSPACE"] = extDir
 
 		if externalAddrWebURL != nil {
 			if runAddrWebURL != nil {

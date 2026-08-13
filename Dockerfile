@@ -17,7 +17,7 @@ RUN --mount=type=cache,target="$(go env GOMODCACHE)" \
     --mount=type=cache,target="$(go env GOCACHE)" \
     go mod download 
 
-COPY . .
+COPY --exclude=frontend . .
 RUN --mount=type=cache,target="$(go env GOMODCACHE)" \
     --mount=type=cache,target="$(go env GOCACHE)" \
     CGO_ENABLED=0 go build \
@@ -32,6 +32,5 @@ COPY --from=go-builder /build/main /app/main
 COPY --from=vue-builder /build/dist /app/static
 
 WORKDIR /app
-VOLUME [ "/app/data" ]
 
 ENTRYPOINT ["/app/main"]

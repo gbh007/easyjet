@@ -1,5 +1,7 @@
 [app]
 project_dir = "./projects"
+# Если запускаешься в докере и моунтинг директорий не 1 в 1
+# external_project_dir = ""
 
 [log]
 level = "info"
