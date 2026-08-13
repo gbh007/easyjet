@@ -86,6 +86,8 @@
          # - /var/lib/easyjet/.ssh:/root/.ssh
        environment:
          HOME: /var/lib/easyjet
+         # Настрой нужную таймзону для крона
+         TZ: Asia/Krasnoyarsk
        ports:
          - 8080:8080
        logging:
@@ -100,3 +102,20 @@
    ```sh
    sudo systemctl disable --now easyjet.service
    ```
+
+## Настройка само-обновления
+
+Для самообновления можно использовать подобный скрипт (при настройке по инструкции)
+
+```sh
+docker build -f Dockerfile -t easyjet:latest .
+
+docker run --rm -d --name easyjet-updater \
+-v /srv/easyjet:/srv/easyjet \
+-v /var/run/docker.sock:/var/run/docker.sock \
+docker:29 \
+/bin/sh -c "
+sleep 10
+docker compose -f /srv/easyjet/docker-compose.yml up -d --remove-orphans
+"
+```
