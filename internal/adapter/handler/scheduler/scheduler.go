@@ -101,6 +101,12 @@ func (s *Scheduler) processEvents(ctx context.Context) {
 }
 
 func (s *Scheduler) handleEvent(ctx context.Context, event entity.Event) (err error) {
+	s.logger.DebugContext(
+		ctx, "event in scheduler",
+		"type", event.Type,
+		"project_id", event.ProjectID,
+	)
+
 	switch event.Type { //nolint:exhaustive // не требуется поддержка всех вариантов
 	case entity.EventProjectCreated:
 		err = s.registerJob(ctx, event.ProjectID)
@@ -154,6 +160,11 @@ func (s *Scheduler) registerJob(ctx context.Context, projectID int) error {
 
 	s.jobs[projectID] = job
 
+	s.logger.DebugContext(
+		ctx, "job in scheduler registered",
+		"project_id", projectID,
+	)
+
 	return nil
 }
 
@@ -166,6 +177,11 @@ func (s *Scheduler) removeJob(projectID int) error {
 	if !exists {
 		return nil
 	}
+
+	s.logger.Debug(
+		"job in scheduler removed",
+		"project_id", projectID,
+	)
 
 	return s.scheduler.RemoveJob(job.ID())
 }

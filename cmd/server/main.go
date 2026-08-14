@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 
@@ -107,7 +108,7 @@ func main() {
 
 	schedulerCnt := schedulerhandler.NewScheduler(logger, ps, srv)
 
-	logger.Info("EasyJet starting")
+	logger.Info("EasyJet starting", "tz", time.Local.String())
 
 	g, ctx := errgroup.WithContext(ctx)
 

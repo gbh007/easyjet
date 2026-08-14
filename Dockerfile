@@ -28,6 +28,8 @@ RUN --mount=type=cache,target="$(go env GOMODCACHE)" \
 
 FROM docker:29
 
+COPY --from=go-builder /usr/share/zoneinfo /usr/share/zoneinfo
+
 COPY --from=go-builder /build/main /app/main
 COPY --from=vue-builder /build/dist /app/static
 
