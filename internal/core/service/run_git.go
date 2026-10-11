@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -46,7 +47,15 @@ func (srv Service) runGitPull(ctx context.Context, project entity.Project, runID
 
 	err = srv.git.Pull(ctx, dir, project.GitBranch)
 	if err != nil {
-		return fmt.Errorf("git pull origin: %w", err)
+		err = fmt.Errorf("git pull origin: %w", err)
+
+		srv.logger.ErrorContext(ctx, "pull repository", "error", err, "project_id", project.ID)
+
+		// Есть проблема с пулом, пытаемся сделать жесткий сброс ветки
+		resetErr := srv.git.HardReset(ctx, dir, srv.git.OriginName()+"/"+project.GitBranch)
+		if resetErr != nil {
+			return errors.Join(err, fmt.Errorf("git reset: %w", resetErr))
+		}
 	}
 
 	return nil
